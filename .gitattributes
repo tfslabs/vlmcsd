@@ -1,0 +1,5 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Force all text files to have LF line endings on checkout and commit.
+* text eol=lf
