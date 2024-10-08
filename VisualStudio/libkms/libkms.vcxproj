@@ -75,6 +75,7 @@
     <GenerateManifest>false</GenerateManifest>
     <TargetExt>.dll</TargetExt>
     <LinkIncremental>true</LinkIncremental>
+    <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\..\..\!bin!\vlmcsd\Release\x64</OutDir>
@@ -82,6 +83,7 @@
     <GenerateManifest>false</GenerateManifest>
     <TargetExt>.dll</TargetExt>
     <LinkIncremental>true</LinkIncremental>
+    <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\..\!bin!\vlmcsd\Debug\x64</OutDir>
