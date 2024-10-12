@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)..\..\!bin!\vlmcsd\Release\x86</OutDir>
+    <OutDir>$(SolutionDir)!bin!\vlmcsd\Release\x86</OutDir>
     <TargetName>libkms32</TargetName>
     <GenerateManifest>false</GenerateManifest>
     <TargetExt>.dll</TargetExt>
@@ -78,7 +78,7 @@
     <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)..\..\!bin!\vlmcsd\Release\x64</OutDir>
+    <OutDir>$(SolutionDir)!bin!\vlmcsd\Release\x64</OutDir>
     <TargetName>libkms64</TargetName>
     <GenerateManifest>false</GenerateManifest>
     <TargetExt>.dll</TargetExt>
@@ -86,13 +86,13 @@
     <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)..\..\!bin!\vlmcsd\Debug\x64</OutDir>
+    <OutDir>$(SolutionDir)!bin!\vlmcsd\Debug\x64</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>$(ProjectName)64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)..\..\!bin!\vlmcsd\Debug\x86</OutDir>
+    <OutDir>$(SolutionDir)!bin!\vlmcsd\Debug\x86</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetExt>.dll</TargetExt>
     <TargetName>$(ProjectName)32</TargetName>
