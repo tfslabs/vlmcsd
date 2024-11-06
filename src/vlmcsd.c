@@ -360,7 +360,7 @@ static __noreturn void usage()
 		" -K (0|1|2|3)\t\tSet white-listing level which product VLMCSD accepts or refuses (default 0)\n\t\t\t\t0: Activate all products with an unknown, retail or beta/preview KMS IDs.\n\t\t\t\t1: Activate products with a retail or beta/preview KMS ID but refuse to activate products with an unknown KMS ID.\n\t\t\t\t2: Activate products with an unknown KMS ID but refuse products with a retail or beta/preview KMS ID.\n\t\t\t\t3: Activate only products with a known volume license RTM KMS ID and refuse all others.\n\n"
 		" -c (0|1)\t\tDisable (0)/Enable (1) client time checking. If the client time is different than 4 hours compare to the KMS Host, the host will deny the activation. (default 0).\n\t\t\tNote: It is recommended that the VLMCSD has a reliable time service (e.g. sync the time with time.windows.com).\n\n"
 #		ifndef NO_CLIENT_LIST
-		" -M (0|1)\t\tDisable (0)/Enable (1) maintaining clients (default 0).\n\t\t\tNote: Enabling this service is not recommended, except you have to do so to prevent the activation failling.\n\t\t\tIt is because the VLMCSD can only keep maximum of 671 clients. If that number exceed, VLMCSD will no longer accept any new connect, nor activation requests.\n\n"
+		" -M (0|1)\t\tDisable (0)/Enable (1) maintaining clients (default 0).\n\t\t\tNote: Enabling this service is not recommended, except you have to do so to prevent the activation failling.\n\t\t\tIt is because the VLMCSD can only keep maximum of 16777215 clients. If that number exceed, VLMCSD will no longer accept any new connect, nor activation requests.\n\n"
 		" -E (0|1)\t\tDisable (0)/Enable (1) starting VLMCSD with empty client list (Default 0).\n\t\t\tNote: It is recommended to keep the default, because Office will not activate unless your KMS Host has at least 5 active clients.\n\t\t\tSee more: https://learn.microsoft.com/en-us/office/troubleshoot/administration/0xc004f038-computer-not-activate\n\n"
 #		endif // !NO_CLIENT_LIST
 #		endif // !NO_STRICT_MODES
@@ -406,8 +406,7 @@ static __noreturn void usage()
 #		ifndef NO_VERSION_INFORMATION
 		" -V\t\t\tDisplay version information and exit\n"
 #		endif // NO_VERSION_INFORMATION
-		,
-		Version, global_argv[0]);
+		,Version, global_argv[0]);
 
 	exit(VLMCSD_EINVAL);
 }
