@@ -22,6 +22,7 @@
     <ProjectGuid>{918B4F5B-6356-451E-998C-5FCB29988170}</ProjectGuid>
     <RootNamespace>vlmcsd-Windows</RootNamespace>
     <ProjectName>vlmcsd-Windows</ProjectName>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -85,7 +86,7 @@
     <OutDir>$(SolutionDir)!bin!\vlmcsd\Debug\x86</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>vlmcsd-Windows-x86</TargetName>
+    <TargetName>vlmcsd-Windows-x64</TargetName>
     <OutDir>$(SolutionDir)!bin!\vlmcsd\Debug\x64</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
