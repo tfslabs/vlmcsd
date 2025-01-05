@@ -278,8 +278,8 @@ static __noreturn void usage()
 		/////////////////////////////////////////////////////////////////////
 		//// Windows Intergration (With define User in LC)
 #		if !defined(_WIN32) && !defined(NO_USER_SWITCH)
-		"  -u <user>\t\tset uid to <user>\n"
-		"  -g <group>\t\tset gid to <group>\n"
+		" -u <user>\t\tset uid to <user>\n"
+		" -g <group>\t\tset gid to <group>\n"
 #		endif // !defined(_WIN32) && !defined(NO_USER_SWITCH)
 		/////////////////////////////////////////////////////////////////////
 
@@ -393,9 +393,6 @@ static __noreturn void usage()
 		" -A <interval>\t\tRetry activation every <interval>, if the previous activation/reactivation is failed (default 2h).\n\n"
 #		endif // NO_CUSTOM_INTERVALS
 #		ifndef NO_LOG
-#		ifndef _WIN32
-		"  -l syslog		log to syslog\n"
-#		endif // _WIN32
 		" -l <file>\t\tWrites VLMCSD log into a file.\n\t\t\tNote: Make sure you have read+write access to that file.\n\n"
 		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1).\n\n"
 #		ifndef NO_VERBOSE_LOG
