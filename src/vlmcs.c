@@ -127,13 +127,13 @@ static void string2UuidOrExit(const char *const restrict input, GUID *const rest
 __noreturn static void clientUsage(const char* const programName)
 {
 	errorout(
-		"vlmcs %s \n\n"
-#		ifndef NO_DNS
+		/////////////////////////////////////////////////////////////////////
+		//// VLMCS Introduction
+		"Volume Management Service - Client Emulator\n"
+		"Build Date: %s\n"
+		"\nUsage:\n"
 		"Usage: %s [Options] [<Host>:<port> | <domain|FQDN> ] [Advanced Options]\n\n"
-#		else // DNS
-		"Usage: %s [Options] [<Host>:<port> | <domain|FQDN> ] [Advanced Options]\n\n"
-#		endif // DNS
-		"Options:\n\n"
+		"Advanced options:\n"
 #		ifndef NO_VERBOSE_LOG
 		"  -v : Verbose logging\n"
 #		endif
