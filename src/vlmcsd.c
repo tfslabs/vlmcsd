@@ -410,7 +410,6 @@ static __noreturn void usage()
 		" -V\t\t\tDisplay version information and exit\n"
 #		endif // NO_VERSION_INFORMATION
 		,Version, global_argv[0]);
-
 	exit(VLMCSD_EINVAL);
 }
 #endif // HELP
