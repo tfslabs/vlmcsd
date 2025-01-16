@@ -1,3 +1,9 @@
+/*
+Someone plz add comments
+Im crying
+mf who abuse preprocessor is wild
+*/
+
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
