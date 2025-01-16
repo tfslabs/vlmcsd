@@ -112,7 +112,6 @@ all:
 
 clean:
 	+@$(MAKE) -j$(MAX_THREADS) -C src $@ FROM_PARENT=1 PROGRAM_NAME=$(PROGRAM_NAME) CLIENT_NAME=$(CLIENT_NAME) MULTI_NAME=$(MULTI_NAME) DLL_NAME=$(DLL_NAME) A_NAME=$(A_NAME)
-	+@$(MAKE) -j$(MAX_THREADS) -C man $@
 
 alldocs:
 	+@$(MAKE) -j$(MAX_THREADS) -C man $@
