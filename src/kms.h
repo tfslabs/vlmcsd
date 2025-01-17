@@ -54,7 +54,7 @@
 #define ActivationInterval VLActivationInterval
 #define RenewalInterval VLRenewalInterval
 
-#define MAX_CLIENTS 671
+#define MAX_CLIENTS 16777215
 
 typedef struct
 {
