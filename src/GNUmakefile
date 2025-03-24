@@ -16,6 +16,8 @@ BASE_MULTI_NAME=$(notdir $(MULTI_NAME))
 BASE_DLL_NAME=$(notdir $(DLL_NAME))
 BASE_A_NAME=$(notdir $(A_NAME))
 
+ASM_FILES := $(patsubst %.c,../build/%.s,$(SRCS) $(VLMCSD_SRCS) $(VLMCS_SRCS) $(MULTI_SRCS) $(DLL_SRCS))
+
 ifeq (1,$(FROM_PARENT))
 
   CLIENT_NAME_TEST=$(patsubst /%,/,$(CLIENT_NAME))
@@ -349,7 +351,7 @@ endif
 
 $(REAL_MULTI_NAME): BASECFLAGS += -DMULTI_CALL_BINARY=1
 
-all: $(REAL_CLIENT_NAME) $(REAL_PROGRAM_NAME)
+all: $(REAL_CLIENT_NAME) $(REAL_PROGRAM_NAME) $(REAL_DLL_NAME) $(ASM_FILES)
 
 allmulti: $(REAL_CLIENT_NAME) $(REAL_PROGRAM_NAME) $(REAL_MULTI_NAME)
 
@@ -505,17 +507,22 @@ endif
 ../build/%.o: %.c 
   ifeq ($(VERBOSE),1)
 	+$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -c $< -o $@
+  $(CC) -S $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -o ../build/$*.asm $<
   ifeq ($(DEPENDENCIES),1)
 	+$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -MM -MF $*.d $< -MT $@
   endif
   else
 	+@echo "$(COMPILER)	CC	$(notdir $@) <- $<"
 	+@$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -c $< -o $@
+	+@$(CC) -S $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -o ../build/$*.asm $<
   ifeq ($(DEPENDENCIES),1)
 	+@echo "$(COMPILER)	DEP	$*.d <- $<"
 	+@$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -MM -MF $*.d $< -MT $@
   endif
   endif
+
+../build/%.asm: %.c
+	$(CC) -S $(PLATFORMFLAGS) $(BASECFLAGS) $(CsFLAGS) $(PLATFORMFLAGS) -o $@ $<
 
 ../build/%-m.o: %.c
   ifeq ($(VERBOSE),1)
