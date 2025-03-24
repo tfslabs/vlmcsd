@@ -675,7 +675,7 @@ static void displayResponse(const RESPONSE_RESULT result, const REQUEST* request
 #			ifndef _WIN32
 			printf(" (%016llX)", (unsigned long long)BE64(*(uint64_t*)hwid));
 #			else // _WIN32
-			printf(" (%016I64X)", (unsigned long long)BE64(*(uint64_t*)hwid));
+			printf(" (%016" PRIx64 ")", (unsigned long long)BE64(*(uint64_t*)hwid));
 #			endif // _WIN32
 		}
 

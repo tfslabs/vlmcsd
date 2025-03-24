@@ -1,7 +1,5 @@
 /*
-Someone plz add comments
-Im crying
-mf who abuse preprocessor is wild
+Volume Management Service DAEMON (vlmcsd)
 */
 
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -339,7 +337,7 @@ static __noreturn void usage()
 		" -F0, -F1\t\tDisable/enable binding to foreign IP addresses\n\n"
 #		endif // HAVE_FREEBIND
 #		else // defined(USE_MSRPC) || defined(SIMPLE_SOCKETS)
-		" -P <port>\t\tSet the specific TCP port for subsequent \"-L\" statement (default 1688).\n\t\t\tIf you use \"-P\" alongside \"-L\", \"-P\" must be specified before \"-L\".\n\n
+		" -P <port>\t\tSet the specific TCP port for subsequent \"-L\" statement (default 1688).\n\t\t\tIf you use \"-P\" alongside with \"-L\", \"-P\" must be specified before \"-L\".\n\n"
 #		endif // defined(USE_MSRPC) || defined(SIMPLE_SOCKETS)
 #		if !defined(NO_LIMIT) && !__minix__
 		" -m <clients>\t\tMaximum clients VLMCSD can handle at the same time.\n\n"
