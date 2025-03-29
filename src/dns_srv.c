@@ -25,6 +25,7 @@
  //#ifndef DNS_PARSER_INTERNAL
 #if __ANDROID__
 #include <netinet/in.h>
+#include <arpa/nameser.h> 
 #include "nameser.h"
 #include "resolv.h"
 #else // other Unix non-Android
