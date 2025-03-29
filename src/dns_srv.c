@@ -26,6 +26,7 @@
 #if __ANDROID__
 #include <netinet/in.h>
 #include <arpa/nameser.h> 
+#include <semaphore.h> // termux specialization
 #include "nameser.h"
 #include "resolv.h"
 #else // other Unix non-Android
