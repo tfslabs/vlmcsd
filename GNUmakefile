@@ -1,6 +1,6 @@
 .NOTPARALLEL:
 
-MAX_THREADS ?= 2
+MAX_THREADS ?= 12
 
 PROGRAM_NAME ?= bin/vlmcsd
 CLIENT_NAME ?= bin/vlmcs
