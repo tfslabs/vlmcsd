@@ -253,7 +253,7 @@ __noreturn static void showProducts(PRINTFUNC p)
 	{
 		for (k = 0; k < itemsPerLine; k++)
 		{
-			uint8_t j;
+			size_t j;
 			index = k * lines + i;
 
 			if (index >= items) break;
