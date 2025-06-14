@@ -211,7 +211,7 @@ void CleanUpClientLists()
 
 void InitializeClientLists()
 {
-	int_fast8_t i;
+	int32_t i;
 	int_fast16_t j;
 
 #	ifndef USE_THREADS
