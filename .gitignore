@@ -12,3 +12,4 @@ _deps
 bin
 build
 VisualStudio
+lib/*

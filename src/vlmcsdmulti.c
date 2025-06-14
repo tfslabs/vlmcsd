@@ -88,10 +88,14 @@ int main(int argc, CARGV argv)
 	}
 
 	errorout(
-		"vlmcsdmulti %s\n\n"
+		"Volume Management Service - Multi-binary\n"
+		"Build Date: %s\n\n"
 		"Usage:\n"
-		"\t%s vlmcsd [<vlmcsd command line>]\n"
-		"\t%s vlmcs [<vlmcs command line>]\n\n",
+		"\t%s vlmcs  [vlmcsd command]\n"
+		"\t%s vlmcsd [vlmcs command]\n\n"
+		"HELP:\n"
+		"\tFor each VLMCSD sub-program, please use \"-h\" at each command"
+		"\n",
 		Version, *argv, *argv
 	);
 
