@@ -1037,7 +1037,7 @@ __noreturn static void HangupHandler(const int signal_unused)
 __noreturn static void terminationHandler(const int signal_unused)
 {
 	cleanup();
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 #if defined(CHILD_HANDLER) || __minix__
@@ -1109,7 +1109,7 @@ static BOOL __stdcall terminationHandler(const DWORD fdwCtrlType)
 	case CTRL_LOGOFF_EVENT:
 	case CTRL_SHUTDOWN_EVENT:
 		cleanup();
-		exit(0);
+		exit(EXIT_SUCCESS);
 	default:
 		return FALSE;
 	}
@@ -1152,7 +1152,7 @@ static void parseGeneralArguments()
 
 	for (opterr = 0; (o = getopt(global_argc, (char *const *)global_argv, (const char *)optstring)) > 0;)
 		switch (o)
-		{
+		{	
 #if !defined(NO_SOCKETS) && !defined(NO_SIGHUP) && !defined(_WIN32)
 		case 'Z':
 			IsRestarted = TRUE;
@@ -1466,7 +1466,7 @@ static void parseGeneralArguments()
 			printPlatform();
 			printCommonFlags();
 			printServerFlags();
-			exit(0);
+			exit(EXIT_SUCCESS);
 #endif // NO_VERSION_INFORMATION
 
 		default:

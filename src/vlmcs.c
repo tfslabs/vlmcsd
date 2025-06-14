@@ -266,7 +266,7 @@ __noreturn static void showProducts(PRINTFUNC p)
 
 	p("\n");
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 __noreturn static void examples(const char* const programName)
@@ -290,7 +290,7 @@ __noreturn static void examples(const char* const programName)
 		programName, programName, programName, programName, programName, programName, programName, programName
 	);
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 #else // NO_HELP
@@ -608,7 +608,7 @@ static void parseCommandLinePass2(const char *const programName, const int argc,
 		printPlatform();
 		printCommonFlags();
 		printClientFlags();
-		exit(0);
+		exit(EXIT_SUCCESS);
 
 #			endif // NO_VERSION_INFORMATION
 

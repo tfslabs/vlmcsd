@@ -975,7 +975,7 @@ static int ServeClientAsyncFork(const SOCKET s_client, const DWORD RpcAssocGroup
 
 		serveClient(s_client, RpcAssocGroup);
 		post_sem();
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 }
 #endif
