@@ -9,7 +9,7 @@ TheFlightSims takes the security responsibilities  of our software products and 
 You can report security issues on these platforms:
 
 * The repository security page (Preferred)
-* [Email](mailto:welcome.tfs@outlook.com)
+* [Email](mailto:report_concern@theflightsims.com)
 
 Please include the requested information listed below (as much as you can provide) to help us better understand the nature and scope of the possible issue:
 
