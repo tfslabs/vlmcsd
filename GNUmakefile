@@ -210,7 +210,7 @@ help:
 	@echo "    -DUNSAFE_DATA_LOAD           Don't check the KMS data file for integrity. Saves some bytes but is dangerous."
 	@echo ""
 	@echo "Troubleshooting options"
-	@echo "    CAT=1                        Combine all sources in a single in-memory file and compile directly to target."
+	@echo "    CAT=1                        Combine all sources in a single in-memory file and compile directly to target. DON'T USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING!"
 	@echo "    NOPROCFS=1                   Don't rely on a properly mounted proc filesystem in /proc."
 	@echo "    AUXV=1                       Use /proc/self/auxv (requires Linux with glibc >= 2.16 or musl.)"
 	@echo "    NOLPTHREAD=1                 Disable detection if -lpthread is required (for use with Android NDK)."

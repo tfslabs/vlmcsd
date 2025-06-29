@@ -514,7 +514,7 @@ endif
   else
 	+@echo "$(COMPILER)	CC	$(notdir $@) <- $<"
 	+@$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -c $< -o $@
-	+@echo "$(COMPILER)	Generate ASM	$(notdir $*.asm) <- $<"
+	+@echo "$(COMPILER)	ASM	$(notdir $*.asm) <- $<"
 	+@$(CC) -S $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -o ../build/$*.asm $<
   ifeq ($(DEPENDENCIES),1)
 	+@echo "$(COMPILER)	DEP	$*.d <- $<"

@@ -13,3 +13,5 @@ bin
 build
 VisualStudio
 lib/*
+.vscode
+*.d
