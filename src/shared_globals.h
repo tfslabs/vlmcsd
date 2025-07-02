@@ -48,6 +48,10 @@
 #include "types.h"
 #include "kms.h"
 
+#ifdef _WIN32
+#include <inttypes.h> //fix for format error %any
+#endif
+
 //#define MIN_CSVLK 6
 typedef struct
 {

@@ -1,6 +1,6 @@
 .NOTPARALLEL:
 
-MAX_THREADS ?= 16
+MAX_THREADS ?= 12
 
 PROGRAM_NAME ?= bin/vlmcsd
 CLIENT_NAME ?= bin/vlmcs
@@ -17,89 +17,89 @@ BASE_A_NAME=$(notdir $(A_NAME))
 TARGETPLATFORM := $(shell LANG=en_US.UTF-8 LANGUAGE=en_US $(CC) -v 2>&1 | grep '^Target: ' | cut -f 2 -d ' ')
 
 ifneq (,$(findstring darwin,$(TARGETPLATFORM)))
-  DARWIN := 1
-  UNIX := 1
+	DARWIN := 1
+	UNIX := 1
 endif
 
 ifneq (,$(findstring android,$(TARGETPLATFORM)))
-  ANDROID := 1
-  UNIX := 1
-  ELF := 1
+	ANDROID := 1
+	UNIX := 1
+	ELF := 1
 endif
 
 ifneq (,$(findstring minix,$(TARGETPLATFORM)))
-  MINIX := 1
-  UNIX := 1
-  ELF := 1
+	MINIX := 1
+	UNIX := 1
+	ELF := 1
 endif
 
 ifneq (,$(findstring mingw,$(TARGETPLATFORM)))
-  MINGW := 1
-  WIN := 1
-  PE := 1 
+	MINGW := 1
+	WIN := 1
+	PE := 1 
 endif
 
 ifneq (,$(findstring cygwin,$(TARGETPLATFORM)))
-  CYGWIN := 1
-  WIN := 1
-  PE := 1
+	CYGWIN := 1
+	WIN := 1
+	PE := 1
 endif
 
 ifneq (,$(findstring cygnus,$(TARGETPLATFORM)))
-  CYGWIN := 1
-  WIN := 1
-  PE := 1
+	CYGWIN := 1
+	WIN := 1
+	PE := 1
 endif
 
 ifneq (,$(findstring freebsd,$(TARGETPLATFORM)))
-  FREEBSD := 1
-  UNIX := 1
-  BSD := 1
-  ELF := 1
+	FREEBSD := 1
+	UNIX := 1
+	BSD := 1
+	ELF := 1
 endif
 
 ifneq (,$(findstring netbsd,$(TARGETPLATFORM)))
-  NETBSD := 1
-  UNIX := 1
-  BSD := 1
-  ELF := 1
+	NETBSD := 1
+	UNIX := 1
+	BSD := 1
+	ELF := 1
 endif
 
 ifneq (,$(findstring openbsd,$(TARGETPLATFORM)))
-  OPENBSD := 1
-  UNIX := 1
-  BSD := 1
-  ELF := 1
+	OPENBSD := 1
+	UNIX := 1
+	BSD := 1
+	ELF := 1
 endif
 
 ifneq (,$(findstring solaris,$(TARGETPLATFORM)))
-  SOLARIS := 1
-  UNIX := 1
-  ELF := 1
+	SOLARIS := 1
+	UNIX := 1
+	ELF := 1
 endif
 
 ifneq (,$(findstring linux,$(TARGETPLATFORM)))
-  LINUX := 1
-  UNIX := 1
-  ELF := 1
+	LINUX := 1
+	UNIX := 1
+	ELF := 1
 endif
 
 ifneq (,$(findstring gnu,$(TARGETPLATFORM)))
 ifeq (,$(findstring linux,$(TARGETPLATFORM)))
-  UNIX := 1
-  HURD := 1
-  ELF := 1
+	UNIX := 1
+	HURD := 1
+	ELF := 1
 endif
 endif
 
 ifeq ($(CYGWIN),1)
-  DLL_NAME ?= lib/cygkms.dll
+	DLL_NAME ?= lib/cygkms.dll
 else ifeq ($(WIN),1)
-  DLL_NAME ?= lib/libkms.dll
+	DLL_NAME ?= lib/libkms.dll
 else ifeq ($(DARWIN),1)
-  DLL_NAME ?= lib/libkms.dylib
+	DLL_NAME ?= lib/libkms.dylib
 else
-  DLL_NAME ?= lib/libkms.so
+	DLL_NAME ?= lib/libkms.so
 endif
 
 .DEFAULT:
@@ -112,7 +112,6 @@ all:
 
 clean:
 	+@$(MAKE) -j$(MAX_THREADS) -C src $@ FROM_PARENT=1 PROGRAM_NAME=$(PROGRAM_NAME) CLIENT_NAME=$(CLIENT_NAME) MULTI_NAME=$(MULTI_NAME) DLL_NAME=$(DLL_NAME) A_NAME=$(A_NAME)
-	+@$(MAKE) -j$(MAX_THREADS) -C man $@
 
 alldocs:
 	+@$(MAKE) -j$(MAX_THREADS) -C man $@
@@ -134,6 +133,7 @@ GNUmakefile:
 help:
 	@echo "Type"
 	@echo "    ${MAKE}               - to build $(BASE_PROGRAM_NAME) and $(BASE_CLIENT_NAME)"
+	@echo "    ${MAKE} all           - to build $(BASE_PROGRAM_NAME), $(BASE_CLIENT_NAME) and $(A_NAME)"
 	@echo "    ${MAKE} clean         - to remove all targets and temporary files"
 	@echo "    ${MAKE} pdfdocs       - Create PDF versions of the documentation (Requires groff with PDF support)."
 	@echo "    ${MAKE} htmldocs      - Create HTML versions of the documentation."
@@ -210,7 +210,7 @@ help:
 	@echo "    -DUNSAFE_DATA_LOAD           Don't check the KMS data file for integrity. Saves some bytes but is dangerous."
 	@echo ""
 	@echo "Troubleshooting options"
-	@echo "    CAT=1                        Combine all sources in a single in-memory file and compile directly to target."
+	@echo "    CAT=1                        Combine all sources in a single in-memory file and compile directly to target. DON'T USE THIS UNLESS YOU KNOW WHAT YOU ARE DOING!"
 	@echo "    NOPROCFS=1                   Don't rely on a properly mounted proc filesystem in /proc."
 	@echo "    AUXV=1                       Use /proc/self/auxv (requires Linux with glibc >= 2.16 or musl.)"
 	@echo "    NOLPTHREAD=1                 Disable detection if -lpthread is required (for use with Android NDK)."

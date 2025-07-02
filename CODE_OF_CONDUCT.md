@@ -42,7 +42,7 @@ Some TheFlightSims open source projects may adopt a project-specific code of con
 In those cases, a TheFlightSims employee will be identified as the Project Steward,
 who will receive and handle reports of code of conduct violations. In the event
 that a project hasn’t identified a Project Steward, you can report problems by
-emailing to welcome.tfs@outlook.com.
+emailing to report_concern@theflightsims.com.
 
 We will investigate every complaint, but you may not receive a direct response.
 We will use our discretion in determining when and how to follow up on reported

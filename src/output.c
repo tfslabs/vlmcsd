@@ -143,7 +143,7 @@ void uuid2StringLE(const GUID *const guid, char *const string)
 {
 	sprintf(string,
 #		ifdef _WIN32
-		"%08x-%04x-%04x-%04x-%012I64x",
+		"%08x-%04x-%04x-%04x-%012" PRIx64,
 #		else
 		"%08x-%04x-%04x-%04x-%012llx",
 #		endif

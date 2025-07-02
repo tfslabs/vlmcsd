@@ -24,7 +24,7 @@
    * Define your own version identifier here, e.g. '#define VERSION "my vlmcsd based on 1103"'
    */
 
-#define VERSION "- built version 6/17/23"
+#define VERSION __DATE__
 
 #endif // VERSION
 
