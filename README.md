@@ -1,3 +1,7 @@
+> ⚠️
+>
+> Since version 2410, we are no longer updated the VLMCSD on Floppy disk. Instead, we encourage people to move to Docker container - which is more reliable, and easier to deploy and management.
+
 # Volume Management Daemon
 
 ![Docker Tracker](https://img.shields.io/docker/pulls/theflightsims/vlmcsd)
