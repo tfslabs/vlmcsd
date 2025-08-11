@@ -133,12 +133,11 @@ __noreturn static void clientUsage(const char* const programName)
 		"Build Date: %s\n"
 		"Usage: %s [<Host>:<port> | <FQDN>:<port> ] [Advanced Options]\n\n"
 		"Basic Operation:\n"
-		"  <port>:\t\tTCP port name of the KMS to use. Blank means leaving the default port 1688.\n"
-		"  <host>:\t\tHost name of the KMS to use. Blank means leaving the default local hosting\n\n"
+		"  <host>:\tHost name of the KMS to use. Blank means leaving the default local hosting\n"
 #		ifndef NO_DNS
 		"  <FQDN>:\tTarget to the VLMCSD server with a Domain or FQDN\n"
-		"  <port>:\t\tTCP port name of the KMS to use. Blank means leaving the default port 1688.\n"
 #		endif // NO_DNS
+		"  <port>:\tTCP port name of the KMS to use. Blank means leaving the default port 1688.\n"
 		"\nAdvanced options:\n"
 #		ifndef NO_VERBOSE_LOG
 		"  -v:\t\tVerbose logging\n"
@@ -393,7 +392,7 @@ static void parseCommandLinePass1(const int argc, CARGV argv)
 		if (ActiveProductIndex < 0)
 		{
 			//errorout("Invalid client application. \"%s\" is not valid for -l.\n\n", optarg);
-			errorout("Invalid client application.\nIf you are looking for help, please combine with the \"-l\" flag");
+			errorout("Invalid client application.\nIf you are looking for help, please use the \"-l\" flag\n");
 #ifndef NO_HELP
 			showProducts(&errorout);
 #endif // !NO_HELP

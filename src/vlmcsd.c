@@ -288,16 +288,16 @@ static __noreturn void usage()
 	//// ePID stands for "Enhanced Privacy ID". It is a cryptographic scheme for providing anonymous signatures. Use EPID as Windows EPID.
 	//// CSVLK stands for "Microsoft Customer Specific Volume License Key", known as KMS activation host key.
 #ifndef NO_CL_PIDS
-		" -a <csvlk>=<epid>\tUse an ePID value for a set of CSVLK.\n\t\t\tePID is known as privacy ID, points for an Windows action, while CSLVK is the key for KMS host to serve activation service.\n\n"
+		" -a <csvlk>=<epid>\tUse an ePID value for a set of CSVLK. ePID is known as the ID of the activation client, while the CSVLK is the key for KMS activation\n"
 #endif // NO_CL_PIDS
 	/////////////////////////////////////////////////////////////////////
 
 	/////////////////////////////////////////////////////////////////////
 	//// ePID randomization level is used
 #ifndef NO_RANDOM_EPID
-		" -r (0|1|2)\t\tSet randomization level of the ePIDs (default is \"0\").\n\t\t\t\"0\" stands for no randomization, which also means VLMCSD will use the default ePID that is built-in. It is useful for emulating/replicating real KMS servers.\n\t\t\t\"1\" stands for randomization of each KMS request, but it also poses a risk of being detected non-genuine KMS Server, causing clients to fail to be activated.\n\t\t\t\"2\" is as same as the \"1\" option, but only for debugging.\n\n"
-		" -C <LCID>\t\tUse fixed Windows Language Code Identifier in random ePIDs (default English US LCID=1033).\n\t\t\tSee https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c for correct LCIDs.\n\n"
-		" -H <build>\t\tUse fixed Windows build number for activation.\n\t\t\tUseful when the client requires a proper KMS Server.\n\t\t\tSee all build numbers here: https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions\n\n"
+		" -r (0|1|2)\t\tSet randomization level of the ePIDs (default is \"0\")\n\t\t\t\t\"0\" stands for no randomization, which also means VLMCSD will use the default ePID that is built-in. It is useful for emulating/replicating real KMS servers\n\t\t\t\t\"1\" stands for randomization of each KMS request, but it also poses a risk of being detected non-genuine KMS Server, causing clients to fail to be activated\n\t\t\t\t\"2\" is as same as the \"1\" option, but only for debugging\n"
+		" -C <LCID>\t\tUse fixed Windows Language Code Identifier in random ePIDs\n\t\t\t\tSee https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c for correct LCIDs\n"
+		" -H <build>\t\tUse fixed Windows build number for activation\n\t\t\t\tUseful when the client requires a proper KMS Server\n\t\t\t\tSee all build numbers here: https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions\n"
 #endif // NO_RANDOM_EPID
 	/////////////////////////////////////////////////////////////////////
 
@@ -305,12 +305,12 @@ static __noreturn void usage()
 	//// IP Address treats, using rule of RFC 1918 and RFC 6598
 #if !defined(NO_PRIVATE_IP_DETECT)
 #if HAVE_GETIFADDR
-		" -o (0|1|2|3)\t\tSet protection level against clients with public IP addresses (default 0)\n\t\t\t\"0\" for no protection, allowing all IP addresses to use KMS service\n\t\t\t\"1\" only allows VLMCSD service replies connection with IP addresses in the range define by RFC1918 and RFC6598,\n\t\t\t but still accept connection from public IP addresses.\n\t\t\t\"2\" does not affect the interfaces, while it only check if the client is either external (outbound) and drops its TCP packets when detected\n\t\t\t\"3\" is the combination of \"1\" and \"2\", for dropping package to that public IP addresses and no reply to that IP addresses.\n\n"
+		" -o (0|1|2|3)\t\tSet protection level against clients with public IP addresses (default 0)\n\t\t\t\t\"0\" for no protection, allowing all IP addresses to use KMS service\n\t\t\t\t\"1\" only allows VLMCSD service replies connection with IP addresses in the range define by RFC1918 and RFC6598\n\t\t\t\t\"2\" does not affect the interfaces, while it only check if the client is either external (outbound) and drops its TCP packets when detected\n\t\t\t\t\"3\" is the combination of \"1\" and \"2\", for dropping package to that public IP addresses and no reply to that IP addresses\n"
 #else // !HAVE_GETIFADDR
 #ifndef USE_MSRPC
-		" -o (0|2)\t\tSet protection level against clients with public IP addresses (default 0)\n\t\t\t\"0\" for no protection, allowing all IP addresses to use KMS service\n\t\t\t\"2\" does not affect the interfaces, while it only check if the client is either external (outbound) and drops its TCP packets when detected.\n\n"
+		" -o (0|2)\t\tSet protection level against clients with public IP addresses (default 0)\n\t\t\t\t\"0\" for no protection, allowing all IP addresses to use KMS service\n\t\t\t\t\"2\" does not affect the interfaces, while it only check if the client is either external (outbound) and drops its TCP packets when detected\n"
 #else  // USE_MSRPC
-		" -o (0|2)\t\tSet protection level against clients with public IP addresses (default 0)\n\t\t\t\"0\" for no protection, allowing all IP addresses to use KMS service\n\t\t\t\"2\" does not affect the interfaces, while it only check if the client is either external (outbound) and drops its TCP packets when detected.\n\n"
+		" -o (0|2)\t\tSet protection level against clients with public IP addresses (default 0)\n\t\t\t\t\"0\" for no protection, allowing all IP addresses to use KMS service\n\t\t\t\t\"2\" does not affect the interfaces, while it only check if the client is either external (outbound) and drops its TCP packets when detected\n"
 #endif // USE_MSRPC
 #endif // !HAVE_GETIFADDR
 #endif // !defined(NO_PRIVATE_IP_DETECT)
@@ -319,50 +319,50 @@ static __noreturn void usage()
 	/////////////////////////////////////////////////////////////////////
 	//// TAP VPN Adapter
 #ifndef NO_TAP
-		" -O vpn-adapter-name[=ipv4-address][/cidr-mask][:dhcp-lease-duration]\n\t\t\tEnable another compatible VPN adapter for another activation interface. Only available on Windows/Cygwin.\n\t\t\tCompatible with TAP for Windows (version 8.2 or above) and TeamViewer VPN adapter.\n\n"
+		" -O vpn-adapter-name[=ipv4-address][/cidr-mask][:dhcp-lease-duration]\n\t\t\t\tEnable another compatible VPN adapter for another activation interface. Only available on Windows/Cygwin\n\t\t\t\tCompatible with TAP for Windows (version 8.2 or above) and TeamViewer VPN adapter\n"
 #endif
 	/////////////////////////////////////////////////////////////////////
 
 	/////////////////////////////////////////////////////////////////////
 	//// VLMCSD SOCKETS
 #ifndef NO_SOCKETS
-		" -x (0|1)\t\tConfigure how VLMCSD deal with errors while operating (default 0)\n\t\t\t\"0\" will make VLMCSD stay as long as possible, only exit the interface that having problem (including VPN)\n\t\t\t\"1\" will exit VLMCSD process if there are any problem with any network interface.\n\n"
+		" -x (0|1)\t\tConfigure how VLMCSD deal with errors while operating (default 0)\n\t\t\t\t\"0\" will make VLMCSD stay as long as possible, only exit the interface that having problem (including VPN)\n\t\t\t\t\"1\" will exit VLMCSD process if there are any problem with any network interface\n"
 #if !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
-		" -L <address>[:port]\tListen on the specific IP Address (IPv4/IPv6) with port defined optionally.\n\n"
-		" -P <port>\t\tSet the specific TCP port for subsequent \"-L\" statement (default 1688).\n\t\t\tIf you use \"-P\" alongside with \"-L\", \"-P\" must be specified before \"-L\".\n\n"
+		" -L <address>[:port]\tListen on the specific IP Address (IPv4/IPv6) with port defined optionally\n"
+		" -P <port>\t\tSet the specific TCP port for subsequent \"-L\" statement (default 1688)\n\t\t\t\tIf you use \"-P\" alongside with \"-L\", \"-P\" must be specified before \"-L\"\n"
 #if HAVE_FREEBIND
-		" -F0, -F1\t\tDisable/enable binding to foreign IP addresses\n\n"
+		" -F0, -F1\t\tDisable/enable binding to foreign IP addresses\n"
 #endif // HAVE_FREEBIND
 #else  // defined(USE_MSRPC) || defined(SIMPLE_SOCKETS)
-		" -P <port>\t\tSet the specific TCP port for subsequent \"-L\" statement (default 1688).\n\t\t\tIf you use \"-P\" alongside with \"-L\", \"-P\" must be specified before \"-L\".\n\n"
+		" -P <port>\t\tSet the specific TCP port for subsequent \"-L\" statement (default 1688)\n\t\t\t\tIf you use \"-P\" alongside with \"-L\", \"-P\" must be specified before \"-L\"\n"
 #endif // defined(USE_MSRPC) || defined(SIMPLE_SOCKETS)
 #if !defined(NO_LIMIT) && !__minix__
-		" -m <clients>\t\tMaximum clients VLMCSD can handle at the same time.\n\n"
+		" -m <clients>\t\tMaximum clients VLMCSD can handle at the same time\n"
 #endif // !defined(NO_LIMIT) && !__minix__
 #ifdef _NTSERVICE
-		" -s\t\t\tInstall VLMCSD as a Windows NT service. Combine with another flags to install VLMCSD with custom runner. Disable \"-e\" log to command interface.\n\n"
+		" -s\t\t\tInstall VLMCSD as a Windows NT service. Combine with another flags to install VLMCSD with custom runner. Disable \"-e\" log to command interface\n"
 #ifndef _WIN32
 		", -f and -D"
 #endif // _WIN32
-		" -S\t\t\tRemove VLMCSD service on Windows NT. It ignores all other options.\n\t\t\tAfter the service uninstallation is completed, you no longer can use VLMCSD as NT service, but still run it standalone.\n\n"
-		" -U <username>\t\tRun VLMCSD with NT service as a existed user. Required flag of NT service installation for VLMCSD \"-s\"\n\n"
-		" -W <password>\t\t(Optional) Password for running VLMCSD as a NT service. Required flag of NT service installation for VLMCSD \"-s\"\n\n"
+		" -S\t\t\tRemove VLMCSD service on Windows NT. It ignores all other options\n"
+		" -U <username>\t\tRun VLMCSD with NT service as a existed user. Required flag of NT service installation for VLMCSD \"-s\"\n"
+		" -W <password>\t\t(Optional) Password for running VLMCSD as a NT service. Required flag of NT service installation for VLMCSD \"-s\"\n"
 #endif // _NTSERVICE
 #ifndef NO_LOG
-		" -e\t\t\tLogging to command line interface (stdout). Useful when running VLMCSD on Docker Container, or floppy on Virtual Machine.\n\n"
+		" -e\t\t\tLogging to command line interface (stdout). Useful when running VLMCSD on Docker Container, or floppy on Virtual Machine\n"
 #endif // NO_LOG
-		" -D\t\t\tRun VLMCSD in foreground, useful when in the debugging.\n\t\t\tWindows is not compatible with this feature.\n\n"
+		" -D\t\t\tRun VLMCSD in foreground, useful when in the debugging. Windows is not compatible with this feature\n"
 #endif // NO_SOCKETS
 	/////////////////////////////////////////////////////////////////////
 
 	/////////////////////////////////////////////////////////////////////
 	//// STRICT MODES FOR VLMCSD
 #ifndef NO_STRICT_MODES
-		" -K (0|1|2|3)\t\tSet white-listing level which product VLMCSD accepts or refuses (default 0)\n\t\t\t0: Activate all products with an unknown, retail or beta/preview KMS IDs.\n\t\t\t1: Activate products with a retail or beta/preview KMS ID but refuse to activate products with an unknown KMS ID.\n\t\t\t2: Activate products with an unknown KMS ID but refuse products with a retail or beta/preview KMS ID.\n\t\t\t3: Activate only products with a known volume license RTM KMS ID and refuse all others.\n\n"
-		" -c (0|1)\t\tDisable (0)/Enable (1) client time checking. If the client time is different than 4 hours compare to the KMS Host, the host will deny the activation. (default 0).\n\t\t\tNote: It is recommended that the VLMCSD has a reliable time service (e.g. sync the time with time.windows.com).\n\n"
+		" -K (0|1|2|3)\t\tSet white-listing level which product VLMCSD accepts or refuses (default 0)\n\t\t\t\t0: Activate all products with an unknown, retail or beta/preview KMS IDs\n\t\t\t\t1: Activate products with a retail or beta/preview KMS ID but refuse to activate products with an unknown KMS ID\n\t\t\t\t2: Activate products with an unknown KMS ID but refuse products with a retail or beta/preview KMS ID\n\t\t\t\t3: Activate only products with a known volume license RTM KMS ID and refuse all others\n"
+		" -c (0|1)\t\tDisable (0)/Enable (1) client time checking\n\t\t\t\tIf the client time is different than 4 hours compare to the KMS Host, the host will deny the activation (default 0)\n\t\t\t\tNote: It is recommended that the VLMCSD has a reliable time service (e.g. sync the time with time.windows.com)\n"
 #ifndef NO_CLIENT_LIST
-		" -M (0|1)\t\tDisable (0)/Enable (1) maintaining clients (default 0).\n\t\t\tNote: Enabling this service is not recommended, except you have to do so to prevent the activation failling.\n\t\t\tIt is because the VLMCSD can only keep maximum of 16777215 clients. If that number exceed, VLMCSD will no longer accept any new connect, nor activation requests.\n\n"
-		" -E (0|1)\t\tDisable (0)/Enable (1) starting VLMCSD with empty client list (Default 0).\n\t\t\tNote: It is recommended to keep the default, because Office will not activate unless your KMS Host has at least 5 active clients.\n\t\t\tSee more: https://learn.microsoft.com/en-us/office/troubleshoot/administration/0xc004f038-computer-not-activate\n\n"
+		" -M (0|1)\t\tDisable (0)/Enable (1) maintaining clients (default 0)\n\t\t\t\tNote: Enabling this service is not recommended, except you have to do so to prevent the activation failling\n\t\t\t\tIt is because the VLMCSD can only keep maximum of 16777215 clients. If that number exceed, VLMCSD will no longer accept any new connect, nor activation requests\n"
+		" -E (0|1)\t\tDisable (0)/Enable (1) starting VLMCSD with empty client list (Default 0)\n\t\t\t\tNote: It is recommended to keep the default, because Office will not activate unless your KMS Host has at least 5 active clients.\n\t\t\t\tSee more: https://learn.microsoft.com/en-us/office/troubleshoot/administration/0xc004f038-computer-not-activate\n"
 #endif // !NO_CLIENT_LIST
 #endif // !NO_STRICT_MODES
 	/////////////////////////////////////////////////////////////////////
@@ -371,34 +371,34 @@ static __noreturn void usage()
 	//// VLMCSD Client treats
 #ifndef USE_MSRPC
 #if !defined(NO_TIMEOUT) && !__minix__
-		" -t <seconds>\t\tDisconnect client after an amount of time of inactivity (default 30)\n\n"
+		" -t <seconds>\t\tDisconnect client after an amount of time of inactivity (default 30)\n"
 #endif // !defined(NO_TIMEOUT) && !__minix__
-		" -d\t\t\tDisconnect each client after processing one activation request.\n\n"
-		" -k\t\t\tDo not disconnect clients after processing an activation request (default if \"-d\" defined in external VLMCSD configuration file).\n\n"
+		" -d\t\t\tDisconnect each client after processing one activation request.\n"
+		" -k\t\t\tDo not disconnect clients after processing an activation request (default if \"-d\" defined in external VLMCSD configuration file).\n"
 #ifndef SIMPLE_RPC
-		" -N (0|1)\t\tDisable (0)/Enable (1) NDR64 (default 1).\n\t\t\tOnly useful when on Windows 7/Vista 32-bit, where enabling NDR64 will make VLMCSD by default running higher Windows build number.\n\n"
-		" -B (0|1)\t\tDisable (0)/Enable (1) bind time feature negotiation in RPC protocol.\n\n"
+		" -N (0|1)\t\tDisable (0)/Enable (default, 1) NDR64. Only useful when on Windows Vista/7 32-bit, where enabling NDR64 will make VLMCSD by running higher Windows build number.\n"
+		" -B (0|1)\t\tDisable (0)/Enable (1) bind time feature negotiation in RPC protocol.\n"
 #endif // !SIMPLE_RPC
 #endif // USE_MSRPC
 #ifndef NO_PID_FILE
-		" -p <file>\t\tCreate pid file filename.\n\t\t\tThis is used by standard init scripts (typically found in \"/etc/init.d\"). The default is not to write a pid file.\n\n"
+		" -p <file>\t\tCreate pid file filename. This is used by standard init scripts (typically found in \"/etc/init.d\").\n"
 #endif // NO_PID_FILE
 #ifndef NO_INI_FILE
-		" -i <file>\t\tUse external VLMCSD configuration file. Default name of that file is \"vlmcsd.ini\".\n\n"
+		" -i <file>\t\tUse external VLMCSD configuration file. Default name of that file is \"vlmcsd.ini\".\n"
 #endif // NO_INI_FILE
 #ifndef NO_EXTERNAL_DATA
-		" -j <file>\t\tUse external VLMCSD ePID database. Default name of that file is \"vlmcsd.kmd\".\n\n"
+		" -j <file>\t\tUse external VLMCSD ePID database. Default name of that file is \"vlmcsd.kmd\".\n"
 #endif // !NO_EXTERNAL_DATA
 #ifndef NO_CUSTOM_INTERVALS
-		" -R <interval>\t\tRenew activation every <interval> (default 1w).\n\n"
-		" -A <interval>\t\tRetry activation every <interval>, if the previous activation/reactivation is failed (default 2h).\n\n"
+		" -R <interval>\t\tRenew activation every <interval> (default 1w).\n"
+		" -A <interval>\t\tRetry activation every <interval>, if the previous activation/reactivation is failed (default 2h).\n"
 #endif // NO_CUSTOM_INTERVALS
 #ifndef NO_LOG
-		" -l <file>\t\tWrites VLMCSD log into a file.\n\t\t\tNote: Make sure you have read+write access to that file.\n\n"
-		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1).\n\n"
+		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have read+write access to that file.\n"
+		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1).\n"
 #ifndef NO_VERBOSE_LOG
-		" -v\t\t\tAllow logging verbose.\n\n"
-		" -q\t\t\tDon't allow log verbose (default).\n\n"
+		" -v\t\t\tAllow logging verbose.\n"
+		" -q\t\t\tDon't allow log verbose (default).\n"
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 #ifndef NO_VERSION_INFORMATION
