@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\lib\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>..\..\lib\$(Configuration)\$(Platform)</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
     <GenerateManifest>false</GenerateManifest>
     <TargetExt>.dll</TargetExt>
@@ -78,7 +78,7 @@
     <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>.\lib\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>..\..\lib\$(Configuration)\$(Platform)</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
     <GenerateManifest>false</GenerateManifest>
     <TargetExt>.dll</TargetExt>
@@ -86,13 +86,13 @@
     <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\lib\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>..\..\lib\$(Configuration)\$(Platform)</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\lib\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>..\..\lib\$(Configuration)\$(Platform)</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetExt>.dll</TargetExt>
     <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>

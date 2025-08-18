@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>.\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>..\..\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -79,15 +79,15 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
-    <OutDir>.\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>..\..\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
-    <OutDir>.\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>..\..\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
-    <OutDir>.\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
+    <OutDir>..\..\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
