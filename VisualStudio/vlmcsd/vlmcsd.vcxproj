@@ -71,23 +71,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>$(SolutionDir)!bin!\vlmcsd\Release\x64</OutDir>
-    <TargetName>vlmcsd-Windows-x64</TargetName>
+    <OutDir>.\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
+    <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <TargetName>vlmcsd-Windows-x86</TargetName>
-    <OutDir>$(SolutionDir)!bin!\vlmcsd\Release\x86</OutDir>
+    <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
+    <OutDir>.\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>vlmcsd-Windows-x86</TargetName>
-    <OutDir>$(SolutionDir)!bin!\vlmcsd\Debug\x86</OutDir>
+    <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
+    <OutDir>.\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>vlmcsd-Windows-x64</TargetName>
-    <OutDir>$(SolutionDir)!bin!\vlmcsd\Debug\x64</OutDir>
+    <TargetName>$(ProjectName)_$(Platform)_vs_$(Configuration)</TargetName>
+    <OutDir>.\bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
