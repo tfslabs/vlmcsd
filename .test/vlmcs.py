@@ -17,10 +17,10 @@ AS_TIME = False
 MAX_TIME = 60
 
 AS_REQS = True
-MAX_REQ = 1000000000
+MAX_REQ = 10000
 
 # Define where the vlmcs binary should be executed
-VLMCS_BIN = "../bin/vlmcs"
+VLMCS_BIN = f'..\\bin\\vlmcs'
 
 # Target Host and Port
 HOST = ""
