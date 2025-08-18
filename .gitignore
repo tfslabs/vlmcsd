@@ -12,6 +12,9 @@ _deps
 bin
 build
 VisualStudio
-lib/*
+lib
 .vscode
 *.d
+
+# Test case environment
+.test/.env
