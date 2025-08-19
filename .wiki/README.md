@@ -36,6 +36,16 @@
 | `vlmcsd` | `vlmcsd` is a fully Microsoft-compatible KMS server that provides product activation services to clients. It is a drop-in replacement for a Microsoft KMS server. It supports KMS 4, KMS 5, and KMS 6 protocol. | [See the document](https://github.com/tfslabs/vlmcsd/blob/master/man/vlmcsd.7.unix.txt) |
 | `vlmcsdmulti` | `vlmcsdmulti` is a multi-call binary that contains `vlmcs` and `vlmcsd` in a  single binary. Since both programs share much code and data, the combined binary is significantly smaller than the sum of both files. | [See the document](https://github.com/tfslabs/vlmcsd/blob/master/man/vlmcsdmulti.1.unix.txt)|
 
+### One-click install for `systemd`
+
+> :warning: Note
+>
+> Only available when you have installed `gcc`, `git`, `glibc`, and `make` in your system
+
+```bash
+curl -sSL https://raw.githubusercontent.com/tfslabs/vlmcsd/refs/heads/master/.systemd/install.sh | sudo bash
+```
+
 ### Use VLMCSD on Docker
 
 On a system having too many applications running, using `docker` is the better way to deploy, maintain, and retire `vlmcsd`
@@ -82,8 +92,7 @@ docker run -p 1688:1688 theflightsims/vlmcsd:linux-mips64le
 ### With `make`
 
 ```bash
-mkdir bin && cd bin
-make ..
+make
 ```
 
 For advanced build with `make`, you can use
@@ -96,17 +105,15 @@ make help
 
 Since this project is a part of [Windows Server Management Tool](https://github.com/TheFlightSims/windowsserver-mgmttools), you may need to clone the whole repository, before using Visual Studio.
 
-For more information, please review in [CONTRIBUTING.md](https://github.com/TheFlightSims/windowsserver-mgmttools/blob/master/CONTRIBUTING.md)
-
 ### Build & Manage Database
 
-* License Manager database exports to VLMCSD
+* [License Manager](https://github.com/tfslabs/license-manager) database exports to VLMCSD
 
-For the License Manager database exports to VLMCSD, please review in the License Manager manual.
+For the [License Manager](https://github.com/tfslabs/license-manager) database exports to VLMCSD, please review in the License Manager manual.
 
 * VLMCSD database
 
-VLMCSD Database (or known as [vlmcsd.kmd](https://github.com/TheFlightSims/windowsserver-mgmttools/blob/master/vlmcsd-beta/database-config/vlmcsdb/vlmcsd.kmd)) is the binary, external vlmcsd database. You can configure it in [vlmcsd.ini](https://github.com/TheFlightSims/windowsserver-mgmttools/blob/master/vlmcsd-beta/database-config/vlmcsdb/vlmcsd.ini), or you can use CLI.
+VLMCSD Database is the binary, external to the internal VLMCSD database. You can configure it in `vlmcsd.ini`, or you can use CLI.
 
 * Internal VLMCSD database
 
