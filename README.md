@@ -17,7 +17,7 @@
 > Only available when you have installed `gcc`, `git`, `glibc`, and `make` in your system
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/tfslabs/vlmcsd/refs/heads/master/.systemd/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/tfslabs/vlmcsd/refs/heads/master/.systemd/install.sh | sudo bash
 ```
 
 ## Build and developing
