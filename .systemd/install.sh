@@ -5,9 +5,7 @@ trap 'echo "Error occurred at line ${LINENO} of ${BASH_SOURCE[0]}. Exiting..."; 
 
 GIT_FOLDER="/opt/vlmcsd"
 GIT_REPO="https://github.com/tfslabs/vlmcsd.git"
-GIT_BRANCH_PRODUCTION="master"
-GIT_BRANCH_TESTING="master"
-GIT_BRANCH=""
+GIT_BRANCH="master"
 
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root"
@@ -30,28 +28,10 @@ if ! command -v systemctl &>/dev/null; then
 fi
 
 echo -e "\nWelcome to the simple Volume License Management Service installer
-Please select your installation type:
-1. Production (Stable)
-2. Testing (Unstable)
 (Note): You can always Ctrl+C to cancel the installation
 "
 
-read -rp "Enter your choice [1-2]: " choice
-
 rm -rf "$GIT_FOLDER" || true
-
-case "$choice" in
-    1)
-        GIT_BRANCH="$GIT_BRANCH_PRODUCTION"
-        ;;
-    2)
-        GIT_BRANCH="$GIT_BRANCH_TESTING"
-        ;;
-    *)
-        echo "Invalid choice"
-        exit 1
-        ;;
-esac
 
 echo "Cloning repository branch '$GIT_BRANCH'..."
 git clone --depth 5 --branch "$GIT_BRANCH" "$GIT_REPO" "$GIT_FOLDER"
