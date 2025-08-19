@@ -55,12 +55,6 @@ Containerized `vlmcsd` for both Linux and Windows are available on [Docker Hub](
 * For Windows Server editions, these images are available for Windows Server 2016 and up. You can try to run these images by using these following command lines
 
 ```cmd
-:: Windows Server 2016 container
-docker run -p 1688:1688 theflightsims/vlmcsd:ltsc2016-amd64
-
-:: Windows Server 2019 container
-docker run -p 1688:1688 theflightsims/vlmcsd:ltsc2019-amd64
-
 :: Windows Server 2022 container
 docker run -p 1688:1688 theflightsims/vlmcsd:ltsc2022-amd64
 ```
@@ -73,18 +67,6 @@ docker run -p 1688:1688 theflightsims/vlmcsd:linux-amd64
 
 # ARM64
 docker run -p 1688:1688 theflightsims/vlmcsd:linux-arm64
-
-# S390X
-docker run -p 1688:1688 theflightsims/vlmcsd:linux-s390x
-
-# PPC64LE
-docker run -p 1688:1688 theflightsims/vlmcsd:linux-ppc64le
-
-# RISCv64
-docker run -p 1688:1688 theflightsims/vlmcsd:linux-riscv64
-
-# MIPS64LE
-docker run -p 1688:1688 theflightsims/vlmcsd:linux-mips64le
 ```
 
 ## Build and developing
