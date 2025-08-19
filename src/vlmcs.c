@@ -129,7 +129,7 @@ __noreturn static void clientUsage(const char* const programName)
 	errorout(
 		/////////////////////////////////////////////////////////////////////
 		//// VLMCS Introduction
-		"Volume Management Service - Client Emulator\n"
+		"Volume License Management Service - Client Emulator\n"
 		"Build Date: %s\n"
 		"Usage: %s [<Host>:<port> | <FQDN>:<port> ] [Advanced Options]\n\n"
 		"Basic Operation:\n"

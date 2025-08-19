@@ -6,7 +6,7 @@ trap 'echo "Error occurred at line ${LINENO} of ${BASH_SOURCE[0]}. Exiting..."; 
 GIT_FOLDER="/opt/vlmcsd"
 GIT_REPO="https://github.com/tfslabs/vlmcsd.git"
 GIT_BRANCH_PRODUCTION="master"
-GIT_BRANCH_TESTING="new-guide"
+GIT_BRANCH_TESTING="master"
 GIT_BRANCH=""
 
 if [ "$EUID" -ne 0 ]; then
@@ -29,7 +29,7 @@ if ! command -v systemctl &>/dev/null; then
     exit 1
 fi
 
-echo -e "\nWelcome to the simple Volume Management Service installer
+echo -e "\nWelcome to the simple Volume License Management Service installer
 Please select your installation type:
 1. Production (Stable)
 2. Testing (Unstable)

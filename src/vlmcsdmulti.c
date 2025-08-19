@@ -88,7 +88,7 @@ int main(int argc, CARGV argv)
 	}
 
 	errorout(
-		"Volume Management Service - Multi-binary\n"
+		"Volume License Management Service - Multi-binary\n"
 		"Build Date: %s\n\n"
 		"Usage:\n"
 		"\t%s vlmcs  [vlmcsd command]\n"

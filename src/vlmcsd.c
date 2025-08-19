@@ -1,5 +1,5 @@
 /*
-Volume Management Service DAEMON (vlmcsd)
+Volume License Management Service DAEMON (vlmcsd)
 */
 
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -269,7 +269,7 @@ static __noreturn void usage()
 	printerrorf(
 		/////////////////////////////////////////////////////////////////////
 		//// VLMCSD Introduction
-		"Volume Management Service (vlmcsd)\n"
+		"Volume License Management Service DAEMON (vlmcsd)\n"
 		"Build Date: %s\n"
 		"\nUsage:\n"
 		"\t%s [Options]\n\n"

@@ -2,7 +2,7 @@
 >
 > Since version 2410, we are no longer updated the VLMCSD on Floppy disk. Instead, we encourage people to move to Docker container - which is more reliable, and easier to deploy and management.
 
-# Volume Management Daemon
+# Volume License Management Service
 
 ![Docker Tracker](https://img.shields.io/docker/pulls/theflightsims/vlmcsd)
 
@@ -10,13 +10,22 @@
 
 > For guide and help (written by the original developers), see [here](https://github.com/tfslabs/vlmcsd/tree/master/man)
 
+## One-click install for `systemd`
+
+> :warning: Note
+>
+> Only available when you have installed `gcc`, `git`, `glibc`, and `make` in your system
+
+```bash
+curl -sSL https://raw.githubusercontent.com/tfslabs/vlmcsd/refs/heads/master/.systemd/install.sh | bash
+```
+
 ## Build and developing
 
 ### With `make`
 
 ```bash
-mkdir bin && cd bin
-make ..
+make
 ```
 
 For advanced build with `make`, you can use
@@ -28,5 +37,3 @@ make help
 ### With Visual Studio
 
 Since this project is a part of [Windows Server Management Tool](https://github.com/TheFlightSims/windowsserver-mgmttools), you may need to clone the whole repository, before using Visual Studio.
-
-For more information, please review in [CONTRIBUTING.md](https://github.com/TheFlightSims/windowsserver-mgmttools/blob/master/CONTRIBUTING.md)
