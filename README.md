@@ -1,36 +1,39 @@
-# Volume Management (C) Service
+> ⚠️
+>
+> Since version 2410, we are no longer updated the VLMCSD on Floppy disk. Instead, we encourage people to move to Docker container - which is more reliable, and easier to deploy and management.
+
+# Volume License Management Service
 
 ![Docker Tracker](https://img.shields.io/docker/pulls/theflightsims/vlmcsd)
 
-***VLMCSD*** is a free, open-source software to provide an activation service (KMS) for any computer using Office and Windows products
+***VLMCSD*** is a free, open-source software to provide an volume activation service for any computer running Office and Windows products.
 
-**For detailed information (written by the original developers), see [here](https://github.com/tfslabs/vlmcsd/tree/master/man)**
+> For guide and help (written by the original developers), see [here](https://github.com/tfslabs/vlmcsd/tree/master/man)
 
-## Original Contributors
+## One-click install for `systemd`
 
-| Contributor | Description |
-|--|--|
-| [Linus Torvalds](https://github.com/torvalds) | Original developer of Linux kernel, used in VLMCSD on Floppy |
-| Hotbird64 | Original developer of VLMCSD, License Manager, VLMCSD on Floppy, VLMCSD on WSL |
-| Erik Andersen | Original developer of VLMCSD |
-| Waldemar Brodkorb | Original developer of VLMCSD |
-| Denys Vlasenko | Original developer of VLMCSD |
-| H. Peter Anvin | Original developer of VLMCSD |
-| [Wind4](https://github.com/Wind4/vlmcsd) | Contributor of VLMCSD |
-| [kkkgo](https://github.com/kkkgo) | Contributor of VLMCSD, VLMCSD on Floppy |
-| [HarukaMa](https://github.com/HarukaMa) | Contributor of VLMCSD, VLMCSD on Floppy |
-| Nang | Contributor of VLMCSD database |
-| [shiroineko](https://github.com/shiroinekotfs) | Contributor of VLMCSD, License Manager, VLMCSD on Floppy, VLMCSD on WSL, VLMCSD Database |
+> :warning: Note
+>
+> Only available when you have installed `gcc`, `git`, `glibc`, and `make` in your system
+
+```bash
+curl -sSL https://raw.githubusercontent.com/tfslabs/vlmcsd/refs/heads/master/.systemd/install.sh | sudo bash
+```
 
 ## Build and developing
 
 ### With `make`
 
 ```bash
-mkdir bin && cd bin
-make -j2 ..
+make
+```
+
+For advanced build with `make`, you can use
+
+```bash
+make help
 ```
 
 ### With Visual Studio
 
-For using Visual Studio, you may need to go to folder `VisualStudio` and start making your own application from there
+Since this project is a part of [Windows Server Management Tool](https://github.com/TheFlightSims/windowsserver-mgmttools), you may need to clone the whole repository, before using Visual Studio.

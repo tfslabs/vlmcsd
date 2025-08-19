@@ -12,3 +12,13 @@ _deps
 bin
 build
 VisualStudio
+lib
+.vscode
+*.d
+
+# Test case environment
+.test/.env
+
+# Logging
+*.log
+*.logging

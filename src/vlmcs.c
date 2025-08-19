@@ -127,66 +127,61 @@ static void string2UuidOrExit(const char *const restrict input, GUID *const rest
 __noreturn static void clientUsage(const char* const programName)
 {
 	errorout(
-		"vlmcs %s \n\n"
+		/////////////////////////////////////////////////////////////////////
+		//// VLMCS Introduction
+		"Volume License Management Service - Client Emulator\n"
+		"Build Date: %s\n"
+		"Usage: %s [<Host>:<port> | <FQDN>:<port> ] [Advanced Options]\n\n"
+		"Basic Operation:\n"
+		"  <host>:\tHost name of the KMS to use. Blank means leaving the default local hosting\n"
 #		ifndef NO_DNS
-		"Usage: %s [Options] [<Host>:<port> | <domain|FQDN> ] [Advanced Options]\n\n"
-#		else // DNS
-		"Usage: %s [Options] [<Host>:<port> | <domain|FQDN> ] [Advanced Options]\n\n"
-#		endif // DNS
-		"Options:\n\n"
+		"  <FQDN>:\tTarget to the VLMCSD server with a Domain or FQDN\n"
+#		endif // NO_DNS
+		"  <port>:\tTCP port name of the KMS to use. Blank means leaving the default port 1688.\n"
+		"\nAdvanced options:\n"
 #		ifndef NO_VERBOSE_LOG
-		"  -v : Verbose logging\n"
+		"  -v:\t\tVerbose logging\n"
 #		endif
-		"  -l : <app>\n"
-		"  -4 : Force KMS V4 protocol\n"
-		"  -5 : Force KMS V5 protocol\n"
-		"  -6 : Force KMS V6 protocol\n"
+		"  -l:\t\tUsing available Application ID, which can be shown in \"%s -x\"\n"
+		"  -4:\t\tForce KMS V4 protocol\n"
+		"  -5:\t\tForce KMS V5 protocol\n"
+		"  -6:\t\tForce KMS V6 protocol\n"
 #		ifndef USE_MSRPC
-		"  -i : Use IP protocol (4 or 6)\n"
+		"  -i:\t\tUse IP protocol (4 or 6)\n"
 #		endif // USE_MSRPC
 #		ifndef NO_EXTERNAL_DATA
-		"  -j : Load external KMS data file\n"
+		"  -j:\t\tLoad external KMS data file\n"
 #		endif // NO_EXTERNAL_DATA
-		"  -e : Show some valid examples\n"
-		"  -x : Show valid Apps\n"
-		"  -d : no DNS names, use NetBIOS names (no effect if -w is used)\n"
-		"  -V : show version information and exit\n\n"
-
-		"Advanced options:\n\n"
-
-		"  -a : Use custom Application GUID\n"
-		"  -s : Use custom Activation Configuration GUID\n"
-		"  -k : Use custom KMS GUID\n"
-		"  -c : Use custom Client GUID. Default: Use random\n"
-		"  -o : Use custom previous Client GUID. Default: ZeroGUID\n"
-		"  -K : Use a specific (possibly invalid) protocol version\n"
-		"  -w : Use custom workstation name. Default: Use random\n"
-		"  -r : Fake required clients\n"
-		"  -n : Fixed # of requests (Default: Enough to charge)\n"
-		"  -m : Pretend to be a virtual machine\n"
-		"  -G : Get ePID/HwId data and write to <file>. Can't be used with -l, -4, -5, -6, -a, -s, -k, -r and -n\n"
+		"  -e:\t\tShow some valid examples\n"
+		"  -x:\t\tShow valid Apps\n"
+		"  -d:\t\tNo DNS names, use NetBIOS names (no effect if -w is used)\n"
+		"  -V:\t\tShow version information and exit\n"
+		"  -a:\t\tUse custom Application GUID\n"
+		"  -s:\t\tUse custom Activation Configuration GUID\n"
+		"  -k:\t\tUse custom KMS GUID\n"
+		"  -c:\t\tUse custom Client GUID. Default: Use random\n"
+		"  -o:\t\tUse custom previous Client GUID. Default: ZeroGUID\n"
+		"  -K:\t\tUse a specific (possibly invalid) protocol version\n"
+		"  -w:\t\tUse custom workstation name. Default: Use random\n"
+		"  -r:\t\tFake required clients\n"
+		"  -n:\t\tFixed # of requests (Default: Enough to charge)\n"
+		"  -m:\t\tPretend to be a virtual machine\n"
+		"  -G:\t\tGet ePID/HwId data and write to <file>. Can't be used with -l, -4, -5, -6, -a, -s, -k, -r and -n\n"
 #		ifndef USE_MSRPC
-		"  -T : Use a new TCP connection for each request.\n"
-		"  -N : <0|1> disable or enable NDR64. Default: 1\n"
-		"  -B : <0|1> disable or enable RPC bind time feature negotiation. Default: 1\n"
+		"  -T:\t\tUse a new TCP connection for each request.\n"
+		"  -N:\t\t<0|1> disable or enable NDR64. Default: 1\n"
+		"  -B:\t\t<0|1> disable or enable RPC bind time feature negotiation. Default: 1\n"
 #		endif // USE_MSRPC
-		"  -t : Use specific license status (0 <= T <= 6)\n"
-		"  -g : Use a specific binding expiration time in minutes. Default 43200\n"
+		"  -t:\t\tUse specific license status (0 <= T <= 6)\n"
+		"  -g:\t\tUse a specific binding expiration time in minutes. Default 43200\n"
 #		ifndef NO_DNS
-		"  -P : Ignore priority and weight in DNS SRV records\n"
+		"  -P:\t\tIgnore priority and weight in DNS SRV records\n"
 #		endif // NO_DNS
 #		ifndef USE_MSRPC
-		"  -p : Don't use multiplexed RPC bind\n"
+		"  -p:\t\tDon't use multiplexed RPC bind\n"
 #		endif // USE_MSRPC
-		"\n"
-
-		"<port> : \tTCP port name of the KMS to use. Blank means leaving the default port 1688.\n"
-		"<host> : \thost name of the KMS to use. Blank means leaving the default local hosting\n"
-#		ifndef NO_DNS
-		"<domain|FQDN> :\t find KMS server in <domain> via DNS\n"
-#		endif // NO_DNS
-		"<app>:\t\t(Type %s -x to see a list of valid apps)\n\n",
-		Version, programName, programName
+		"\n",
+		Version, programName, programName, programName
 	);
 	exit(VLMCSD_EINVAL);
 }
@@ -253,7 +248,7 @@ __noreturn static void showProducts(PRINTFUNC p)
 	{
 		for (k = 0; k < itemsPerLine; k++)
 		{
-			uint8_t j;
+			size_t j;
 			index = k * lines + i;
 
 			if (index >= items) break;
@@ -271,7 +266,7 @@ __noreturn static void showProducts(PRINTFUNC p)
 
 	p("\n");
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 __noreturn static void examples(const char* const programName)
@@ -295,7 +290,7 @@ __noreturn static void examples(const char* const programName)
 		programName, programName, programName, programName, programName, programName, programName, programName
 	);
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 #else // NO_HELP
@@ -396,7 +391,8 @@ static void parseCommandLinePass1(const int argc, CARGV argv)
 		ActiveProductIndex = findLicensePackByName(optarg);
 		if (ActiveProductIndex < 0)
 		{
-			errorout("Invalid client application. \"%s\" is not valid for -l.\n\n", optarg);
+			//errorout("Invalid client application. \"%s\" is not valid for -l.\n\n", optarg);
+			errorout("Invalid client application.\nIf you are looking for help, please use the \"-l\" flag\n");
 #ifndef NO_HELP
 			showProducts(&errorout);
 #endif // !NO_HELP
@@ -613,7 +609,7 @@ static void parseCommandLinePass2(const char *const programName, const int argc,
 		printPlatform();
 		printCommonFlags();
 		printClientFlags();
-		exit(0);
+		exit(EXIT_SUCCESS);
 
 #			endif // NO_VERSION_INFORMATION
 
@@ -680,7 +676,7 @@ static void displayResponse(const RESPONSE_RESULT result, const REQUEST* request
 #			ifndef _WIN32
 			printf(" (%016llX)", (unsigned long long)BE64(*(uint64_t*)hwid));
 #			else // _WIN32
-			printf(" (%016I64X)", (unsigned long long)BE64(*(uint64_t*)hwid));
+			printf(" (%016" PRIx64 ")", (unsigned long long)BE64(*(uint64_t*)hwid));
 #			endif // _WIN32
 		}
 

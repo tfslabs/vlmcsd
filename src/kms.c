@@ -33,7 +33,7 @@
 
 #define FRIENDLY_NAME_WINDOWS "Windows"
 #define FRIENDLY_NAME_OFFICE2010 "Office 2010"
-#define FRIENDLY_NAME_OFFICE2013 "Office 2013+"
+#define FRIENDLY_NAME_OFFICE2013 "Office 2013 and up"
 
 #ifndef IS_LIBRARY
 
@@ -211,7 +211,7 @@ void CleanUpClientLists()
 
 void InitializeClientLists()
 {
-	int_fast8_t i;
+	int32_t i;
 	int_fast16_t j;
 
 #	ifndef USE_THREADS
@@ -474,50 +474,51 @@ static void getEpidFromString(RESPONSE *const Response, const char *const pid)
 static void getEpid(RESPONSE *const baseResponse, const char** EpidSource, const int32_t index, BYTE *const HwId, const char* defaultEPid)
 {
 #if !defined(NO_RANDOM_EPID) || !defined(NO_CL_PIDS) || !defined(NO_INI_FILE)
-	const char* pid;
-	if (KmsResponseParameters[index].Epid == NULL)
-	{
+    const char* pid;
+    char ePid[PID_BUFFER_SIZE]; // Move ePid declaration outside the conditional block
+
+    if (KmsResponseParameters[index].Epid == NULL)
+    {
 #ifndef NO_RANDOM_EPID
-		if (RandomizationLevel == 2)
-		{
-			char ePid[PID_BUFFER_SIZE];
-			generateRandomPid(index, ePid, Lcid, HostBuild);
-			pid = ePid;
+        if (RandomizationLevel == 2)
+        {
+            generateRandomPid(index, ePid, Lcid, HostBuild);
+            pid = ePid;
 
 #ifndef NO_LOG
-			*EpidSource = "randomized on every request";
+            *EpidSource = "randomized on every request";
 #endif // NO_LOG
-		}
-		else
+        }
+        else
 #endif // NO_RANDOM_EPID
-		{
-			pid = defaultEPid;
+        {
+            pid = defaultEPid;
 #ifndef NO_LOG
-			*EpidSource = "vlmcsd default";
+            *EpidSource = "vlmcsd default";
 #endif // NO_LOG
-		}
-	}
-	else
-	{
-		pid = KmsResponseParameters[index].Epid;
+        }
+    }
+    else
+    {
+        pid = KmsResponseParameters[index].Epid;
 
-		if (HwId && KmsResponseParameters[index].HwId != NULL)
-			memcpy(HwId, KmsResponseParameters[index].HwId, sizeof(((RESPONSE_V6 *)0)->HwId));
+        if (HwId && KmsResponseParameters[index].HwId != NULL)
+            memcpy(HwId, KmsResponseParameters[index].HwId, sizeof(((RESPONSE_V6 *)0)->HwId));
 
 #ifndef NO_LOG
-		*EpidSource = KmsResponseParameters[index].EpidSource;
+        *EpidSource = KmsResponseParameters[index].EpidSource;
 #endif // NO_LOG
-	}
+    }
 
-	getEpidFromString(baseResponse, pid);
+    getEpidFromString(baseResponse, pid);
 
 #else // defined(NO_RANDOM_EPID) && defined(NO_CL_PIDS) && !defined(NO_INI_FILE)
 
-	getEpidFromString(baseResponse, defaultEPid);
+    getEpidFromString(baseResponse, defaultEPid);
 
-#	ifndef NO_LOG
-	*EpidSource = "vlmcsd default";
-#	endif // NO_LOG
+#   ifndef NO_LOG
+    *EpidSource = "vlmcsd default";
+#   endif // NO_LOG
 
 #endif // defined(NO_RANDOM_EPID) && defined(NO_CL_PIDS) && !defined(NO_INI_FILE)
 }
