@@ -259,7 +259,7 @@ If you are hosting Volume License Management Service in the network where Active
 | Port number | 1688 |
 | Hostname | `<FQDN-of-KMS-host>` |
 
-Replace `<FQDN-of-KMS-host>` with your actual KMS Host's FQDN
+Replace `<FQDN-of-KMS-host>` with your actual KMS Host's FQDN.
 
 In non-Microsoft DNS Server, like `bind9` or `dnsmasq`, the DNS configuration may look like this (do not forget to replace the target and `example.com` with your actual deployment, see the [`SRV` record configuration](https://en.wikipedia.org/wiki/SRV_record))
 
