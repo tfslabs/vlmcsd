@@ -18,3 +18,7 @@ lib
 
 # Test case environment
 .test/.env
+
+# Logging
+*.log
+*.logging
