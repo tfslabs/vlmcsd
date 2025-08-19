@@ -222,59 +222,53 @@ Also, to prevent the client from activating until the deadline (means activate, 
 
 ### KMS Host pre-charges
 
-Microsoft limits that the KMS "client" is only be activated if there are 25 clients (in the case of Windows Client/Window Server editions) or 5 clients (in the case of Microsoft Office)
+Microsoft limits that the KMS "client" is only be activated if there are 25 clients (in the case of Windows Client/Window Server editions) or 5 clients (in the case of Microsoft Office) contact the server in the last 30-day, and caching them in the most 50 recent contacts.
 
-## Build and developing
+However, by default of Volume License Management Service, the daemon will automatically "pre-charge" itself up to 24 clients of Windows and 4 clients of Office (leaving 1 remaining for the complete charging).
 
-### With `make`
+You can also try `-E1` command to experience this, in some case you need to "trick" to strict client to verify these actual markup, instead of the fake "pre-charge" ones. However, be careful of the error ["0xC004F038: The computer couldn't be activated" error in KMS activation](https://learn.microsoft.com/en-us/troubleshoot/microsoft-365-apps/administration/0xc004f038-computer-not-activate).
 
-```bash
-make
-```
+### "Strict" client
 
-For advanced build with `make`, you can use
+Some deployments require special strict versions of KMS. For example, your deployment is pretty new and you do not want to install any "pre-release" version of Windows or Office - which may lead into the service disruption, unstable, or crashing. You can try the `-K` flags to do this.
 
 ```bash
-make help
+"0" Activate all products with an unknown, retail or beta/preview KMS IDs
+"1" Activate products with a retail or beta/preview KMS ID but refuse to activate products with an unknown KMS ID
+"2" Activate products with an unknown KMS ID but refuse products with a retail or beta/preview KMS ID
+"3" Activate only products with a known volume license RTM KMS ID and refuse all others
 ```
 
-### Build containers
+### Time checking
 
-To build, `Dockerfile` are provided in the `.docker` folder. Note that the multi-arch may need to include `--platform`. Currently, `vlmcsd` supports these following architecture
+By default, time checking is disabled, because the target of designing Volume License Management Service is to activate the client with much less hassle as possible.
 
-* `linux/amd64`
-* `linux/arm64/v8`
-* `linux/ppc64le`
-* `linux/s390x`
-* `linux/riscv64`
+However, if you do host a KMS as monolith service, it is recommended to turn that on (using `-c1`) to detect and prevent unauthorized activation. It will check if the time is 4 hours differences.
 
-For example, the command below supports building `vlmcsd` for Linux running on AMD64
+### Service record (`SRV`) on DNS
 
-```bash
-docker build --platform linux/amd64 -f .docker/Dockerfile -t theflightsims/vlmcsd:linux-amd64 .
+If you are hosting Volume License Management Service in the network where Active Directory or self-hosting domain is active, having a `SRV` on the DNS Server may help the client determine which is the best and reliable server to contact with. The `SRV` looks like this
+
+| Property | Value |
+|--|--|
+| Type | SRV |
+| Service/Name | _vlmcs |
+| Protocol | _tcp |
+| Priority | 0 |
+| Weight | 0 |
+| Port number | 1688 |
+| Hostname | `<FQDN-of-KMS-host>` |
+
+Replace `<FQDN-of-KMS-host>` with your actual KMS Host's FQDN
+
+In non-Microsoft DNS Server, like `bind9` or `dnsmasq`, the DNS configuration may look like this (do not forget to replace the target and `example.com` with your actual deployment, see the [`SRV` record configuration](https://en.wikipedia.org/wiki/SRV_record))
+
+```dns
+; _service._proto.name.    TTL   class SRV priority weight port target.
+_vlmcs._tcp.example.com.   86400 IN    SRV 0        0      1688 net-srv-01.example.com.
 ```
 
-### With Visual Studio
-
-Since this project is a part of [Windows Server Management Tool](https://github.com/TheFlightSims/windowsserver-mgmttools), you may need to clone the whole repository, before using Visual Studio.
-
-### Build & Manage Database
-
-* [License Manager](https://github.com/tfslabs/license-manager) database exports to VLMCSD
-
-For the [License Manager](https://github.com/tfslabs/license-manager) database exports to VLMCSD, please review in the License Manager manual.
-
-* VLMCSD database
-
-VLMCSD Database is the binary, external to the internal VLMCSD database. You can configure it in `vlmcsd.ini`, or you can use CLI.
-
-* Internal VLMCSD database
-
-The internal VLMCSD databases are, both includes in `src/kmsdata.c` and `src/kmsdata-full.c` files.
-
-## Activation Error Codes & Limitations
-
-### Error codes
+## Activation Error Codes
 
 |Error code |Error message |Activation&nbsp;type|
 |-----------|--------------|----------------|
