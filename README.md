@@ -1,6 +1,6 @@
 > ⚠️
 >
-> Since version 2410, we are no longer updated the VLMCSD on Floppy disk. Instead, we encourage people to move to Docker container - which is more reliable, and easier to deploy and management.
+> Since version 2410, we are no longer updated the VLMCSD on Floppy disk. Instead, we encourage people to move to Docker container - which is more reliable, and easier to deploy and manage.
 
 # Volume License Management Service
 
@@ -32,6 +32,22 @@ For advanced build with `make`, you can use
 
 ```bash
 make help
+```
+
+### Build containers
+
+To build, `Dockerfile` are provided in the `.docker` folder. Note that the multi-arch may need to include `--platform`. Currently, `vlmcsd` supports these following architecture
+
+* `linux/amd64`
+* `linux/arm64/v8`
+* `linux/ppc64le`
+* `linux/s390x`
+* `linux/riscv64`
+
+For example, the command below supports building `vlmcsd` for Linux running on AMD64
+
+```bash
+docker build --platform linux/amd64 -f .docker/Dockerfile -t theflightsims/vlmcsd:linux-amd64 .
 ```
 
 ### With Visual Studio
