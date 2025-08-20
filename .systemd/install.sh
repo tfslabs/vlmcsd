@@ -1,9 +1,9 @@
 #!/bin/bash
-# filepath: f:\theflightsims\windowsserver-mgmttools\vlmcsd-repos\vlmcsd\.systemd\install.sh
+
 set -euo pipefail
 trap 'echo "Error occurred at line ${LINENO} of ${BASH_SOURCE[0]}. Exiting..."; exit 1' ERR
 
-GIT_FOLDER="/opt/vlmcsd"
+GIT_FOLDER="/tmp/vlmcsd"
 GIT_REPO="https://github.com/tfslabs/vlmcsd.git"
 GIT_BRANCH="master"
 
@@ -33,6 +33,11 @@ echo -e "\nWelcome to the simple Volume License Management Service installer
 
 rm -rf "$GIT_FOLDER" || true
 
+systemctl stop vlmcsd || true
+systemctl disable vlmcsd || true
+rm -f /etc/systemd/system/vlmcsd.service
+systemctl daemon-reload
+
 echo "Cloning repository branch '$GIT_BRANCH'..."
 git clone --depth 5 --branch "$GIT_BRANCH" "$GIT_REPO" "$GIT_FOLDER"
 
@@ -41,7 +46,10 @@ echo "Compiling the service..."
 make -j"$(nproc)" vlmcsd
 
 echo "Creating/updating symbolic link for the executable..."
-ln -sf "$GIT_FOLDER/bin/vlmcsd" /usr/bin/vlmcsd
+cp "$GIT_FOLDER/bin/vlmcsd" /usr/bin/vlmcsd
+
+echo "Removing Git Repo"
+rm -rf "$GIT_FOLDER" || true
 
 echo "Configuring systemd service..."
 mkdir -p /etc/systemd/system
@@ -55,7 +63,7 @@ StartLimitIntervalSec=60
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/vlmcsd -P 1688 -H 26100 -C 1033 -l /var/log/vlmcsd.log -T1 -e -v -D
+ExecStart=/usr/bin/vlmcsd -P 1688 -H 26100 -C 1033 -l /var/log/vlmcsd.log -T1 -e -D
 TimeoutStartSec=0
 RestartSec=2
 Restart=always
