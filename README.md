@@ -6,9 +6,11 @@
 
 ![Docker Tracker](https://img.shields.io/docker/pulls/theflightsims/vlmcsd)
 
-***VLMCSD*** is a free, open-source software to provide an volume activation service for any computer running Office and Windows products.
+**Volume License Management Service** is a free, open-source software to provide a volume-activation for Windows and Office products.
 
-> For guide and help (written by the original developers), see [here](https://github.com/tfslabs/vlmcsd/tree/master/man)
+It is the replacement (or the solution for Linux) of [Key Management Services on Windows Server](https://learn.microsoft.com/en-us/windows-server/get-started/kms-activation-planning) (in term of operation), by provide less infrastructure compared to the Windows Server deployment (even the minimal one), or act as a backup solution in case the main Windows KMS Host fails.
+
+> For guide and help (written by the original developers), [see here](https://github.com/tfslabs/vlmcsd/tree/master/man)
 
 ## One-click install for `systemd`
 
