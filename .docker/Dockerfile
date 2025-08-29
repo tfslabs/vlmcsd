@@ -5,8 +5,9 @@ WORKDIR /root/vlmcsd
 # Install required build packages
 RUN apt update && apt upgrade -y && apt install -y gcc make git
 
-# Clone the repository and build the binary
-RUN git clone --depth 2 --branch "master" "https://github.com/tfslabs/vlmcsd.git" .
+# Copy the source code from build context
+# Make sure Docker command is executed in the project root
+COPY . .
 RUN make -j"$(nproc)" vlmcsd
 
 FROM ubuntu:noble
