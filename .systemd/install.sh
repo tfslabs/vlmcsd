@@ -56,14 +56,14 @@ mkdir -p /etc/systemd/system
 cat <<EOF > /etc/systemd/system/vlmcsd.service
 [Unit]
 Description=Volume License Management Service
-Documentation=https://github.com/tfslabs/vlmcsd
+Documentation=https://github.com/tfslabs/vlmcsd/wiki
 After=network.target
 StartLimitBurst=3
 StartLimitIntervalSec=60
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/vlmcsd -P 1688 -H 26100 -C 1033 -l /var/log/vlmcsd.log -T1 -e -D
+ExecStart=/usr/bin/vlmcsd -P 1688 -H 26100 -C 1033 -l /tmp/vlmcsd.log -T1 -v -D
 TimeoutStartSec=0
 RestartSec=2
 Restart=always

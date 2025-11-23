@@ -6,7 +6,7 @@ WORKDIR /root/vlmcsd
 RUN apt update && apt upgrade -y && apt install -y gcc make git
 
 # Clone the repository and build the binary
-RUN git clone --depth 2 --branch "master" "https://github.com/tfslabs/vlmcsd.git" .
+RUN git clone --depth 1 --branch "master" "https://github.com/tfslabs/vlmcsd.git" .
 RUN make -j"$(nproc)" vlmcsd
 
 FROM ubuntu:noble

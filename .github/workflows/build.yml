@@ -1,0 +1,119 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  
+  pull_request:
+    branches: [master]
+  
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        arch:
+          - { 
+              name: amd64, 
+              target: x86_64-linux-gnu, 
+              apt: gcc 
+            }
+          - {
+              name: arm64,
+              target: aarch64-linux-gnu,
+              apt: gcc-aarch64-linux-gnu,
+            }
+          - {
+              name: ppc64le,
+              target: powerpc64le-linux-gnu,
+              apt: gcc-powerpc64le-linux-gnu,
+            }
+          - { 
+            name: s390x, 
+            target: s390x-linux-gnu, 
+            apt: gcc-s390x-linux-gnu 
+            }
+          - {
+              name: riscv64,
+              target: riscv64-linux-gnu,
+              apt: gcc-riscv64-linux-gnu,
+            }
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install cross-compilation toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.arch.apt }}
+
+      - name: Build all
+        run: |
+          if [ "${{ matrix.arch.name }}" = "amd64" ]; then
+            make clean
+            make all STRIP=0
+          else
+            make clean
+            make all CC=${{ matrix.arch.target }}-gcc STRIP=0
+          fi
+
+      - name: Prepare artifacts
+        run: |
+          mkdir -p artifacts/linux-${{ matrix.arch.name }}
+          cp -r bin artifacts/linux-${{ matrix.arch.name }}
+          cp -r lib artifacts/linux-${{ matrix.arch.name }}
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vlmcsd-linux-${{ matrix.arch.name }}
+          path: artifacts/linux-${{ matrix.arch.name }}/
+          retention-days: 14
+
+  build-windows:
+    name: Build Windows
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        arch:
+          - {
+              name: amd64,
+              target: x86_64-w64-mingw32,
+              apt: gcc-mingw-w64-x86-64,
+            }
+          - { 
+            name: x86, 
+            target: i686-w64-mingw32, 
+            apt: gcc-mingw-w64-i686 
+            }
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install MinGW cross-compilation toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.arch.apt }}
+
+      - name: Build all for Windows
+        run: |
+          make clean
+          make all CC=${{ matrix.arch.target }}-gcc STRIP=0
+
+      - name: Prepare artifacts
+        run: |
+          mkdir -p artifacts/windows-${{ matrix.arch.name }}
+          cp -r bin artifacts/windows-${{ matrix.arch.name }}
+          cp -r lib artifacts/windows-${{ matrix.arch.name }}
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vlmcsd-windows-${{ matrix.arch.name }}
+          path: artifacts/windows-${{ matrix.arch.name }}/
+          retention-days: 14

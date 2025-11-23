@@ -54,7 +54,6 @@
 
 #ifndef IS_LIBRARY
 
-
 // Function Prototypes
 static void CreateRequestBase(REQUEST *Request);
 
@@ -91,6 +90,13 @@ static uint16_t MajorVersion;
 static int_fast8_t NoSrvRecordPriority = FALSE;
 #endif // NO_DNS
 
+/*
+struct of common DNS names. The default DNS name include
+	First segment - computer name
+	Second segment - sub domain under top-level domain
+	Last segment - TLD
+For more information, see RFC 9499
+*/ 
 typedef struct
 {
 	const char* first[16];
@@ -122,8 +128,8 @@ static void string2UuidOrExit(const char *const restrict input, GUID *const rest
 }
 
 
+// Display VLMCS client help
 #ifndef NO_HELP
-
 __noreturn static void clientUsage(const char* const programName)
 {
 	errorout(
@@ -391,13 +397,11 @@ static void parseCommandLinePass1(const int argc, CARGV argv)
 		ActiveProductIndex = findLicensePackByName(optarg);
 		if (ActiveProductIndex < 0)
 		{
-			//errorout("Invalid client application. \"%s\" is not valid for -l.\n\n", optarg);
 			errorout("Invalid client application.\nIf you are looking for help, please use the \"-l\" flag\n");
 #ifndef NO_HELP
 			showProducts(&errorout);
 #endif // !NO_HELP
 		}
-
 		break;
 
 	default:
@@ -456,26 +460,29 @@ static void parseCommandLinePass2(const char *const programName, const int argc,
 #	ifndef USE_MSRPC
 
 	case 'N':
-		if (!getArgumentBool(&UseClientRpcNDR64, optarg)) clientUsage(programName);
+		if (!getArgumentBool(&UseClientRpcNDR64, optarg))  {
+			clientUsage(programName);
+		}
 		break;
 
 	case 'B':
-		if (!getArgumentBool(&UseClientRpcBTFN, optarg)) clientUsage(programName);
+		if (!getArgumentBool(&UseClientRpcBTFN, optarg)) {
+			clientUsage(programName);
+		}
 		break;
 
 	case 'i':
 
-		switch (getOptionArgumentInt((char)o, 4, 6))
-		{
-		case 4:
-			AddressFamily = AF_INET;
-			break;
-		case 6:
-			AddressFamily = AF_INET6;
-			break;
-		default:
-			errorout("IPv5 does not exist.\n");
-			exit(VLMCSD_EINVAL);
+		switch (getOptionArgumentInt((char)o, 4, 6)) {
+			case 4:
+				AddressFamily = AF_INET;
+				break;
+			case 6:
+				AddressFamily = AF_INET6;
+				break;
+			default:
+				errorout("Invalid IP setting. It must either IPv4 or IPv6.\n");
+				exit(VLMCSD_EINVAL);
 		}
 
 		break;
@@ -593,7 +600,7 @@ static void parseCommandLinePass2(const char *const programName, const int argc,
 		break;
 
 #			endif // USE_MSRPC
-
+//	case 'h':
 	case 'l':
 		incompatibleOptions |= VLMCS_OPTION_NO_GRAB_INI;
 		break;

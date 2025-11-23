@@ -507,7 +507,7 @@ endif
 ../build/%.o: %.c 
   ifeq ($(VERBOSE),1)
 	+$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -c $< -o $@
-  $(CC) -S $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -o ../build/$*.asm $<
+	+$(CC) -S $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -o ../build/$*.asm $<
   ifeq ($(DEPENDENCIES),1)
 	+$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) -MM -MF $*.d $< -MT $@
   endif
