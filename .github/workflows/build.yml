@@ -47,16 +47,16 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install -y ${{ matrix.arch.apt }}
 
-            - name: Build all & vlmcsdmulti
+            - name: Build all
               run: |
                   if [ "${{ matrix.arch.name }}" = "amd64" ]; then
                     # Native build for amd64
                     make clean
-                    make all vlmcsdmulti STRIP=0
+                    make all STRIP=0
                   else
                     # Cross-compilation for other architectures
                     make clean
-                    make all vlmcsdmulti CC=${{ matrix.arch.target }}-gcc STRIP=0
+                    make all CC=${{ matrix.arch.target }}-gcc STRIP=0
                   fi
 
             - name: Prepare artifacts
@@ -70,7 +70,7 @@ jobs:
               with:
                   name: vlmcsd-linux-${{ matrix.arch.name }}
                   path: artifacts/linux-${{ matrix.arch.name }}/
-                  retention-days: 30
+                  retention-days: 14
 
     build-windows:
         name: Build Windows
@@ -98,10 +98,10 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install -y ${{ matrix.arch.apt }}
 
-            - name: Build all & vlmcsdmulti for Windows
+            - name: Build all for Windows
               run: |
                   make clean
-                  make all vlmcsdmulti CC=${{ matrix.arch.target }}-gcc STRIP=0
+                  make all CC=${{ matrix.arch.target }}-gcc STRIP=0
 
             - name: Prepare artifacts
               run: |
@@ -114,7 +114,7 @@ jobs:
               with:
                   name: vlmcsd-windows-${{ matrix.arch.name }}
                   path: artifacts/windows-${{ matrix.arch.name }}/
-                  retention-days: 30
+                  retention-days: 14
 
     # release:
     #     name: Create Release Assets

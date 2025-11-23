@@ -4,8 +4,8 @@ set -euo pipefail
 
 cd "$(cd "$(dirname "$0")" && pwd)"
 
-docker build --platform linux/amd64 -f ./Dockerfile -t theflightsims/vlmcsd:linux-amd64 .
-docker build --platform linux/arm64/v8 -f ./Dockerfile -t theflightsims/vlmcsd:linux-arm64v8 .
-docker build --platform linux/ppc64le -f ./Dockerfile -t theflightsims/vlmcsd:linux-ppc64le .
-docker build --platform linux/s390x -f ./Dockerfile -t theflightsims/vlmcsd:linux-s390x .
-docker build --platform linux/riscv64 -f ./Dockerfile -t theflightsims/vlmcsd:linux-riscv64 .
+for arch in amd64 arm64/v8 ppc64le s390x riscv64; do
+    tag_arch=${arch//\//}
+    echo "Building for architecture: $arch with tag ${tag_arch}"
+    docker build --platform "linux/$arch" -f ./Dockerfile -t "theflightsims/vlmcsd:linux-$tag_arch" .
+done
