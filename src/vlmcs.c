@@ -466,7 +466,9 @@ static void parseCommandLinePass2(const char *const programName, const int argc,
 		break;
 
 	case 'B':
-		if (!getArgumentBool(&UseClientRpcBTFN, optarg)) clientUsage(programName);
+		if (!getArgumentBool(&UseClientRpcBTFN, optarg)) {
+			clientUsage(programName);
+		}
 		break;
 
 	case 'i':
