@@ -169,22 +169,43 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 
 	uuid2StringLE(&Request->AppID, guidBuffer);
 	getProductIndex(&Request->AppID, KmsData->AppItemList, KmsData->AppItemCount, &productName, NULL);
+
+#ifdef PRIVACY_ON
+	p("Application ID                  : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
+#else 
 	p("Application ID                  : %s (%s)\n", guidBuffer, productName);
+#endif
 
 	uuid2StringLE(&Request->ActID, guidBuffer);
 	getProductIndex(&Request->ActID, KmsData->SkuItemList, KmsData->SkuItemCount, &productName, NULL);
+#ifdef PRIVACY_ON
+	p("SKU ID (aka Activation ID)      : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
+#else
 	p("SKU ID (aka Activation ID)      : %s (%s)\n", guidBuffer, productName);
+#endif
 
-	uuid2StringLE(&Request->KMSID, guidBuffer);
 	getProductIndex(&Request->KMSID, KmsData->KmsItemList, KmsData->KmsItemCount, &productName, NULL);
-	p("KMS ID (aka KMS counted ID)     : %s (%s)\n", guidBuffer, productName);
 
+#ifdef PRIVACY_ON
+	p("KMS ID (aka KMS counted ID)     : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
+#else
+	uuid2StringLE(&Request->KMSID, guidBuffer);
+	p("KMS ID (aka KMS counted ID)     : %s (%s)\n", guidBuffer, productName);
+#endif
+
+#ifdef PRIVACY_ON
+	p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
+#else
 	uuid2StringLE(&Request->CMID, guidBuffer);
 	p("Client machine ID               : %s\n", guidBuffer);
+#endif
 
+#ifdef PRIVACY_ON
+	p("Previous client machine ID      : 00000000-0000-0000-0000-000000000000\n");
+#else
 	uuid2StringLE(&Request->CMID_prev, guidBuffer);
 	p("Previous client machine ID      : %s\n", guidBuffer);
-
+#endif
 
 	char mbstr[64];
 	time_t st;
@@ -192,9 +213,12 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 	strftime(mbstr, sizeof(mbstr), "%Y-%m-%d %X", gmtime(&st));
 	p("Client request timestamp (UTC)  : %s\n", mbstr);
 
+#ifdef PRIVACY_ON
+	p("Workstation name                : <hidden>\n");
+#else
 	ucs2_to_utf8(Request->WorkstationName, WorkstationBuffer, WORKSTATION_NAME_BUFFER, sizeof(WorkstationBuffer));
-
 	p("Workstation name                : %s\n", WorkstationBuffer);
+#endif
 	p("N count policy (minimum clients): %u\n", (uint32_t)LE32(Request->N_Policy));
 }
 
@@ -203,7 +227,13 @@ void logResponseVerbose(const char *const ePID, const BYTE *const hwid, RESPONSE
 	char guidBuffer[GUID_STRING_LENGTH + 1];
 
 	p("Protocol version                : %u.%u\n", (uint32_t)LE16(response->MajorVer), (uint32_t)LE16(response->MinorVer));
+
+#ifdef PRIVACY_ON
+	p("KMS host extended PID           : <hidden>\n");
+#else
 	p("KMS host extended PID           : %s\n", ePID);
+#endif
+
 	if (LE16(response->MajorVer) > 5)
 #	ifndef _WIN32
 		p("KMS host Hardware ID            : %016llX\n", (unsigned long long)BE64(*(uint64_t*)hwid));

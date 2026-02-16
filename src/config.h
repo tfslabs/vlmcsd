@@ -658,9 +658,18 @@
 
 #endif // SIMPLE_SOCKETS
 
+#ifndef PRIVACY_ON
+/*
+ * This flag enables the ability to hide the incoming request information and outcoming request 
+ * Reasons: to hide the client ID from the inspector, only display the least valuable info
+ */
 
+  #define PRIVACY_ON
+
+#endif
 
 /* Don't change anything BELOW this line */
 
 
 #endif /* CONFIG_H_ */
+
