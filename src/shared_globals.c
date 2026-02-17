@@ -74,6 +74,12 @@ int_fast8_t logverbose = 0;
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 
+#ifndef PRIVACY_ON
+uint8_t isPrivacyOn = 0;
+#else
+uint8_t isPrivacyOn = 1;
+#endif
+
 #ifndef NO_SOCKETS
 int_fast8_t ExitLevel = 0;
 

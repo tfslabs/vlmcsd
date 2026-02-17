@@ -158,6 +158,15 @@ void uuid2StringLE(const GUID *const guid, char *const string)
 #if !defined(NO_VERBOSE_LOG) && !defined(NO_LOG)
 void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 {
+#ifdef PRIVACY_ON
+	p("Privacy mode                    : ON\n");
+#else
+	if (isPrivacyOn == 0)
+		p("Privacy mode                    : OFF\n");
+	else
+		p("Privacy mode                    : ON\n");
+#endif
+
 	char guidBuffer[GUID_STRING_LENGTH + 1];
 	char WorkstationBuffer[3 * WORKSTATION_NAME_BUFFER];
 	char* productName;
@@ -173,7 +182,10 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 #ifdef PRIVACY_ON
 	p("Application ID                  : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #else 
-	p("Application ID                  : %s (%s)\n", guidBuffer, productName);
+	if (isPrivacyOn == 0)
+		p("Application ID                  : %s (%s)\n", guidBuffer, productName);
+	else
+		p("Application ID                  : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #endif
 
 	uuid2StringLE(&Request->ActID, guidBuffer);
@@ -181,7 +193,10 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 #ifdef PRIVACY_ON
 	p("SKU ID (aka Activation ID)      : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #else
-	p("SKU ID (aka Activation ID)      : %s (%s)\n", guidBuffer, productName);
+	if (isPrivacyOn == 0)
+		p("SKU ID (aka Activation ID)      : %s (%s)\n", guidBuffer, productName);
+	else
+		p("SKU ID (aka Activation ID)      : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #endif
 
 	getProductIndex(&Request->KMSID, KmsData->KmsItemList, KmsData->KmsItemCount, &productName, NULL);
@@ -190,21 +205,30 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 	p("KMS ID (aka KMS counted ID)     : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #else
 	uuid2StringLE(&Request->KMSID, guidBuffer);
-	p("KMS ID (aka KMS counted ID)     : %s (%s)\n", guidBuffer, productName);
+	if (isPrivacyOn == 0)
+		p("KMS ID (aka KMS counted ID)     : %s (%s)\n", guidBuffer, productName);
+	else
+		p("KMS ID (aka KMS counted ID)     : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #endif
 
 #ifdef PRIVACY_ON
 	p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
 #else
 	uuid2StringLE(&Request->CMID, guidBuffer);
-	p("Client machine ID               : %s\n", guidBuffer);
+	if (isPrivacyOn == 0)
+		p("Client machine ID               : %s\n", guidBuffer);
+	else
+		p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
 #endif
 
 #ifdef PRIVACY_ON
 	p("Previous client machine ID      : 00000000-0000-0000-0000-000000000000\n");
 #else
 	uuid2StringLE(&Request->CMID_prev, guidBuffer);
-	p("Previous client machine ID      : %s\n", guidBuffer);
+	if (isPrivacyOn == 0)
+		p("Previous client machine ID      : %s\n", guidBuffer);
+	else
+		p("Previous client machine ID      : 00000000-0000-0000-0000-000000000000\n");
 #endif
 
 	char mbstr[64];
@@ -217,8 +241,12 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 	p("Workstation name                : <hidden>\n");
 #else
 	ucs2_to_utf8(Request->WorkstationName, WorkstationBuffer, WORKSTATION_NAME_BUFFER, sizeof(WorkstationBuffer));
-	p("Workstation name                : %s\n", WorkstationBuffer);
+	if (isPrivacyOn == 0)
+		p("Workstation name                : %s\n", WorkstationBuffer);
+	else
+		p("Workstation name                : <hidden>\n");
 #endif
+
 	p("N count policy (minimum clients): %u\n", (uint32_t)LE32(Request->N_Policy));
 }
 
@@ -231,7 +259,10 @@ void logResponseVerbose(const char *const ePID, const BYTE *const hwid, RESPONSE
 #ifdef PRIVACY_ON
 	p("KMS host extended PID           : <hidden>\n");
 #else
-	p("KMS host extended PID           : %s\n", ePID);
+	if (isPrivacyOn == 0)
+		p("KMS host extended PID           : %s\n", ePID);
+	else
+		p("KMS host extended PID           : <hidden>\n");
 #endif
 
 	if (LE16(response->MajorVer) > 5)
@@ -242,8 +273,15 @@ void logResponseVerbose(const char *const ePID, const BYTE *const hwid, RESPONSE
 #	endif // WIN32
 
 	uuid2StringLE(&response->CMID, guidBuffer);
-	p("Client machine ID               : %s\n", guidBuffer);
-
+#ifdef PRIVACY_ON
+	p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
+#else
+	if (isPrivacyOn == 0) {
+		p("Client machine ID               : %s\n", guidBuffer);
+	} else {
+		p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
+	}
+#endif
 	char mbstr[64];
 	time_t st;
 
