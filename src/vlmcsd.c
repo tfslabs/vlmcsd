@@ -399,6 +399,7 @@ static __noreturn void usage()
 #ifndef NO_VERBOSE_LOG
 		" -v\t\t\tAllow logging verbose.\n"
 		" -q\t\t\tDon't allow log verbose (default).\n"
+		" -X\t\t\tAllow running in Privacy Mode (experiment).\n"
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 #ifndef NO_VERSION_INFORMATION
