@@ -664,7 +664,7 @@
  * Reasons: to hide the client ID from the inspector, only display the least valuable info
  */
 
-  #define PRIVACY_ON
+  // #define PRIVACY_ON
 
 #endif
 

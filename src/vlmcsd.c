@@ -177,6 +177,7 @@ static IniFileParameter_t IniFileParameterList[] =
 #ifndef NO_LOG
 		{"LogDateAndTime", INI_PARAM_LOG_DATE_AND_TIME},
 		{"LogFile", INI_PARAM_LOG_FILE},
+		{"PrivacyMode", INI_PARAM_PRIVACY_MODE},
 #ifndef NO_VERBOSE_LOG
 		{"LogVerbose", INI_PARAM_LOG_VERBOSE},
 #endif // NO_VERBOSE_LOG
@@ -671,6 +672,12 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 #endif // !NO_STRICT_MODES
 
 #ifndef NO_LOG
+
+#ifndef PRIVACY_ON
+	case INI_PARAM_PRIVACY_MODE:
+		isPrivacyOn = getIniFileArgumentBool(&logverbose, iniarg);
+		break;
+#endif // PRIVACY_ON
 
 	case INI_PARAM_LOG_FILE:
 		fn_log = vlmcsd_strdup(iniarg);
@@ -1280,6 +1287,7 @@ static void parseGeneralArguments()
 #ifndef PRIVACY_ON
 		case 'X':
 			isPrivacyOn = 1;
+			ignoreIniFileParameter(INI_PARAM_PRIVACY_MODE);
 			break;
 #endif // PRIVACY_ON
 
