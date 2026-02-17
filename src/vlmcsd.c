@@ -396,10 +396,10 @@ static __noreturn void usage()
 #ifndef NO_LOG
 		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have read+write access to that file.\n"
 		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1).\n"
+		" -X\t\t\tAllow running in Privacy Mode (experiment).\n"
 #ifndef NO_VERBOSE_LOG
 		" -v\t\t\tAllow logging verbose.\n"
 		" -q\t\t\tDon't allow log verbose (default).\n"
-		" -X\t\t\tAllow running in Privacy Mode (experiment).\n"
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 #ifndef NO_VERSION_INFORMATION
