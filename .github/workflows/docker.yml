@@ -73,5 +73,5 @@ jobs:
                   platforms: linux/${{ matrix.map.arch }}
                   push: true
                   tags: |
-                      theflightsims/ubuntu-dev:noble-${{ matrix.map.name }}
+                      theflightsims/vlmcsd:latest-${{ matrix.map.name }}
               if: github.ref == 'refs/heads/master'
