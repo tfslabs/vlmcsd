@@ -6,6 +6,12 @@
 
 ![Docker Tracker](https://img.shields.io/docker/pulls/theflightsims/vlmcsd)
 
+[![CodeQL Advanced](https://github.com/tfslabs/vlmcsd/actions/workflows/codeql.yml/badge.svg)](https://github.com/tfslabs/vlmcsd/actions/workflows/codeql.yml)
+[![Build static VLMCSD binary](https://github.com/tfslabs/vlmcsd/actions/workflows/build.yml/badge.svg)](https://github.com/tfslabs/vlmcsd/actions/workflows/build.yml)
+[![Build Docker image (all architectures)](https://github.com/tfslabs/vlmcsd/actions/workflows/docker.yml/badge.svg)](https://github.com/tfslabs/vlmcsd/actions/workflows/docker.yml)
+
+[![GitLab CI/CD](https://img.shields.io/badge/gitlab-repo-orange?logo=gitlab)](https://devops.theflightsims.com/tfsinfra/vlmcsd)
+
 **Volume License Management Service** is a free, open-source software to provide a volume-activation for Windows and Office products.
 
 It is the replacement (or the solution for Linux) of [Key Management Services on Windows Server](https://learn.microsoft.com/en-us/windows-server/get-started/kms-activation-planning) (in term of operation), by provide less infrastructure compared to the Windows Server deployment (even the minimal one), or act as a backup solution in case the main Windows KMS Host fails.
