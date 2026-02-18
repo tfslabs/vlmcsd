@@ -88,7 +88,7 @@ Volume License Management Service DAEMON (vlmcsd)
 #include "wintap.h"
 #endif
 
-static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:SseDdVvqkZ";
+static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:SseDdVvqkZX";
 
 #if !defined(NO_SOCKETS) && !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
 static uint_fast8_t maxsockets = 0;
@@ -177,6 +177,7 @@ static IniFileParameter_t IniFileParameterList[] =
 #ifndef NO_LOG
 		{"LogDateAndTime", INI_PARAM_LOG_DATE_AND_TIME},
 		{"LogFile", INI_PARAM_LOG_FILE},
+		{"PrivacyMode", INI_PARAM_PRIVACY_MODE},
 #ifndef NO_VERBOSE_LOG
 		{"LogVerbose", INI_PARAM_LOG_VERBOSE},
 #endif // NO_VERBOSE_LOG
@@ -396,6 +397,9 @@ static __noreturn void usage()
 #ifndef NO_LOG
 		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have read+write access to that file.\n"
 		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1).\n"
+#ifndef PRIVACY_ON
+		" -X\t\t\tAllow running in Privacy Mode (experiment).\n"
+#endif // PRIVACY_ON
 #ifndef NO_VERBOSE_LOG
 		" -v\t\t\tAllow logging verbose.\n"
 		" -q\t\t\tDon't allow log verbose (default).\n"
@@ -670,6 +674,12 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 #endif // !NO_STRICT_MODES
 
 #ifndef NO_LOG
+
+#ifndef PRIVACY_ON
+	case INI_PARAM_PRIVACY_MODE:
+		isPrivacyOn = getIniFileArgumentBool(&isPrivacyOn, iniarg);
+		break;
+#endif // PRIVACY_ON
 
 	case INI_PARAM_LOG_FILE:
 		fn_log = vlmcsd_strdup(iniarg);
@@ -1275,6 +1285,13 @@ static void parseGeneralArguments()
 
 			break;
 #endif // !defined(NO_PRIVATE_IP_DETECT)
+
+#ifndef PRIVACY_ON
+		case 'X':
+			isPrivacyOn = TRUE;
+			ignoreIniFileParameter(INI_PARAM_PRIVACY_MODE);
+			break;
+#endif // PRIVACY_ON
 
 #ifndef NO_SOCKETS
 #if !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
@@ -1977,8 +1994,7 @@ int newmain()
 			const char *csvlkIniName = getNextString(csvlk->EPid);
 			const char *csvlkFullName = getNextString(csvlkIniName);
 			csvlkFullName = *csvlkFullName ? csvlkFullName : "unknown";
-			const char *ePid = KmsResponseParameters[i].Epid ? KmsResponseParameters[i].Epid : RandomizationLevel == 2 ? ""
-																													   : csvlk->EPid;
+			const char *ePid = KmsResponseParameters[i].Epid ? KmsResponseParameters[i].Epid : RandomizationLevel == 2 ? "" : csvlk->EPid;
 			logger("Using CSVLK %s (%s) with %s ePID %s\n", csvlkIniName, csvlkFullName, (RandomizationLevel == 1 && KmsResponseParameters[i].IsRandom) || (RandomizationLevel == 2 && !KmsResponseParameters[i].Epid) ? "random" : "fixed", ePid);
 		}
 	}
@@ -2003,6 +2019,14 @@ int newmain()
 #if !defined(NO_LOG) && !defined(NO_SOCKETS) && !defined(USE_MSRPC)
 	if (!InetdMode)
 		logger("vlmcsd %s started successfully\n", Version);
+
+#ifdef PRIVACY_ON
+		logger("Privacy mode (Enforced) is turned on\n");
+#else		
+	if (isPrivacyOn == TRUE)
+		logger("Privacy mode is turned on\n");
+#endif //PRIVACY_ON
+
 #endif // !defined(NO_LOG) && !defined(NO_SOCKETS) && !defined(USE_MSRPC)
 
 #if defined(_NTSERVICE) && !defined(USE_MSRPC)

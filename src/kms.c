@@ -452,7 +452,16 @@ static void logRequest(REQUEST* baseRequest)
 	}
 
 	ucs2_to_utf8(baseRequest->WorkstationName, clientName, 64, 64);
-	logger("KMS v%i.%i request from %s for %s\n", LE16(baseRequest->MajorVer), LE16(baseRequest->MinorVer), clientName, productName);
+#ifdef PRIVACY_ON
+	logger("KMS v%i.%i request from <hidden> for %s\n", LE16(baseRequest->MajorVer), LE16(baseRequest->MinorVer), productName);
+#else
+	if (isPrivacyOn == FALSE) {
+		logger("KMS v%i.%i request from %s for %s\n", LE16(baseRequest->MajorVer), LE16(baseRequest->MinorVer), clientName, productName);
+	}
+	else {
+		logger("KMS v%i.%i request from <hidden> for %s\n", LE16(baseRequest->MajorVer), LE16(baseRequest->MinorVer), productName);
+	}
+#endif // PRIVACY_ON
 }
 #endif // NO_LOG
 

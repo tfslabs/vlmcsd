@@ -800,9 +800,19 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 	const char *const connection_type = addr.ss_family == AF_INET6 ? cIPv6 : cIPv4;
 	static const char *const cAccepted = "accepted";
 	static const char *const cClosed = "closed";
-	static const char *const fIP = "%s connection %s: %s.\n";
+	static const char *const fIP = "%s connection %s: 0.0.0.0:0\n";
+	
+#ifdef PRIVACY_ON
+	logger(fIP, connection_type, cAccepted);
+#else // PRIVACY_ON
+	if (isPrivacyOn == FALSE) {
+		static const char *const fIP = "%s connection %s: %s\n";
+		logger(fIP, connection_type, cAccepted, ipstr);
+	} else {
+		logger(fIP, connection_type, cAccepted);
+	}
+#endif // PRIVACY_ON
 
-	logger(fIP, connection_type, cAccepted, ipstr);
 #endif // NO_LOG
 
 #	if !defined(NO_PRIVATE_IP_DETECT)
@@ -825,7 +835,18 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #	endif // defined(NO_PRIVATE_IP_DETECT)
 
 #	ifndef NO_LOG
-	logger(fIP, connection_type, cClosed, ipstr);
+
+#ifdef PRIVACY_ON
+	logger(fIP, connection_type, cAccepted);
+#else // PRIVACY_ON
+	if (isPrivacyOn == FALSE) {
+		static const char *const fIP = "%s connection %s: %s\n";
+		logger(fIP, connection_type, cClosed, ipstr);
+	} else {
+		logger(fIP, connection_type, cClosed);
+	}
+#endif // PRIVACY_ON
+
 #	endif // NO_LOG
 
 	socketclose(s_client);
