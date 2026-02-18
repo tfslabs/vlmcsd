@@ -1,18 +1,20 @@
-name: Build
+name: Build static VLMCSD binary
+permissions:
+    contents: read
 
 on:
   push:
     branches: [master]
-  
   pull_request:
     branches: [master]
-  
+  schedule:
+    - cron: "0 0 * * 1"
   workflow_dispatch:
 
 jobs:
   build-linux:
     name: Build Linux
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         arch:
@@ -44,7 +46,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Install cross-compilation toolchain
         run: |
@@ -68,7 +70,7 @@ jobs:
           cp -r lib artifacts/linux-${{ matrix.arch.name }}
 
       - name: Upload Linux artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: vlmcsd-linux-${{ matrix.arch.name }}
           path: artifacts/linux-${{ matrix.arch.name }}/
@@ -76,7 +78,7 @@ jobs:
 
   build-windows:
     name: Build Windows
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         arch:
@@ -93,7 +95,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Install MinGW cross-compilation toolchain
         run: |
@@ -112,7 +114,7 @@ jobs:
           cp -r lib artifacts/windows-${{ matrix.arch.name }}
 
       - name: Upload Windows artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: vlmcsd-windows-${{ matrix.arch.name }}
           path: artifacts/windows-${{ matrix.arch.name }}/

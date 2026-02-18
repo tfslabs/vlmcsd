@@ -74,6 +74,12 @@ int_fast8_t logverbose = 0;
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 
+#ifndef PRIVACY_ON
+int_fast8_t isPrivacyOn = FALSE;
+#else
+int_fast8_t isPrivacyOn = TRUE;
+#endif
+
 #ifndef NO_SOCKETS
 int_fast8_t ExitLevel = 0;
 
@@ -148,8 +154,3 @@ CRITICAL_SECTION logmutex;
 #if HAVE_FREEBIND
 int_fast8_t freebind = FALSE;
 #endif // HAVE_FREEBIND
-
-
-
-
-
