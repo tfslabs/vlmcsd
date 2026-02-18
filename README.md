@@ -4,12 +4,11 @@
 
 # Volume License Management Service
 
-![Docker Tracker](https://img.shields.io/docker/pulls/theflightsims/vlmcsd)
-
 [![CodeQL Advanced](https://github.com/tfslabs/vlmcsd/actions/workflows/codeql.yml/badge.svg)](https://github.com/tfslabs/vlmcsd/actions/workflows/codeql.yml)
 [![Build static VLMCSD binary](https://github.com/tfslabs/vlmcsd/actions/workflows/build.yml/badge.svg)](https://github.com/tfslabs/vlmcsd/actions/workflows/build.yml)
 [![Build Docker image (all architectures)](https://github.com/tfslabs/vlmcsd/actions/workflows/docker.yml/badge.svg)](https://github.com/tfslabs/vlmcsd/actions/workflows/docker.yml)
 
+![Docker Tracker](https://img.shields.io/docker/pulls/theflightsims/vlmcsd)
 [![GitLab CI/CD](https://img.shields.io/badge/gitlab-repo-orange?logo=gitlab)](https://devops.theflightsims.com/tfsinfra/vlmcsd)
 
 **Volume License Management Service** is a free, open-source software to provide a volume-activation for Windows and Office products.
