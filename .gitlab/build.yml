@@ -13,4 +13,5 @@ build:
   artifacts:
       paths:
         - bin/
+        - lib/
       expire_in: 3 mos
