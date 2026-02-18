@@ -161,7 +161,7 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 #ifdef PRIVACY_ON
 	p("Privacy mode                    : ON\n");
 #else
-	if (isPrivacyOn == 0)
+	if (isPrivacyOn == FALSE)
 		p("Privacy mode                    : OFF\n");
 	else
 		p("Privacy mode                    : ON\n");
@@ -182,7 +182,7 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 #ifdef PRIVACY_ON
 	p("Application ID                  : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #else 
-	if (isPrivacyOn == 0)
+	if (isPrivacyOn == FALSE)
 		p("Application ID                  : %s (%s)\n", guidBuffer, productName);
 	else
 		p("Application ID                  : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
@@ -193,7 +193,7 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 #ifdef PRIVACY_ON
 	p("SKU ID (aka Activation ID)      : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #else
-	if (isPrivacyOn == 0)
+	if (isPrivacyOn == FALSE)
 		p("SKU ID (aka Activation ID)      : %s (%s)\n", guidBuffer, productName);
 	else
 		p("SKU ID (aka Activation ID)      : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
@@ -205,7 +205,7 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 	p("KMS ID (aka KMS counted ID)     : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
 #else
 	uuid2StringLE(&Request->KMSID, guidBuffer);
-	if (isPrivacyOn == 0)
+	if (isPrivacyOn == FALSE)
 		p("KMS ID (aka KMS counted ID)     : %s (%s)\n", guidBuffer, productName);
 	else
 		p("KMS ID (aka KMS counted ID)     : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
@@ -215,7 +215,7 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 	p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
 #else
 	uuid2StringLE(&Request->CMID, guidBuffer);
-	if (isPrivacyOn == 0)
+	if (isPrivacyOn == FALSE)
 		p("Client machine ID               : %s\n", guidBuffer);
 	else
 		p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
@@ -225,7 +225,7 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 	p("Previous client machine ID      : 00000000-0000-0000-0000-000000000000\n");
 #else
 	uuid2StringLE(&Request->CMID_prev, guidBuffer);
-	if (isPrivacyOn == 0)
+	if (isPrivacyOn == FALSE)
 		p("Previous client machine ID      : %s\n", guidBuffer);
 	else
 		p("Previous client machine ID      : 00000000-0000-0000-0000-000000000000\n");
@@ -241,7 +241,7 @@ void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 	p("Workstation name                : <hidden>\n");
 #else
 	ucs2_to_utf8(Request->WorkstationName, WorkstationBuffer, WORKSTATION_NAME_BUFFER, sizeof(WorkstationBuffer));
-	if (isPrivacyOn == 0)
+	if (isPrivacyOn == FALSE)
 		p("Workstation name                : %s\n", WorkstationBuffer);
 	else
 		p("Workstation name                : <hidden>\n");
@@ -259,7 +259,7 @@ void logResponseVerbose(const char *const ePID, const BYTE *const hwid, RESPONSE
 #ifdef PRIVACY_ON
 	p("KMS host extended PID           : <hidden>\n");
 #else
-	if (isPrivacyOn == 0)
+	if (isPrivacyOn == FALSE)
 		p("KMS host extended PID           : %s\n", ePID);
 	else
 		p("KMS host extended PID           : <hidden>\n");
@@ -276,7 +276,7 @@ void logResponseVerbose(const char *const ePID, const BYTE *const hwid, RESPONSE
 #ifdef PRIVACY_ON
 	p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
 #else
-	if (isPrivacyOn == 0) {
+	if (isPrivacyOn == FALSE) {
 		p("Client machine ID               : %s\n", guidBuffer);
 	} else {
 		p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");

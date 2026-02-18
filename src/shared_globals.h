@@ -217,7 +217,7 @@ extern int_fast8_t freebind;
 #endif // HAVE_FREEBIND
 
 #ifndef PRIVACY_ON
-extern uint8_t isPrivacyOn;
+extern int_fast8_t isPrivacyOn;
 #endif
 
 #endif // INCLUDED_SHARED_GLOBALS_H

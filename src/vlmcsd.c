@@ -397,7 +397,9 @@ static __noreturn void usage()
 #ifndef NO_LOG
 		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have read+write access to that file.\n"
 		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1).\n"
+#ifndef PRIVACY_ON
 		" -X\t\t\tAllow running in Privacy Mode (experiment).\n"
+#endif // PRIVACY_ON
 #ifndef NO_VERBOSE_LOG
 		" -v\t\t\tAllow logging verbose.\n"
 		" -q\t\t\tDon't allow log verbose (default).\n"
@@ -675,7 +677,7 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 
 #ifndef PRIVACY_ON
 	case INI_PARAM_PRIVACY_MODE:
-		isPrivacyOn = getIniFileArgumentBool(&logverbose, iniarg);
+		isPrivacyOn = getIniFileArgumentBool(&isPrivacyOn, iniarg);
 		break;
 #endif // PRIVACY_ON
 
@@ -1286,7 +1288,7 @@ static void parseGeneralArguments()
 
 #ifndef PRIVACY_ON
 		case 'X':
-			isPrivacyOn = 1;
+			isPrivacyOn = TRUE;
 			ignoreIniFileParameter(INI_PARAM_PRIVACY_MODE);
 			break;
 #endif // PRIVACY_ON
@@ -2021,7 +2023,7 @@ int newmain()
 #ifdef PRIVACY_ON
 		logger("Privacy mode (Enforced) is turned on\n");
 #else		
-	if (isPrivacyOn == 1)
+	if (isPrivacyOn == TRUE)
 		logger("Privacy mode is turned on\n");
 #endif //PRIVACY_ON
 

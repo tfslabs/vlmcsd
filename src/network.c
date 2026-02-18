@@ -805,7 +805,7 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
 #else // PRIVACY_ON
-	if (isPrivacyOn == 0) {
+	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
 		logger(fIP, connection_type, cAccepted, ipstr);
 	} else {
@@ -839,7 +839,7 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
 #else // PRIVACY_ON
-	if (isPrivacyOn == 0) {
+	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
 		logger(fIP, connection_type, cClosed, ipstr);
 	} else {

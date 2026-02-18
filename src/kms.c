@@ -455,7 +455,7 @@ static void logRequest(REQUEST* baseRequest)
 #ifdef PRIVACY_ON
 	logger("KMS v%i.%i request from <hidden> for %s\n", LE16(baseRequest->MajorVer), LE16(baseRequest->MinorVer), productName);
 #else
-	if (isPrivacyOn == 0) {
+	if (isPrivacyOn == FALSE) {
 		logger("KMS v%i.%i request from %s for %s\n", LE16(baseRequest->MajorVer), LE16(baseRequest->MinorVer), clientName, productName);
 	}
 	else {
