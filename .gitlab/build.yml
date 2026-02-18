@@ -1,0 +1,16 @@
+stages:
+  - build
+
+build:
+  stage: build
+  tags:
+    - default
+  image: ubuntu:latest
+  script:
+    - apt-get update && apt-get full-upgrade -y && apt-get install gcc make
+    - make clean
+    - make all STRIP=0
+  artifacts:
+      paths:
+        - bin/
+      expire_in: 3 mos

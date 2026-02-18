@@ -1,0 +1,77 @@
+name: Build Docker image (all architectures)
+permissions:
+    contents: read
+
+on:
+    push:
+        branches: ["master"]
+    pull_request:
+        branches: ["master"]
+    schedule:
+        - cron: "0 0 * * 1"
+    workflow_dispatch:
+
+jobs:
+    build-docker:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                map:
+                    - {
+                        name: amd64,
+                        arch: amd64
+                    }
+                    - {
+                        name: arm64v8,
+                        arch: arm64/v8
+                    }
+                    - {
+                        name: ppc64le,
+                        arch: ppc64le
+                    }
+                    - {
+                        name: s390x,
+                        arch: s390x
+                    }
+                    - {
+                        name: riscv64,
+                        arch: riscv64
+                    }
+                    - {
+                        name: armv7,
+                        arch: arm/v7
+                    }
+        steps:
+            - name: Check out the repo
+              uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+            - name: Set up QEMU (for cross-platform)
+              uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
+
+            - name: Set up Docker buildx
+              uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2
+
+            - name: Build and push multi-arch image for VLMCSD (Test)
+              uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+              with:
+                  context: .
+                  file: ./.docker/Dockerfile
+                  platforms: linux/${{ matrix.map.arch }}
+                  push: false
+
+            - name: Log in to DockerHub
+              uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Build and push multi-arch image for VLMCSD (On-push to Docker)
+              uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83
+              with:
+                  context: .
+                  file: ./.docker/Dockerfile
+                  platforms: linux/${{ matrix.map.arch }}
+                  push: true
+                  tags: |
+                      theflightsims/ubuntu-dev:noble-${{ matrix.map.name }}
+              if: github.ref == 'refs/heads/master'
