@@ -551,6 +551,16 @@
 
 #endif
 
+#ifndef COUNTING_REQ
+
+/*
+* This flag enables the ability to count the total requests at runtime of VLMCSD
+*/
+
+// #define COUNTING_REQ
+
+#endif // COUNTING_REQ
+
 /* Don't change anything BELOW this line */
 
 #endif /* CONFIG_H_ */
