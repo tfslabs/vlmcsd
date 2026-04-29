@@ -40,25 +40,24 @@
 
 #include "network.h"
 #include "endian.h"
-//#include "output.h"
+// #include "output.h"
 #include "helpers.h"
 #include "shared_globals.h"
 #include "rpc.h"
 
 #ifndef _WIN32
-typedef ssize_t(*sendrecv_t)(int, void*, size_t, int);
+typedef ssize_t (*sendrecv_t)(int, void *, size_t, int);
 #else
-typedef int (WINAPI *sendrecv_t)(SOCKET, void*, int, int);
+typedef int(WINAPI *sendrecv_t)(SOCKET, void *, int, int);
 #endif
-
 
 // Send or receive a fixed number of bytes regardless if received in one or more chunks
 int_fast8_t sendrecv(SOCKET sock, BYTE *data, int len, int_fast8_t do_send)
 {
 	int n;
-	sendrecv_t  f = do_send
-		? (sendrecv_t)send
-		: (sendrecv_t)recv;
+	sendrecv_t f = do_send
+					   ? (sendrecv_t)send
+					   : (sendrecv_t)recv;
 
 	do
 	{
@@ -69,31 +68,28 @@ int_fast8_t sendrecv(SOCKET sock, BYTE *data, int len, int_fast8_t do_send)
 	return !len;
 }
 
-
 static int_fast8_t ip2str(char *restrict result, const size_t resultLength, const struct sockaddr *const restrict socketAddress, const socklen_t socketLength)
 {
 	static const char *const fIPv4 = "%s:%s";
 	static const char *const fIPv6 = "[%s]:%s";
 	char ipAddress[64], portNumber[8];
 
-	if (getnameinfo
-	(
-		socketAddress,
-		socketLength,
-		ipAddress,
-		sizeof(ipAddress),
-		portNumber,
-		sizeof(portNumber),
-		NI_NUMERICHOST | NI_NUMERICSERV
-	))
+	if (getnameinfo(
+			socketAddress,
+			socketLength,
+			ipAddress,
+			sizeof(ipAddress),
+			portNumber,
+			sizeof(portNumber),
+			NI_NUMERICHOST | NI_NUMERICSERV))
 	{
 		return FALSE;
 	}
 
-	if ((unsigned int)vlmcsd_snprintf(result, resultLength, socketAddress->sa_family == AF_INET6 ? fIPv6 : fIPv4, ipAddress, portNumber) > resultLength) return FALSE;
+	if ((unsigned int)vlmcsd_snprintf(result, resultLength, socketAddress->sa_family == AF_INET6 ? fIPv6 : fIPv4, ipAddress, portNumber) > resultLength)
+		return FALSE;
 	return TRUE;
 }
-
 
 static int_fast8_t getSocketList(struct addrinfo **saList, const char *const addr, const int flags, const int AddressFamily)
 {
@@ -102,9 +98,10 @@ static int_fast8_t getSocketList(struct addrinfo **saList, const char *const add
 	const size_t len = strlen(addr) + 1;
 
 	// Don't alloca too much
-	if (len > 264) return FALSE;
+	if (len > 264)
+		return FALSE;
 
-	char *addrcopy = (char*)alloca(len);
+	char *addrcopy = (char *)alloca(len);
 	memcpy(addrcopy, addr, len);
 
 	parseAddress(addrcopy, &szHost, &szPort);
@@ -127,10 +124,10 @@ static int_fast8_t getSocketList(struct addrinfo **saList, const char *const add
 	return TRUE;
 }
 
-
 static int_fast8_t setBlockingEnabled(SOCKET fd, int_fast8_t blocking)
 {
-	if (fd == INVALID_SOCKET) return FALSE;
+	if (fd == INVALID_SOCKET)
+		return FALSE;
 
 #ifdef _WIN32
 
@@ -141,7 +138,8 @@ static int_fast8_t setBlockingEnabled(SOCKET fd, int_fast8_t blocking)
 
 	int flags = fcntl(fd, F_GETFL, 0);
 
-	if (flags < 0) return FALSE;
+	if (flags < 0)
+		return FALSE;
 
 	flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
 	return (fcntl(fd, F_SETFL, flags) == 0) ? TRUE : FALSE;
@@ -149,25 +147,26 @@ static int_fast8_t setBlockingEnabled(SOCKET fd, int_fast8_t blocking)
 #endif // POSIX
 }
 
-
 int_fast8_t isDisconnected(const SOCKET s)
 {
 	char buffer[1];
 
-	if (!setBlockingEnabled(s, FALSE)) return TRUE;
+	if (!setBlockingEnabled(s, FALSE))
+		return TRUE;
 
 	const int n = recv(s, buffer, 1, MSG_PEEK);
 
-	if (!setBlockingEnabled(s, TRUE)) return TRUE;
-	if (n == 0) return TRUE;
+	if (!setBlockingEnabled(s, TRUE))
+		return TRUE;
+	if (n == 0)
+		return TRUE;
 
 	return FALSE;
 }
 
-
 #if !defined(NO_PRIVATE_IP_DETECT)
 // Check, if a sockaddr is a private IPv4 or IPv6 address
-static int_fast8_t isPrivateIPAddress(struct sockaddr* addr, socklen_t* length)
+static int_fast8_t isPrivateIPAddress(struct sockaddr *addr, socklen_t *length)
 {
 	union v6addr
 	{
@@ -177,44 +176,45 @@ static int_fast8_t isPrivateIPAddress(struct sockaddr* addr, socklen_t* length)
 		uint64_t qwords[2];
 	};
 
-	if (addr == NULL) return FALSE;
+	if (addr == NULL)
+		return FALSE;
 
 	switch (addr->sa_family)
 	{
 	case AF_INET6:
 	{
-		union v6addr* ipv6addr = (union v6addr*)&((struct sockaddr_in6*)addr)->sin6_addr;
+		union v6addr *ipv6addr = (union v6addr *)&((struct sockaddr_in6 *)addr)->sin6_addr;
 
-		if
-			(
+		if (
 			(ipv6addr->qwords[0] != 0 || BE64(ipv6addr->qwords[1]) != 1) && // ::1 IPv6 localhost
-				(BE16(ipv6addr->words[0]) & 0xe000) == 0x2000 // !2000::/3
-				)
+			(BE16(ipv6addr->words[0]) & 0xe000) == 0x2000					// !2000::/3
+		)
 		{
 			return FALSE;
 		}
 
-		if (length) *length = sizeof(struct sockaddr_in6);
+		if (length)
+			*length = sizeof(struct sockaddr_in6);
 		break;
 	}
 
 	case AF_INET:
 	{
-		const uint32_t ipv4addr = BE32(((struct sockaddr_in*)addr)->sin_addr.s_addr);
+		const uint32_t ipv4addr = BE32(((struct sockaddr_in *)addr)->sin_addr.s_addr);
 
-		if
-			(
+		if (
 			(ipv4addr & 0xff000000) != 0x7f000000 && // 127.x.x.x localhost
-				(ipv4addr & 0xffff0000) != 0xc0a80000 && // 192.168.x.x private routeable
-				(ipv4addr & 0xffff0000) != 0xa9fe0000 && // 169.254.x.x link local
-				(ipv4addr & 0xff000000) != 0x0a000000 && // 10.x.x.x private routeable
-				(ipv4addr & 0xfff00000) != 0xac100000    // 172.16-31.x.x private routeable
-				)
+			(ipv4addr & 0xffff0000) != 0xc0a80000 && // 192.168.x.x private routeable
+			(ipv4addr & 0xffff0000) != 0xa9fe0000 && // 169.254.x.x link local
+			(ipv4addr & 0xff000000) != 0x0a000000 && // 10.x.x.x private routeable
+			(ipv4addr & 0xfff00000) != 0xac100000	 // 172.16-31.x.x private routeable
+		)
 		{
 			return FALSE;
 		}
 
-		if (length) *length = sizeof(struct sockaddr_in);
+		if (length)
+			*length = sizeof(struct sockaddr_in);
 		break;
 	}
 
@@ -226,7 +226,6 @@ static int_fast8_t isPrivateIPAddress(struct sockaddr* addr, socklen_t* length)
 }
 #endif // !defined(NO_PRIVATE_IP_DETECT)
 
-
 // Connect to TCP address addr (e.g. "kms.example.com:1688") and return an
 // open socket for the connection if successful or INVALID_SOCKET otherwise
 SOCKET connectToAddress(const char *const addr, const int AddressFamily, int_fast8_t showHostName)
@@ -235,7 +234,8 @@ SOCKET connectToAddress(const char *const addr, const int AddressFamily, int_fas
 	SOCKET s = INVALID_SOCKET;
 	char szAddr[128];
 
-	if (!getSocketList(&saList, addr, 0, AddressFamily)) return INVALID_SOCKET;
+	if (!getSocketList(&saList, addr, 0, AddressFamily))
+		return INVALID_SOCKET;
 
 	for (sa = saList; sa; sa = sa->ai_next)
 	{
@@ -250,22 +250,22 @@ SOCKET connectToAddress(const char *const addr, const int AddressFamily, int_fas
 
 		s = socket(sa->ai_family, SOCK_STREAM, IPPROTO_TCP);
 
-#		if !defined(NO_TIMEOUT) && !__minix__
-#		ifndef _WIN32 // Standard Posix timeout structure
+#if !defined(NO_TIMEOUT) && !__minix__
+#ifndef _WIN32 // Standard Posix timeout structure
 
 		struct timeval to;
 		to.tv_sec = 10;
 		to.tv_usec = 0;
 
-#		else // Windows requires a DWORD with milliseconds
+#else // Windows requires a DWORD with milliseconds
 
 		DWORD to = 10000;
 
-#		endif // _WIN32
+#endif // _WIN32
 
 		setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (sockopt_t)&to, sizeof(to));
 		setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (sockopt_t)&to, sizeof(to));
-#		endif // !defined(NO_TIMEOUT) && !__minix__
+#endif // !defined(NO_TIMEOUT) && !__minix__
 
 		if (!connect(s, sa->ai_addr, (int)sa->ai_addrlen))
 		{
@@ -284,38 +284,36 @@ SOCKET connectToAddress(const char *const addr, const int AddressFamily, int_fas
 }
 
 // fix for lame tomato toolchain
-#	if !defined(IPV6_V6ONLY) && defined(__linux__)
-#	define IPV6_V6ONLY (26)
-#	endif // !defined(IPV6_V6ONLY) && defined(__linux__)
-
+#if !defined(IPV6_V6ONLY) && defined(__linux__)
+#define IPV6_V6ONLY (26)
+#endif // !defined(IPV6_V6ONLY) && defined(__linux__)
 
 #ifndef NO_SOCKETS
 
 static int_fast8_t allowSocketReuse(SOCKET s)
 {
-#	if !__CYGWIN__
+#if !__CYGWIN__
 
 	BOOL socketOption = TRUE;
 
-#	if !_WIN32
-#	define VLMCSD_SOCKET_OPTION SO_REUSEADDR
-#	else // _WIN32
-#	define VLMCSD_SOCKET_OPTION SO_EXCLUSIVEADDRUSE
-#	endif // _WIN32
+#if !_WIN32
+#define VLMCSD_SOCKET_OPTION SO_REUSEADDR
+#else // _WIN32
+#define VLMCSD_SOCKET_OPTION SO_EXCLUSIVEADDRUSE
+#endif // _WIN32
 
 	if (setsockopt(s, SOL_SOCKET, VLMCSD_SOCKET_OPTION, (sockopt_t)&socketOption, sizeof(socketOption)))
 	{
-#		ifdef _PEDANTIC
+#ifdef _PEDANTIC
 		printerrorf("Warning: Socket option SO_REUSEADDR unsupported: %s\n", vlmcsd_strerror(socket_errno));
-#		endif // _PEDANTIC
+#endif // _PEDANTIC
 	}
 
-#	undef VLMCSD_SOCKET_OPTION
-#	endif // !__CYGWIN__
+#undef VLMCSD_SOCKET_OPTION
+#endif // !__CYGWIN__
 
 	return 0;
 }
-
 
 #ifdef SIMPLE_SOCKETS
 
@@ -329,7 +327,7 @@ int listenOnAllAddresses()
 		exit(VLMCSD_EINVAL);
 	}
 
-#	if defined(AF_INET6) && defined(IPV6_V6ONLY)
+#if defined(AF_INET6) && defined(IPV6_V6ONLY)
 
 	struct sockaddr_in6 addr;
 	memset(&addr, 0, sizeof(addr));
@@ -339,35 +337,27 @@ int listenOnAllAddresses()
 	BOOL v6only = FALSE;
 	s_server = socket(AF_INET6, SOCK_STREAM, 0);
 
-	if (s_server == INVALID_SOCKET
-		|| allowSocketReuse(s_server)
-		|| setsockopt(s_server, IPPROTO_IPV6, IPV6_V6ONLY, (sockopt_t)&v6only, sizeof(v6only))
-		|| bind(s_server, (struct sockaddr *)&addr, sizeof(addr))
-		|| listen(s_server, SOMAXCONN))
+	if (s_server == INVALID_SOCKET || allowSocketReuse(s_server) || setsockopt(s_server, IPPROTO_IPV6, IPV6_V6ONLY, (sockopt_t)&v6only, sizeof(v6only)) || bind(s_server, (struct sockaddr *)&addr, sizeof(addr)) || listen(s_server, SOMAXCONN))
 	{
 		socketclose(s_server);
-#	endif // defined(AF_INET6) && defined(IPV6_V6ONLY)
+#endif // defined(AF_INET6) && defined(IPV6_V6ONLY)
 		struct sockaddr_in addr4 = {
-				.sin_family = AF_INET,
-				.sin_port = BE16((uint16_t)port_listen),
-				.sin_addr.s_addr = BE32(INADDR_ANY)
-		};
+			.sin_family = AF_INET,
+			.sin_port = BE16((uint16_t)port_listen),
+			.sin_addr.s_addr = BE32(INADDR_ANY)};
 
 		s_server = socket(AF_INET, SOCK_STREAM, 0);
 
-		if (s_server == INVALID_SOCKET
-			|| allowSocketReuse(s_server)
-			|| bind(s_server, (struct sockaddr *)&addr4, sizeof(addr4))
-			|| listen(s_server, SOMAXCONN))
+		if (s_server == INVALID_SOCKET || allowSocketReuse(s_server) || bind(s_server, (struct sockaddr *)&addr4, sizeof(addr4)) || listen(s_server, SOMAXCONN))
 		{
 			int error = socket_errno;
 			printerrorf("Fatal: Cannot bind to TCP port %u: %s\n", port_listen, vlmcsd_strerror(error));
 			return error;
 		}
 
-#	if defined(AF_INET6) && defined(IPV6_V6ONLY)
+#if defined(AF_INET6) && defined(IPV6_V6ONLY)
 	}
-#	endif // defined(AF_INET6) && defined(IPV6_V6ONLY)
+#endif // defined(AF_INET6) && defined(IPV6_V6ONLY)
 
 #ifndef NO_LOG
 	logger("Listening on TCP port %u\n", port_listen);
@@ -378,13 +368,12 @@ int listenOnAllAddresses()
 
 #else // !SIMPLE_SOCKETS
 
-
 #if HAVE_GETIFADDR && !defined(NO_PRIVATE_IP_DETECT)
 // Get list of private IP addresses.
 // Returns 0 on success or an errno error code on failure
-void getPrivateIPAddresses(int* numAddresses, char*** ipAddresses)
+void getPrivateIPAddresses(int *numAddresses, char ***ipAddresses)
 {
-#	if _WIN32
+#if _WIN32
 
 	PIP_ADAPTER_ADDRESSES firstAdapter, currentAdapter;
 
@@ -412,28 +401,32 @@ void getPrivateIPAddresses(int* numAddresses, char*** ipAddresses)
 		PIP_ADAPTER_UNICAST_ADDRESS currentAddress;
 		int length;
 
-		if (currentAdapter->OperStatus != IfOperStatusUp) continue;
+		if (currentAdapter->OperStatus != IfOperStatusUp)
+			continue;
 
 		for (currentAddress = currentAdapter->FirstUnicastAddress; currentAddress != NULL; currentAddress = currentAddress->Next)
 		{
-			if (isPrivateIPAddress(currentAddress->Address.lpSockaddr, &length)) (*numAddresses)++;
+			if (isPrivateIPAddress(currentAddress->Address.lpSockaddr, &length))
+				(*numAddresses)++;
 		}
 	}
 
-	*ipAddresses = (char**)vlmcsd_malloc(*numAddresses * sizeof(char*));
+	*ipAddresses = (char **)vlmcsd_malloc(*numAddresses * sizeof(char *));
 
 	for (currentAdapter = firstAdapter, *numAddresses = 0; currentAdapter != NULL; currentAdapter = currentAdapter->Next)
 	{
 		PIP_ADAPTER_UNICAST_ADDRESS currentAddress;
 		int length;
 
-		if (currentAdapter->OperStatus != IfOperStatusUp) continue;
+		if (currentAdapter->OperStatus != IfOperStatusUp)
+			continue;
 
 		for (currentAddress = currentAdapter->FirstUnicastAddress; currentAddress != NULL; currentAddress = currentAddress->Next)
 		{
-			if (!isPrivateIPAddress(currentAddress->Address.lpSockaddr, &length)) continue;
+			if (!isPrivateIPAddress(currentAddress->Address.lpSockaddr, &length))
+				continue;
 
-			char *ipAddress = (char*)vlmcsd_malloc(64);
+			char *ipAddress = (char *)vlmcsd_malloc(64);
 			const int error = getnameinfo(currentAddress->Address.lpSockaddr, currentAddress->Address.iSockaddrLength, ipAddress, 64, NULL, 0, NI_NUMERICHOST);
 
 			if (error)
@@ -448,7 +441,7 @@ void getPrivateIPAddresses(int* numAddresses, char*** ipAddresses)
 
 	free(firstAdapter);
 
-#	else // !_WIN32
+#else // !_WIN32
 
 	struct ifaddrs *addrs, *addr;
 
@@ -462,17 +455,19 @@ void getPrivateIPAddresses(int* numAddresses, char*** ipAddresses)
 
 	for (addr = addrs, *numAddresses = 0; addr != NULL; addr = addr->ifa_next)
 	{
-		if (!isPrivateIPAddress(addr->ifa_addr, &length)) continue;
+		if (!isPrivateIPAddress(addr->ifa_addr, &length))
+			continue;
 		(*numAddresses)++;
 	}
 
-	*ipAddresses = (char**)vlmcsd_malloc(*numAddresses * sizeof(char*));
+	*ipAddresses = (char **)vlmcsd_malloc(*numAddresses * sizeof(char *));
 
 	for (addr = addrs, *numAddresses = 0; addr != NULL; addr = addr->ifa_next)
 	{
-		if (!isPrivateIPAddress(addr->ifa_addr, &length)) continue;
+		if (!isPrivateIPAddress(addr->ifa_addr, &length))
+			continue;
 
-		char *ipAddress = (char*)vlmcsd_malloc(64);
+		char *ipAddress = (char *)vlmcsd_malloc(64);
 		int error = getnameinfo(addr->ifa_addr, length, ipAddress, 64, NULL, 0, NI_NUMERICHOST);
 
 		if (error)
@@ -481,20 +476,18 @@ void getPrivateIPAddresses(int* numAddresses, char*** ipAddresses)
 			*ipAddress = 0;
 		}
 
-#		if __UCLIBC__ || __gnu_hurd__
+#if __UCLIBC__ || __gnu_hurd__
 
 		size_t adrlen = strlen(ipAddress);
 
-		if
-			(
-				addr->ifa_addr->sa_family == AF_INET6 &&
-				adrlen > 5 &&
-				!strchr(ipAddress, '%') &&
-				(BE16(*(uint16_t*)&((struct sockaddr_in6*)addr->ifa_addr)->sin6_addr) & 0xffc0) == 0xfe80
-				)
+		if (
+			addr->ifa_addr->sa_family == AF_INET6 &&
+			adrlen > 5 &&
+			!strchr(ipAddress, '%') &&
+			(BE16(*(uint16_t *)&((struct sockaddr_in6 *)addr->ifa_addr)->sin6_addr) & 0xffc0) == 0xfe80)
 		{
 			size_t ifnamelen = strlen(addr->ifa_name);
-			char* workaroundIpAddress = (char*)vlmcsd_malloc(adrlen + ifnamelen + 2);
+			char *workaroundIpAddress = (char *)vlmcsd_malloc(adrlen + ifnamelen + 2);
 			strcpy(workaroundIpAddress, ipAddress);
 			strcat(workaroundIpAddress, "%");
 			strcat(workaroundIpAddress, addr->ifa_name);
@@ -505,20 +498,18 @@ void getPrivateIPAddresses(int* numAddresses, char*** ipAddresses)
 		{
 			(*ipAddresses)[(*numAddresses)++] = ipAddress;
 		}
-#		else // !(__UCLIBC__ || __gnu_hurd__)
+#else // !(__UCLIBC__ || __gnu_hurd__)
 
 		(*ipAddresses)[(*numAddresses)++] = ipAddress;
 
-#		endif // !(__UCLIBC__ || __gnu_hurd__)
+#endif // !(__UCLIBC__ || __gnu_hurd__)
 	}
 
 	freeifaddrs(addrs);
 
-#	endif // !_WIN32
+#endif // !_WIN32
 }
 #endif // HAVE_GETIFADDR && !defined(NO_PRIVATE_IP_DETECT)
-
-
 
 // Create a Listening socket for addrinfo sa and return socket s
 // szHost and szPort are for logging only
@@ -539,7 +530,7 @@ static int listenOnAddress(const struct addrinfo *const ai, SOCKET *s)
 		return error;
 	}
 
-#	if !defined(_WIN32) && !defined(NO_SIGHUP)
+#if !defined(_WIN32) && !defined(NO_SIGHUP)
 
 	int flags = fcntl(*s, F_GETFD, 0);
 
@@ -548,75 +539,75 @@ static int listenOnAddress(const struct addrinfo *const ai, SOCKET *s)
 		flags |= FD_CLOEXEC;
 		fcntl(*s, F_SETFD, flags);
 	}
-#	ifdef _PEDANTIC
+#ifdef _PEDANTIC
 	else
 	{
 		printerrorf("Warning: Could not set FD_CLOEXEC flag on %s: %s\n", ipstr, vlmcsd_strerror(errno));
 	}
-#	endif // _PEDANTIC
+#endif // _PEDANTIC
 
-#	endif // !defined(_WIN32) && !defined(NO_SIGHUP)
+#endif // !defined(_WIN32) && !defined(NO_SIGHUP)
 
 	BOOL socketOption = TRUE;
 
-#	ifdef IPV6_V6ONLY
+#ifdef IPV6_V6ONLY
 	if (ai->ai_family == AF_INET6 && setsockopt(*s, IPPROTO_IPV6, IPV6_V6ONLY, (sockopt_t)&socketOption, sizeof(socketOption)))
 	{
-#		ifdef _PEDANTIC
-#		if defined(_WIN32) || defined(__CYGWIN__)
+#ifdef _PEDANTIC
+#if defined(_WIN32) || defined(__CYGWIN__)
 		//		if (IsWindowsVistaOrGreater()) //Doesn't work with older version of MingW32-w64 toolchain
 		if ((GetVersion() & 0xff) > 5)
 		{
-#		endif // _WIN32
+#endif // _WIN32
 			printerrorf("Warning: %s does not support socket option IPV6_V6ONLY: %s\n", ipstr, vlmcsd_strerror(socket_errno));
-#		if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(_WIN32) || defined(__CYGWIN__)
 		}
-#		endif // _WIN32
-#		endif // _PEDANTIC
+#endif // _WIN32
+#endif // _PEDANTIC
 	}
-#	endif
+#endif
 
 	allowSocketReuse(*s);
 
-#	if HAVE_FREEBIND
-#	if (defined(IP_NONLOCALOK) || __FreeBSD_kernel__ || __FreeBSD__) && !defined(IPV6_BINDANY)
-#	define IPV6_BINDANY 64
-#	endif // (defined(IP_NONLOCALOK) || __FreeBSD_kernel__ || __FreeBSD__) && !defined(IPV6_BINDANY)
+#if HAVE_FREEBIND
+#if (defined(IP_NONLOCALOK) || __FreeBSD_kernel__ || __FreeBSD__) && !defined(IPV6_BINDANY)
+#define IPV6_BINDANY 64
+#endif					 // (defined(IP_NONLOCALOK) || __FreeBSD_kernel__ || __FreeBSD__) && !defined(IPV6_BINDANY)
 
 	if (freebind)
 	{
-#		if defined(IP_FREEBIND) // Linux
+#if defined(IP_FREEBIND) // Linux
 		if (setsockopt(*s, IPPROTO_IP, IP_FREEBIND, (sockopt_t)&socketOption, sizeof(socketOption)))
 		{
 			printerrorf("Warning: Cannot use FREEBIND on %s: %s\n", ipstr, vlmcsd_strerror(socket_errno));
 		}
-#		endif // defined(IP_FREEBIND)
+#endif					 // defined(IP_FREEBIND)
 
-#		if defined(IP_BINDANY) // FreeBSD IPv4
+#if defined(IP_BINDANY) // FreeBSD IPv4
 		if (ai->ai_family == AF_INET && setsockopt(*s, IPPROTO_IP, IP_BINDANY, (sockopt_t)&socketOption, sizeof(socketOption)))
 		{
 			printerrorf("Warning: Cannot use BINDANY on %s: %s\n", ipstr, vlmcsd_strerror(socket_errno));
 		}
-#		endif // defined(IP_BINDANY)
+#endif					// defined(IP_BINDANY)
 
-#		if defined(IPV6_BINDANY) // FreeBSD IPv6
+#if defined(IPV6_BINDANY) // FreeBSD IPv6
 		if (ai->ai_family == AF_INET6 && setsockopt(*s, IPPROTO_IP, IPV6_BINDANY, (sockopt_t)&socketOption, sizeof(socketOption)))
 		{
-#			ifdef _PEDANTIC // FreeBSD defines the symbol but doesn't have BINDANY in IPv6 (Kame stack doesn't have it)
+#ifdef _PEDANTIC		  // FreeBSD defines the symbol but doesn't have BINDANY in IPv6 (Kame stack doesn't have it)
 			printerrorf("Warning: Cannot use BINDANY on %s: %s\n", ipstr, vlmcsd_strerror(socket_errno));
-#			endif
+#endif
 		}
-#		endif // defined(IPV6_BINDANY)
+#endif // defined(IPV6_BINDANY)
 
-#		if defined(IP_NONLOCALOK) && !defined(IP_BINDANY) // FreeBSD with GNU userspace IPv4
+#if defined(IP_NONLOCALOK) && !defined(IP_BINDANY) // FreeBSD with GNU userspace IPv4
 		if (ai->ai_family == AF_INET && setsockopt(*s, IPPROTO_IP, IP_NONLOCALOK, (sockopt_t)&socketOption, sizeof(socketOption)))
 		{
 			printerrorf("Warning: Cannot use BINDANY on %s: %s\n", ipstr, vlmcsd_strerror(socket_errno));
 		}
-#		endif // defined(IP_NONLOCALOK) && !defined(IP_BINDANY)
+#endif											   // defined(IP_NONLOCALOK) && !defined(IP_BINDANY)
 	}
 
-#	endif // HAVE_FREEBIND
+#endif // HAVE_FREEBIND
 
 	if (bind(*s, ai->ai_addr, (int)ai->ai_addrlen) || listen(*s, SOMAXCONN))
 	{
@@ -626,9 +617,9 @@ static int listenOnAddress(const struct addrinfo *const ai, SOCKET *s)
 		return error;
 	}
 
-#	ifndef NO_LOG
+#ifndef NO_LOG
 	logger("Listening on %s\n", ipstr);
-#	endif
+#endif
 
 	return 0;
 }
@@ -672,7 +663,6 @@ BOOL addListeningSocket(const char *const addr)
 	return result;
 }
 
-
 // Just create some dummy sockets to see if we have a specific protocol (IPv4 or IPv6)
 __pure int_fast8_t checkProtocolStack(const int addressfamily)
 {
@@ -684,7 +674,6 @@ __pure int_fast8_t checkProtocolStack(const int addressfamily)
 	socketclose(s);
 	return success;
 }
-
 
 // Build an fd_set of all listening socket then use select to wait for an incoming connection
 static SOCKET network_accept_any()
@@ -700,12 +689,14 @@ static SOCKET network_accept_any()
 	for (i = 0; i < numsockets; i++)
 	{
 		FD_SET(SocketList[i], &ListeningSocketsList);
-		if (SocketList[i] > maxSocket) maxSocket = SocketList[i];
+		if (SocketList[i] > maxSocket)
+			maxSocket = SocketList[i];
 	}
 
 	status = select((int)maxSocket + 1, &ListeningSocketsList, NULL, NULL, NULL);
 
-	if (status < 0) return INVALID_SOCKET;
+	if (status < 0)
+		return INVALID_SOCKET;
 
 	sock = INVALID_SOCKET;
 
@@ -725,14 +716,13 @@ static SOCKET network_accept_any()
 }
 #endif // !SIMPLE_SOCKETS
 
-
 void closeAllListeningSockets()
 {
-#	ifdef SIMPLE_SOCKETS
+#ifdef SIMPLE_SOCKETS
 
 	socketclose(s_server);
 
-#	else // !SIMPLE_SOCKETS
+#else // !SIMPLE_SOCKETS
 
 	int i;
 
@@ -745,12 +735,11 @@ void closeAllListeningSockets()
 }
 #endif // NO_SOCKETS
 
-
 static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 {
-#	if !defined(NO_TIMEOUT) && !__minix__
+#if !defined(NO_TIMEOUT) && !__minix__
 
-#	ifndef _WIN32 // Standard Posix timeout structure
+#ifndef _WIN32 // Standard Posix timeout structure
 
 	struct timeval to;
 	to.tv_sec = ServerTimeout;
@@ -760,24 +749,25 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 
 	DWORD to = ServerTimeout * 1000;
 
-#	endif // _WIN32
+#endif // _WIN32
 
-#	if !defined(NO_LOG) && defined(_PEDANTIC)
+#if !defined(NO_LOG) && defined(_PEDANTIC)
 
 	const int result =
 		setsockopt(s_client, SOL_SOCKET, SO_RCVTIMEO, (sockopt_t)&to, sizeof(to)) ||
 		setsockopt(s_client, SOL_SOCKET, SO_SNDTIMEO, (sockopt_t)&to, sizeof(to));
 
-	if (result) logger("Warning: Set timeout failed: %s\n", vlmcsd_strerror(socket_errno));
+	if (result)
+		logger("Warning: Set timeout failed: %s\n", vlmcsd_strerror(socket_errno));
 
-#	else // !(!defined(NO_LOG) && defined(_PEDANTIC))
+#else // !(!defined(NO_LOG) && defined(_PEDANTIC))
 
 	setsockopt(s_client, SOL_SOCKET, SO_RCVTIMEO, (sockopt_t)&to, sizeof(to));
 	setsockopt(s_client, SOL_SOCKET, SO_SNDTIMEO, (sockopt_t)&to, sizeof(to));
 
-#   endif // !(!defined(NO_LOG) && defined(_PEDANTIC))
+#endif // !(!defined(NO_LOG) && defined(_PEDANTIC))
 
-#	endif // !defined(NO_TIMEOUT) && !__minix__
+#endif // !defined(NO_TIMEOUT) && !__minix__
 
 	char ipstr[64];
 	socklen_t len;
@@ -785,73 +775,77 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 
 	len = sizeof(addr);
 
-	if (getpeername(s_client, (struct sockaddr*)&addr, &len) ||
-		!ip2str(ipstr, sizeof(ipstr), (struct sockaddr*)&addr, len))
+	if (getpeername(s_client, (struct sockaddr *)&addr, &len) ||
+		!ip2str(ipstr, sizeof(ipstr), (struct sockaddr *)&addr, len))
 	{
-#		if !defined(NO_LOG) && defined(_PEDANTIC)
+#if !defined(NO_LOG) && defined(_PEDANTIC)
 		logger("Fatal: Cannot determine client's IP address: %s\n", vlmcsd_strerror(errno));
-#		endif // !defined(NO_LOG) && defined(_PEDANTIC)
+#endif // !defined(NO_LOG) && defined(_PEDANTIC)
 		socketclose(s_client);
 		return;
 	}
 
-
-#	ifndef NO_LOG
+#ifndef NO_LOG
 	const char *const connection_type = addr.ss_family == AF_INET6 ? cIPv6 : cIPv4;
 	static const char *const cAccepted = "accepted";
 	static const char *const cClosed = "closed";
 	static const char *const fIP = "%s connection %s: 0.0.0.0:0\n";
-	
+
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
-#else // PRIVACY_ON
-	if (isPrivacyOn == FALSE) {
+#else  // PRIVACY_ON
+	if (isPrivacyOn == FALSE)
+	{
 		static const char *const fIP = "%s connection %s: %s\n";
 		logger(fIP, connection_type, cAccepted, ipstr);
-	} else {
+	}
+	else
+	{
 		logger(fIP, connection_type, cAccepted);
 	}
 #endif // PRIVACY_ON
 
 #endif // NO_LOG
 
-#	if !defined(NO_PRIVATE_IP_DETECT)
+#if !defined(NO_PRIVATE_IP_DETECT)
 
-	if (!(PublicIPProtectionLevel & 2) || isPrivateIPAddress((struct sockaddr*)&addr, NULL))
+	if (!(PublicIPProtectionLevel & 2) || isPrivateIPAddress((struct sockaddr *)&addr, NULL))
 	{
 		rpcServer(s_client, RpcAssocGroup, ipstr);
 	}
-#	ifndef NO_LOG
+#ifndef NO_LOG
 	else
 	{
 		logger("Client with public IP address rejected\n");
 	}
-#	endif // NO_LOG
+#endif // NO_LOG
 
-#   else // defined(NO_PRIVATE_IP_DETECT)
+#else // defined(NO_PRIVATE_IP_DETECT)
 
 	rpcServer(s_client, RpcAssocGroup, ipstr);
 
-#	endif // defined(NO_PRIVATE_IP_DETECT)
+#endif // defined(NO_PRIVATE_IP_DETECT)
 
-#	ifndef NO_LOG
+#ifndef NO_LOG
 
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
-#else // PRIVACY_ON
-	if (isPrivacyOn == FALSE) {
+#else  // PRIVACY_ON
+	if (isPrivacyOn == FALSE)
+	{
 		static const char *const fIP = "%s connection %s: %s\n";
 		logger(fIP, connection_type, cClosed, ipstr);
-	} else {
+	}
+	else
+	{
 		logger(fIP, connection_type, cClosed);
 	}
 #endif // PRIVACY_ON
 
-#	endif // NO_LOG
+#endif // NO_LOG
 
 	socketclose(s_client);
 }
-
 
 #ifndef NO_SOCKETS
 static void post_sem(void)
@@ -863,7 +857,6 @@ static void post_sem(void)
 	}
 #endif // !defined(NO_LIMIT) && !__minix__
 }
-
 
 static void wait_sem(void)
 {
@@ -880,7 +873,7 @@ static void wait_sem(void)
 
 #if defined(_WIN32) || defined(__CYGWIN__) // Win32 Threads
 static DWORD WINAPI serveClientThreadProc(PCLDATA clData)
-#else // Posix threads
+#else  // Posix threads
 static void *serveClientThreadProc(PCLDATA clData)
 #endif // Thread proc is identical in WIN32 and Posix threads
 {
@@ -892,7 +885,6 @@ static void *serveClientThreadProc(PCLDATA clData)
 }
 
 #endif // USE_THREADS
-
 
 #ifndef NO_SOCKETS
 
@@ -918,7 +910,6 @@ static int serveClientAsyncWinThreads(PCLDATA thr_CLData)
 }
 #endif // defined(USE_THREADS) && defined(_WIN32) // Windows Threads
 
-
 #if defined(USE_THREADS) && !defined(_WIN32) && !defined(__CYGWIN__) // Posix Threads
 static int ServeClientAsyncPosixThreads(const PCLDATA thr_CLData)
 {
@@ -931,7 +922,7 @@ static int ServeClientAsyncPosixThreads(const PCLDATA thr_CLData)
 	// Must set detached state to avoid memory leak
 	if ((error = pthread_attr_init(&attr)) ||
 		(error = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED)) ||
-		(error = pthread_create(&p_thr, &attr, (void * (*)(void *))serveClientThreadProc, thr_CLData)))
+		(error = pthread_create(&p_thr, &attr, (void *(*)(void *))serveClientThreadProc, thr_CLData)))
 	{
 		socketclose(thr_CLData->socket);
 		free(thr_CLData);
@@ -946,7 +937,8 @@ static int ServeClientAsyncPosixThreads(const PCLDATA thr_CLData)
 #ifndef USE_THREADS // fork() implementation
 static void ChildSignalHandler(const int signal)
 {
-	if (signal == SIGHUP) return;
+	if (signal == SIGHUP)
+		return;
 
 	post_sem();
 
@@ -982,7 +974,7 @@ static int ServeClientAsyncFork(const SOCKET s_client, const DWORD RpcAssocGroup
 		sa.sa_flags = 0;
 		sa.sa_handler = ChildSignalHandler;
 
-		static int signallist[] = { SIGHUP, SIGINT, SIGTERM, SIGSEGV, SIGILL, SIGFPE, SIGBUS };
+		static int signallist[] = {SIGHUP, SIGINT, SIGTERM, SIGSEGV, SIGILL, SIGFPE, SIGBUS};
 
 		if (!sigemptyset(&sa.sa_mask))
 		{
@@ -1001,7 +993,6 @@ static int ServeClientAsyncFork(const SOCKET s_client, const DWORD RpcAssocGroup
 }
 #endif
 
-
 int serveClientAsync(const SOCKET s_client, const DWORD RpcAssocGroup)
 {
 #ifndef USE_THREADS // fork() implementation
@@ -1014,7 +1005,7 @@ int serveClientAsync(const SOCKET s_client, const DWORD RpcAssocGroup)
 	thr_CLData->socket = s_client;
 	thr_CLData->RpcAssocGroup = RpcAssocGroup;
 
-#if defined(_WIN32) || defined (__CYGWIN__) // Windows threads
+#if defined(_WIN32) || defined(__CYGWIN__) // Windows threads
 
 	return serveClientAsyncWinThreads(thr_CLData);
 
@@ -1029,7 +1020,6 @@ int serveClientAsync(const SOCKET s_client, const DWORD RpcAssocGroup)
 
 #endif // NO_SOCKETS
 
-
 int runServer()
 {
 	DWORD RpcAssocGroup = rand32();
@@ -1039,7 +1029,7 @@ int runServer()
 	serveClient(STDIN_FILENO, RpcAssocGroup);
 	return 0;
 #else
-// In inetd mode just handle the stdin socket
+	// In inetd mode just handle the stdin socket
 	if (InetdMode)
 	{
 		serveClient(STDIN_FILENO, RpcAssocGroup);
@@ -1051,42 +1041,44 @@ int runServer()
 		int error;
 		SOCKET s_client;
 
-#		ifdef SIMPLE_SOCKETS
+#ifdef SIMPLE_SOCKETS
 		if ((s_client = accept(s_server, NULL, NULL)) == INVALID_SOCKET)
-#		else // Standalone mode fully featured sockets
+#else  // Standalone mode fully featured sockets
 		if ((s_client = network_accept_any()) == INVALID_SOCKET)
-#		endif // Standalone mode fully featured sockets
+#endif // Standalone mode fully featured sockets
 		{
 			error = socket_errno;
-			if (error == SOCKET_EINTR || error == SOCKET_ECONNABORTED) continue;
+			if (error == SOCKET_EINTR || error == SOCKET_ECONNABORTED)
+				continue;
 
-#			ifdef _NTSERVICE
-			if (ServiceShutdown) return 0;
-#			endif
+#ifdef _NTSERVICE
+			if (ServiceShutdown)
+				return 0;
+#endif
 
-#			ifndef NO_LOG
+#ifndef NO_LOG
 			logger("Fatal: %s\n", vlmcsd_strerror(error));
-#			endif
+#endif
 
 			return error;
 		}
 
 		RpcAssocGroup++;
 
-#		if !defined(NO_LOG) && defined(_PEDANTIC)
+#if !defined(NO_LOG) && defined(_PEDANTIC)
 		if ((error = serveClientAsync(s_client, RpcAssocGroup)))
 		{
-#			ifdef USE_THREADS
+#ifdef USE_THREADS
 			logger("Warning: Could not create client thread: %s\n", vlmcsd_strerror(error));
-#			else // !USE_THREADS
+#else  // !USE_THREADS
 			logger("Warning: Could not fork client: %s\n", vlmcsd_strerror(error));
-#			endif // !USE_THREADS
+#endif // !USE_THREADS
 		}
-#		else // NO_LOG || !_PEDANTIC
+#else  // NO_LOG || !_PEDANTIC
 		serveClientAsync(s_client, RpcAssocGroup);
-#		endif // NO_LOG || !_PEDANTIC
+#endif // NO_LOG || !_PEDANTIC
 	}
-#	endif // NO_SOCKETS
+#endif // NO_SOCKETS
 }
 
 #endif // USE_MSRPC
