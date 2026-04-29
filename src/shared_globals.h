@@ -220,4 +220,6 @@ extern int_fast8_t freebind;
 extern int_fast8_t isPrivacyOn;
 #endif
 
+extern int_fast8_t isCounting;
+
 #endif // INCLUDED_SHARED_GLOBALS_H

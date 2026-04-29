@@ -88,7 +88,7 @@ Volume License Management Service DAEMON (vlmcsd)
 #include "wintap.h"
 #endif
 
-static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:SseDdVvqkZX";
+static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:SseDdVvqkZXw";
 
 #if !defined(NO_SOCKETS) && !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
 static uint_fast8_t maxsockets = 0;
@@ -178,6 +178,7 @@ static IniFileParameter_t IniFileParameterList[] =
 		{"LogDateAndTime", INI_PARAM_LOG_DATE_AND_TIME},
 		{"LogFile", INI_PARAM_LOG_FILE},
 		{"PrivacyMode", INI_PARAM_PRIVACY_MODE},
+		{"CountingReq", INT_PARAM_COUNTING_REQ},
 #ifndef NO_VERBOSE_LOG
 		{"LogVerbose", INI_PARAM_LOG_VERBOSE},
 #endif // NO_VERBOSE_LOG
@@ -400,6 +401,7 @@ static __noreturn void usage()
 #ifndef PRIVACY_ON
 		" -X\t\t\tAllow running in Privacy Mode (experiment).\n"
 #endif // PRIVACY_ON
+		" -w\t\t\tDisplay total KMS requests (experiment).\n"
 #ifndef NO_VERBOSE_LOG
 		" -v\t\t\tAllow logging verbose.\n"
 		" -q\t\t\tDon't allow log verbose (default).\n"
@@ -408,8 +410,7 @@ static __noreturn void usage()
 #ifndef NO_VERSION_INFORMATION
 		" -V\t\t\tDisplay version information and exit\n"
 #endif // NO_VERSION_INFORMATION
-		,
-		Version, global_argv[0]);
+		,Version, global_argv[0]);
 	exit(VLMCSD_EINVAL);
 }
 #endif // HELP
@@ -680,6 +681,11 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 		isPrivacyOn = getIniFileArgumentBool(&isPrivacyOn, iniarg);
 		break;
 #endif // PRIVACY_ON
+
+	case INT_PARAM_COUNTING_REQ:
+		isCounting = getIniFileArgumentBool(&isCounting, iniarg);
+		break;
+
 
 	case INI_PARAM_LOG_FILE:
 		fn_log = vlmcsd_strdup(iniarg);
@@ -1292,6 +1298,11 @@ static void parseGeneralArguments()
 			ignoreIniFileParameter(INI_PARAM_PRIVACY_MODE);
 			break;
 #endif // PRIVACY_ON
+
+		case 'w':
+			isCounting = TRUE;
+			ignoreIniFileParameter(INT_PARAM_COUNTING_REQ);
+			break;
 
 #ifndef NO_SOCKETS
 #if !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
@@ -2026,6 +2037,10 @@ int newmain()
 	if (isPrivacyOn == TRUE)
 		logger("Privacy mode is turned on\n");
 #endif //PRIVACY_ON
+
+	if (isCounting == TRUE) {
+		logger("Counting request is turned on\n");
+	}
 
 #endif // !defined(NO_LOG) && !defined(NO_SOCKETS) && !defined(USE_MSRPC)
 

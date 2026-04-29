@@ -78,7 +78,9 @@ int_fast8_t logverbose = 0;
 int_fast8_t isPrivacyOn = FALSE;
 #else
 int_fast8_t isPrivacyOn = TRUE;
-#endif
+#endif // PRIVACY_ON
+
+int_fast8_t isCounting = FALSE;
 
 #ifndef NO_SOCKETS
 int_fast8_t ExitLevel = 0;
