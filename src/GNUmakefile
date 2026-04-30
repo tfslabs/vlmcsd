@@ -652,10 +652,10 @@ endif
 	$(BUILDCOMMANDPREFIX)$(AR) rcs $@ $^
 
 clean:
-	rm -f $(REAL_PROGRAM_NAME) $(REAL_MULTI_NAME) $(REAL_DLL_NAME) $(REAL_CLIENT_NAME)  $(OBJ_NAME) $(REAL_A_NAME) ../bin/* ../build/* *.d
+	rm -rf $(REAL_PROGRAM_NAME) $(REAL_MULTI_NAME) $(REAL_DLL_NAME) $(REAL_CLIENT_NAME) $(OBJ_NAME) $(REAL_A_NAME) ../bin/* ../build/* *.d
 
 dnsclean:
-	rm -f ../build/dns_srv.o
+	rm -rf ../build/dns_srv.o
 
 help:
 	@echo "Help is available by typing 'make help' in directory $(shell realpath `pwd`/..). Use 'cd ..' to get there."
