@@ -88,7 +88,7 @@ Volume License Management Service DAEMON (vlmcsd)
 #include "wintap.h"
 #endif
 
-static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:SseDdVvqkZX";
+static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:SseDdVvqkZXw";
 
 #if !defined(NO_SOCKETS) && !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
 static uint_fast8_t maxsockets = 0;
@@ -178,6 +178,7 @@ static IniFileParameter_t IniFileParameterList[] =
 		{"LogDateAndTime", INI_PARAM_LOG_DATE_AND_TIME},
 		{"LogFile", INI_PARAM_LOG_FILE},
 		{"PrivacyMode", INI_PARAM_PRIVACY_MODE},
+		{"CountingReq", INT_PARAM_COUNTING_REQ},
 #ifndef NO_VERBOSE_LOG
 		{"LogVerbose", INI_PARAM_LOG_VERBOSE},
 #endif // NO_VERBOSE_LOG
@@ -296,7 +297,7 @@ static __noreturn void usage()
 	/////////////////////////////////////////////////////////////////////
 	//// ePID randomization level is used
 #ifndef NO_RANDOM_EPID
-		" -r (0|1|2)\t\tSet randomization level of the ePIDs (default is \"0\")\n\t\t\t\t\"0\" stands for no randomization, which also means VLMCSD will use the default ePID that is built-in. It is useful for emulating/replicating real KMS servers\n\t\t\t\t\"1\" stands for randomization of each KMS request, but it also poses a risk of being detected non-genuine KMS Server, causing clients to fail to be activated\n\t\t\t\t\"2\" is as same as the \"1\" option, but only for debugging\n"
+		" -r (0|1|2)\t\tSet randomization level of the ePIDs (default is \"0\")\n\t\t\t\t\"0\" stands for no randomization, which also means VLMCSD will use the default ePID that is built-in\n\t\t\t\t\"1\" stands for randomization of each KMS request, but it also poses a risk of being detected non-genuine KMS Server\n\t\t\t\t\"2\" is as same as the \"1\" option, but only for debugging\n"
 		" -C <LCID>\t\tUse fixed Windows Language Code Identifier in random ePIDs\n\t\t\t\tSee https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c for correct LCIDs\n"
 		" -H <build>\t\tUse fixed Windows build number for activation\n\t\t\t\tUseful when the client requires a proper KMS Server\n\t\t\t\tSee all build numbers here: https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions\n"
 #endif // NO_RANDOM_EPID
@@ -362,8 +363,8 @@ static __noreturn void usage()
 		" -K (0|1|2|3)\t\tSet white-listing level which product VLMCSD accepts or refuses (default 0)\n\t\t\t\t\"0\" Activate all products with an unknown, retail or beta/preview KMS IDs\n\t\t\t\t\"1\" Activate products with a retail or beta/preview KMS ID but refuse to activate products with an unknown KMS ID\n\t\t\t\t\"2\" Activate products with an unknown KMS ID but refuse products with a retail or beta/preview KMS ID\n\t\t\t\t\"3\" Activate only products with a known volume license RTM KMS ID and refuse all others\n"
 		" -c (0|1)\t\tDisable (0)/Enable (1) client time checking\n\t\t\t\tIf the client time is different than 4 hours compare to the KMS Host, the host will deny the activation (default 0)\n\t\t\t\tNote: It is recommended that the VLMCSD has a reliable time service (e.g. sync the time with time.windows.com)\n"
 #ifndef NO_CLIENT_LIST
-		" -M (0|1)\t\tDisable (0)/Enable (1) maintaining clients (default 0)\n\t\t\t\tNote: Enabling this service is not recommended, except you have to do so to prevent the activation failling\n\t\t\t\tIt is because the VLMCSD can only keep maximum of 16777215 clients. If that number exceed, VLMCSD will no longer accept any new connect, nor activation requests\n"
-		" -E (0|1)\t\tDisable (0)/Enable (1) starting VLMCSD with empty client list (Default 0)\n\t\t\t\tNote: It is recommended to keep the default, because Office will not activate unless your KMS Host has at least 5 active clients.\n\t\t\t\tSee more: https://learn.microsoft.com/en-us/office/troubleshoot/administration/0xc004f038-computer-not-activate\n"
+		" -M (0|1)\t\tDisable (default, 0)/Enable (1) maintaining clients\n\t\t\t\tNote: Enabling this service is not recommended, except you have to do so to prevent the activation failling\n\t\t\t\tIt is because the VLMCSD can only keep maximum of 16777215 clients. If that number exceed, VLMCSD will no longer accept any new connect, nor activation requests\n"
+		" -E (0|1)\t\tDisable (default, 0)/Enable (1) starting VLMCSD with empty client list\n\t\t\t\tNote: It is recommended to keep the default, because Office will not activate unless your KMS Host has at least 5 active clients.\n\t\t\t\tSee more: https://learn.microsoft.com/en-us/office/troubleshoot/administration/0xc004f038-computer-not-activate\n"
 #endif // !NO_CLIENT_LIST
 #endif // !NO_STRICT_MODES
 	/////////////////////////////////////////////////////////////////////
@@ -374,42 +375,42 @@ static __noreturn void usage()
 #if !defined(NO_TIMEOUT) && !__minix__
 		" -t <seconds>\t\tDisconnect client after an amount of time of inactivity (default 30)\n"
 #endif // !defined(NO_TIMEOUT) && !__minix__
-		" -d\t\t\tDisconnect each client after processing one activation request.\n"
-		" -k\t\t\tDo not disconnect clients after processing an activation request (default if \"-d\" defined in external VLMCSD configuration file).\n"
+		" -d\t\t\tDisconnect each client after processing one activation request\n"
+		" -k\t\t\tDo not disconnect clients after processing an activation request (default if \"-d\" defined in external VLMCSD configuration file)\n"
 #ifndef SIMPLE_RPC
-		" -N (0|1)\t\tDisable (0)/Enable (default, 1) NDR64. Only useful when on Windows Vista/7 32-bit, where enabling NDR64 will make VLMCSD by running higher Windows build number.\n"
-		" -B (0|1)\t\tDisable (0)/Enable (1) bind time feature negotiation in RPC protocol.\n"
+		" -N (0|1)\t\tDisable (0)/Enable (default, 1) NDR64. Only useful when on Windows Vista/7 32-bit, where enabling NDR64 will make VLMCSD by running higher Windows build number\n"
+		" -B (0|1)\t\tDisable (0)/Enable (1) bind time feature negotiation in RPC protocol\n"
 #endif // !SIMPLE_RPC
 #endif // USE_MSRPC
 #ifndef NO_PID_FILE
-		" -p <file>\t\tCreate pid file filename. This is used by standard init scripts (typically found in \"/etc/init.d\").\n"
+		" -p <file>\t\tCreate pid file filename. This is used by standard init scripts (typically found in \"/etc/init.d\")\n"
 #endif // NO_PID_FILE
 #ifndef NO_INI_FILE
-		" -i <file>\t\tUse external VLMCSD configuration file. Default name of that file is \"vlmcsd.ini\".\n"
+		" -i <file>\t\tUse external VLMCSD configuration file. Default name of that file is \"vlmcsd.ini\"\n"
 #endif // NO_INI_FILE
 #ifndef NO_EXTERNAL_DATA
-		" -j <file>\t\tUse external VLMCSD ePID database. Default name of that file is \"vlmcsd.kmd\".\n"
+		" -j <file>\t\tUse external VLMCSD ePID database. Default name of that file is \"vlmcsd.kmd\"\n"
 #endif // !NO_EXTERNAL_DATA
 #ifndef NO_CUSTOM_INTERVALS
-		" -R <interval>\t\tRenew activation every <interval> (default 1w).\n"
-		" -A <interval>\t\tRetry activation every <interval>, if the previous activation/reactivation is failed (default 2h).\n"
+		" -R <interval>\t\tRenew activation every <interval> (default 1w)\n"
+		" -A <interval>\t\tRetry activation every <interval>, if the previous activation/reactivation is failed (default 2h)\n"
 #endif // NO_CUSTOM_INTERVALS
 #ifndef NO_LOG
-		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have read+write access to that file.\n"
-		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1).\n"
+		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have rw access to that file\n"
+		" -T0, -T1\t\tDisable (0)/Enable (default, 1) logging client connection with time and date\n"
 #ifndef PRIVACY_ON
-		" -X\t\t\tAllow running in Privacy Mode (experiment).\n"
+		" -X\t\t\tAllow running in Privacy Mode (hide detail of incoming and response requests)\n"
 #endif // PRIVACY_ON
+		" -w\t\t\tDisplay total KMS requests\n"
 #ifndef NO_VERBOSE_LOG
-		" -v\t\t\tAllow logging verbose.\n"
-		" -q\t\t\tDon't allow log verbose (default).\n"
+		" -v\t\t\tAllow logging verbose\n"
+		" -q\t\t\tDon't allow log verbose (default)\n"
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 #ifndef NO_VERSION_INFORMATION
 		" -V\t\t\tDisplay version information and exit\n"
 #endif // NO_VERSION_INFORMATION
-		,
-		Version, global_argv[0]);
+		,Version, global_argv[0]);
 	exit(VLMCSD_EINVAL);
 }
 #endif // HELP
@@ -680,6 +681,10 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 		isPrivacyOn = getIniFileArgumentBool(&isPrivacyOn, iniarg);
 		break;
 #endif // PRIVACY_ON
+
+	case INT_PARAM_COUNTING_REQ:
+		isCounting = getIniFileArgumentBool(&isCounting, iniarg);
+		break;
 
 	case INI_PARAM_LOG_FILE:
 		fn_log = vlmcsd_strdup(iniarg);
@@ -1292,6 +1297,11 @@ static void parseGeneralArguments()
 			ignoreIniFileParameter(INI_PARAM_PRIVACY_MODE);
 			break;
 #endif // PRIVACY_ON
+
+		case 'w':
+			isCounting = TRUE;
+			ignoreIniFileParameter(INT_PARAM_COUNTING_REQ);
+			break;
 
 #ifndef NO_SOCKETS
 #if !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
@@ -2026,6 +2036,10 @@ int newmain()
 	if (isPrivacyOn == TRUE)
 		logger("Privacy mode is turned on\n");
 #endif //PRIVACY_ON
+
+	if (isCounting == TRUE) {
+		logger("Counting request is turned on\n");
+	}
 
 #endif // !defined(NO_LOG) && !defined(NO_SOCKETS) && !defined(USE_MSRPC)
 

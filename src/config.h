@@ -10,19 +10,17 @@
  * new version.
  */
 
-
-
- /*
-  * ----------------------------------------------------------------------------------------
-  * Useful customizations. These options are mandatory. You cannot comment them out.
-  * Feel free to change them to fit your needs.
-  * ----------------------------------------------------------------------------------------
-  */
+/*
+ * ----------------------------------------------------------------------------------------
+ * Useful customizations. These options are mandatory. You cannot comment them out.
+ * Feel free to change them to fit your needs.
+ * ----------------------------------------------------------------------------------------
+ */
 
 #ifndef VERSION
-  /*
-   * Define your own version identifier here, e.g. '#define VERSION "my vlmcsd based on 1103"'
-   */
+/*
+ * Define your own version identifier here, e.g. '#define VERSION "my vlmcsd based on 1103"'
+ */
 
 #define VERSION __DATE__
 
@@ -37,29 +35,21 @@
  * uncomment one or more lines starting with "//#define"
  */
 
-
-
- /*
-  * -------------------------------
-  * Defaults
-  * -------------------------------
-  */
-
-
+/*
+ * -------------------------------
+ * Defaults
+ * -------------------------------
+ */
 
 #ifndef INI_FILE
-  /*
-   * Uncomment and customize the following line if you want vlmcsd to look for an ini file
-   * at a default location.
-   */
+/*
+ * Uncomment and customize the following line if you want vlmcsd to look for an ini file
+ * at a default location.
+ */
 
-   //#define INI_FILE "/etc/vlmcsd.ini"
+// #define INI_FILE "/etc/vlmcsd.ini"
 
 #endif // INI_FILE
-
-
-
-
 
 #ifndef DATA_FILE
 /*
@@ -67,10 +57,9 @@
  * at a custom default location.
  */
 
- //#define DATA_FILE "/etc/vlmcsd.kmd"
+// #define DATA_FILE "/etc/vlmcsd.kmd"
 
 #endif // DATA_FILE
-
 
 /*
  * ----------------------------------------------------------------------------------------
@@ -81,20 +70,18 @@
  * ----------------------------------------------------------------------------------------
  */
 
-
 #ifndef CHILD_HANDLER
- /*
-  * Uncomment the following #define if you are compiling for a platform that does
-  * not correctly handle the SA_NOCLDWAIT flag when ignoring SIGCHLD, i.e. forked
-  * processes remain as "zombies" after dying. This option will add a SIGCHLD handler that
-  * "waits" for a child that has terminated. This is only required for a few
-  * unixoid OSses.
-  */
+/*
+ * Uncomment the following #define if you are compiling for a platform that does
+ * not correctly handle the SA_NOCLDWAIT flag when ignoring SIGCHLD, i.e. forked
+ * processes remain as "zombies" after dying. This option will add a SIGCHLD handler that
+ * "waits" for a child that has terminated. This is only required for a few
+ * unixoid OSses.
+ */
 
-  //#define CHILD_HANDLER
+// #define CHILD_HANDLER
 
 #endif // CHILD_HANDLER
-
 
 #ifndef NO_TIMEOUT
 /*
@@ -102,10 +89,9 @@
  * not support custom socket send or receive timeouts.
  */
 
- //#define NO_TIMEOUT
+// #define NO_TIMEOUT
 
 #endif // NO_TIMEOUT
-
 
 #ifndef NO_DNS
 /*
@@ -114,10 +100,9 @@
  * detecting KMS servers via DNS.
  */
 
- //#define NO_DNS
+// #define NO_DNS
 
 #endif // NO_DNS
-
 
 #ifndef TERMINAL_FIXED_WIDTH
 /*
@@ -126,12 +111,9 @@
  * This affects the output of "vlmcsd -x" only. It should be rarely necessary to use this.
  */
 
- //#define TERMINAL_FIXED_WIDTH 80
+// #define TERMINAL_FIXED_WIDTH 80
 
 #endif // TERMINAL_FIXED_WIDTH
-
-
-
 
 #ifndef _PEDANTIC
 /*
@@ -140,12 +122,9 @@
  * you are testing any KMS server or client emulator that may send malformed KMS packets.
  */
 
- //#define _PEDANTIC
+// #define _PEDANTIC
 
 #endif // _PEDANTIC
-
-
-
 
 #ifndef NO_PROCFS
 /*
@@ -163,12 +142,9 @@
  *
  */
 
- //#define NO_PROCFS
+// #define NO_PROCFS
 
 #endif // NO_PROCFS
-
-
-
 
 #ifndef USE_AUXV
 /*
@@ -186,12 +162,9 @@
  *    It is safe to try this by yourself. vlmcsd won't compile if your system doesn't support it.
  */
 
- //#define USE_AUXV
+// #define USE_AUXV
 
 #endif // USE_AUXV
-
-
-
 
 #ifndef _OPENSSL_NO_HMAC
 /*
@@ -201,12 +174,9 @@
  * This may be necessary for some embedded devices that have OpenSSL without HMAC support.
  */
 
- //#define _OPENSSL_NO_HMAC
+// #define _OPENSSL_NO_HMAC
 
 #endif // _OPENSSL_NO_HMAC
-
-
-
 
 /*
  * ----------------------------------------------------------------------------------------
@@ -214,33 +184,29 @@
  * ----------------------------------------------------------------------------------------
  */
 
-
 #ifndef USE_THREADS
- /*
-  * Do not use fork() but threads to serve your clients.
-  *
-  * Unix-like operarting systems:
-  *    You may use this or not. Entirely your choice. Threads do not require explicitly allocating
-  *    a shared memory segment which might be a problem on some systems. Using fork() is more robust
-  *    although the threaded version of vlmcsd is rock solid too.
-  *
-  *    Some older unixoid OSses may not have pthreads. Do NOT use USE_THREADS and define NO_SIGHUP
-  *    and NO_LIMIT instead to disable use of the pthreads, shared memory and semaphores.
-  *
-  * Cygwin:
-  *    It is recommended to use threads since fork() is extremely slow (no copy on write) and somewhat
-  *    unstable.
-  *
-  * Windows:
-  *    This option has no effect since fork() is not supported.
-  */
+/*
+ * Do not use fork() but threads to serve your clients.
+ *
+ * Unix-like operarting systems:
+ *    You may use this or not. Entirely your choice. Threads do not require explicitly allocating
+ *    a shared memory segment which might be a problem on some systems. Using fork() is more robust
+ *    although the threaded version of vlmcsd is rock solid too.
+ *
+ *    Some older unixoid OSses may not have pthreads. Do NOT use USE_THREADS and define NO_SIGHUP
+ *    and NO_LIMIT instead to disable use of the pthreads, shared memory and semaphores.
+ *
+ * Cygwin:
+ *    It is recommended to use threads since fork() is extremely slow (no copy on write) and somewhat
+ *    unstable.
+ *
+ * Windows:
+ *    This option has no effect since fork() is not supported.
+ */
 
-  //#define USE_THREADS
+// #define USE_THREADS
 
 #endif // USE_THREADS
-
-
-
 
 #ifndef _CRYPTO_POLARSSL
 /*
@@ -256,12 +222,9 @@
  * Do not define both _CRYPTO_OPENSSL and _CRYPTO_POLARSSL
  */
 
- //#define _CRYPTO_POLARSSL
+// #define _CRYPTO_POLARSSL
 
 #endif // _CRYPTO_POLARSSL
-
-
-
 
 #ifndef _CRYPTO_OPENSSL
 /*
@@ -277,12 +240,9 @@
  * Do not define both _CRYPTO_OPENSSL and _CRYPTO_POLARSSL
  */
 
- //#define _CRYPTO_OPENSSL
+// #define _CRYPTO_OPENSSL
 
 #endif // _CRYPTO_OPENSSL
-
-
-
 
 #ifndef _USE_AES_FROM_OPENSSL
 /*
@@ -297,13 +257,9 @@
  * Don't use this except for your own research on the internals of OpenSSL.
  */
 
- //#define _USE_AES_FROM_OPENSSL
+// #define _USE_AES_FROM_OPENSSL
 
 #endif // _USE_AES_FROM_OPENSSL
-
-
-
-
 
 #ifndef _OPENSSL_SOFTWARE
 /*
@@ -313,23 +269,17 @@
  * compiled without support for hardware accelerated AES. It's worth a try if _USE_AES_FROM_OPENSSL doesn't work.
  */
 
- //#define _OPENSSL_SOFTWARE
+// #define _OPENSSL_SOFTWARE
 
 #endif // _OPENSSL_SOFTWARE
-
-
-
 
 #ifndef FULL_INTERNAL_DATA
 /*
  * Includes the full database in vlmcsd.
  */
 
- //#define FULL_INTERNAL_DATA
+// #define FULL_INTERNAL_DATA
 #endif // FULL_INTERNAL_DATA
-
-
-
 
 /*
  * ----------------------------------------------------------------------------------------
@@ -338,44 +288,34 @@
  * ----------------------------------------------------------------------------------------
  */
 
-
 #ifndef NO_FREEBIND
- /*
-  * Do not compile support for FREEBIND (Linux) and IP_BINDANY (FreeBSD). This disables the -F1 command
-  * line option and you can bind only to (listen on) IP addresses that are currently up and running on
-  * your system.
-  */
+/*
+ * Do not compile support for FREEBIND (Linux) and IP_BINDANY (FreeBSD). This disables the -F1 command
+ * line option and you can bind only to (listen on) IP addresses that are currently up and running on
+ * your system.
+ */
 
-//#define NO_FREEBIND
+// #define NO_FREEBIND
 
 #endif // NO_FREEBIND
 
-
-
-
 #ifndef NO_TAP
- /*
-  * Do not compile support for using a VPN adapter under Windows. Disables -O command line option.
-  */
+/*
+ * Do not compile support for using a VPN adapter under Windows. Disables -O command line option.
+ */
 
-//#define NO_TAP
+// #define NO_TAP
 
 #endif // NO_TAP
-
-
-
 
 #ifndef NO_VERSION_INFORMATION
 /*
  * Removes the -V option from vlmcsd and vlmcs that displays the version information
  */
 
- //#define NO_VERSION_INFORMATION
+// #define NO_VERSION_INFORMATION
 
 #endif // NO_VERSION_INFORMATION
-
-
-
 
 #ifndef NO_VERBOSE_LOG
 /*
@@ -383,12 +323,9 @@
  * option in the vlmcs client. Disables ini file directive LogVerbose.
  */
 
- //#define NO_VERBOSE_LOG
+// #define NO_VERBOSE_LOG
 
 #endif // NO_VERBOSE_LOG
-
-
-
 
 #ifndef NO_LOG
 /*
@@ -397,12 +334,9 @@
  * Implies NO_VERBOSE_LOG.
  */
 
- //#define NO_LOG
+// #define NO_LOG
 
 #endif // NO_LOG
-
-
-
 
 #ifndef NO_STRICT_MODES
 /*
@@ -411,13 +345,9 @@
  * as if it was started with -K0, -M0.
  */
 
- //#define NO_STRICT_MODES
+// #define NO_STRICT_MODES
 
 #endif // NO_STRICT_MODES
-
-
-
-
 
 #ifndef NO_CLIENT_LIST
 /*
@@ -425,91 +355,71 @@
  * from vlmcsd command line options.
  */
 
- //#define NO_CLIENT_LIST
+// #define NO_CLIENT_LIST
 
 #endif // !NO_CLIENT_LIST
 
-
-
 #ifndef NO_RANDOM_EPID
- /*
-  * Disables the ability to generate random ePIDs. Useful if you managed to grab ePID/HWID from a
-  * real KMS server and want to use these. Removes -r from the vlmcsd command line and the ini
-  * file directive RandomizationLevel (The randomization level will be harcoded to 0).
-  */
+/*
+ * Disables the ability to generate random ePIDs. Useful if you managed to grab ePID/HWID from a
+ * real KMS server and want to use these. Removes -r from the vlmcsd command line and the ini
+ * file directive RandomizationLevel (The randomization level will be harcoded to 0).
+ */
 
-  //#define NO_RANDOM_EPID
+// #define NO_RANDOM_EPID
 
 #endif // NO_RANDOM_EPID
-
-
-
 
 #ifndef NO_INI_FILE
 /*
  * Disables the ability to use a configuration file (aka ini file). Removes -i from the command line.
  */
 
- //#define NO_INI_FILE
+// #define NO_INI_FILE
 
 #endif // NO_INI_FILE
 
-
-
-
 #ifndef NO_PID_FILE
- /*
+/*
  * Disables the abilty to write a pid file containing the process id of vlmcsd. If your init system
  * does not need this feature, you can safely disables this but it won't save much space. Disables
  * the use of -p from the command line and PidFile from the ini file.
  */
 
- //#define NO_PID_FILE
+// #define NO_PID_FILE
 
 #endif // NO_PID_FILE
 
-
-
-
 #ifndef NO_EXTERNAL_DATA
- /*
+/*
  * Disables the abilty to load external KMS data from a file. Disables command line options -j
  * and ini file parameter KmsData. Implies UNSAFE_DATA_LOAD.
  */
 
- //#define NO_EXTERNAL_DATA
+// #define NO_EXTERNAL_DATA
 
 #endif // NO_EXTERNAL_DATA
 
-
-
-
 #ifndef NO_INTERNAL_DATA
- /*
+/*
  * Compiles vlmcsd and vlmcs without an internal database. If no database is found at
  * either the default location or the file specified with command line option -j.,
  * the program exits with an error message.
  */
 
- //#define NO_INTERNAL_DATA
+// #define NO_INTERNAL_DATA
 
 #endif // NO_INTERNAL_DATA
 
-
-
-
 #ifndef UNSAFE_DATA_LOAD
- /*
+/*
  * Does not check an external KMS data file for integrity.
  * This save some bytes but it dangerous if you load a KMS data file from an unknown source.
  */
 
- //#define UNSAFE_DATA_LOAD
+// #define UNSAFE_DATA_LOAD
 
 #endif // UNSAFE_DATA_LOAD
-
-
-
 
 #ifndef NO_USER_SWITCH
 /*
@@ -522,12 +432,9 @@
  * Cygwin.
  */
 
- //#define NO_USER_SWITCH
+// #define NO_USER_SWITCH
 
 #endif // NO_USER_SWITCH
-
-
-
 
 #ifndef NO_HELP
 /*
@@ -535,12 +442,9 @@
  * access to the man files vlmcsd.8 and vlmcs.1
  */
 
- //#define NO_HELP
+// #define NO_HELP
 
 #endif // NO_HELP
-
-
-
 
 #ifndef NO_CUSTOM_INTERVALS
 /*
@@ -549,12 +453,9 @@
  * -A and -R from the command line as well as ActivationInterval and RenewalInterval in the ini file.
  */
 
- //#define NO_CUSTOM_INTERVALS
+// #define NO_CUSTOM_INTERVALS
 
 #endif // NO_CUSTOM_INTERVALS
-
-
-
 
 #ifndef NO_PRIVATE_IP_DETECT
 /*
@@ -562,12 +463,9 @@
  * Removes -o from the command line.
  */
 
- //#define NO_PRIVATE_IP_DETECT
+// #define NO_PRIVATE_IP_DETECT
 
 #endif // NO_PRIVATE_IP_DETECT
-
-
-
 
 #ifndef NO_SOCKETS
 /*
@@ -576,12 +474,9 @@
  * command line. Socket setup is the job of your superserver.
  */
 
- //#define NO_SOCKETS
+// #define NO_SOCKETS
 
 #endif // NO_SOCKETS
-
-
-
 
 #ifndef NO_CL_PIDS
 /*
@@ -589,12 +484,9 @@
  * Removes -0, -3, -w and -H from the vlmcsd command line.
  */
 
- //#define NO_CL_PIDS
+// #define NO_CL_PIDS
 
 #endif // NO_CL_PIDS
-
-
-
 
 #ifndef NO_LIMIT
 /*
@@ -608,12 +500,9 @@
  * and NO_LIMIT instead to disable use of the pthreads, shared memory and semaphores.
  */
 
- //#define NO_LIMIT
+// #define NO_LIMIT
 
 #endif // NO_LIMIT
-
-
-
 
 #ifndef NO_SIGHUP
 /*
@@ -628,12 +517,9 @@
  * This option has no effect on native Windows since Posix signaling is not supported. It can be used with Cygwin.
  */
 
- //#define NO_SIGHUP
+// #define NO_SIGHUP
 
 #endif // NO_SIGHUP
-
-
-
 
 #ifndef SIMPLE_RPC
 /*
@@ -642,11 +528,8 @@
  * smaller binaries but makes emulator detection easier.
  */
 
- //#define SIMPLE_RPC
+// #define SIMPLE_RPC
 #endif // !SIMPLE_RPC
-
-
-
 
 #ifndef SIMPLE_SOCKETS
 /*
@@ -654,22 +537,20 @@
  * It still supports IPv4 and IPv6.
  */
 
- //#define SIMPLE_SOCKETS
+// #define SIMPLE_SOCKETS
 
 #endif // SIMPLE_SOCKETS
 
 #ifndef PRIVACY_ON
 /*
- * This flag enables the ability to hide the incoming request information and outcoming request 
+ * This flag enables the ability to hide the incoming request information and outcoming request
  * Reasons: to hide the client ID from the inspector, only display the least valuable info
  */
 
-  // #define PRIVACY_ON
+// #define PRIVACY_ON
 
 #endif
 
 /* Don't change anything BELOW this line */
 
-
 #endif /* CONFIG_H_ */
-

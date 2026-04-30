@@ -26,7 +26,7 @@ void printClientFlags();
 
 #ifndef NO_LOG
 int logger(const char *const fmt, ...);
-#endif //NO_LOG
+#endif // NO_LOG
 
 void uuid2StringLE(const GUID *const guid, char *const string);
 
