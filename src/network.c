@@ -51,8 +51,10 @@ typedef ssize_t(*sendrecv_t)(int, void*, size_t, int);
 typedef int (WINAPI *sendrecv_t)(SOCKET, void*, int, int);
 #endif
 
+#ifndef NO_LOG
 #include "output.h"
 #include <time.h>
+#endif // NO_LOG
 
 // Send or receive a fixed number of bytes regardless if received in one or more chunks
 int_fast8_t sendrecv(SOCKET sock, BYTE *data, int len, int_fast8_t do_send)
@@ -1047,9 +1049,10 @@ int runServer()
 		serveClient(STDIN_FILENO, RpcAssocGroup);
 		return 0;
 	}
-
+#ifndef NO_LOG
 	static uint32_t CountKMSReq = 0;
 	time_t startClock = time(NULL);
+#endif // NO_LOG
 
 	for (;;)
 	{
@@ -1090,7 +1093,8 @@ int runServer()
 #		else // NO_LOG || !_PEDANTIC
 		serveClientAsync(s_client, RpcAssocGroup);
 #		endif // NO_LOG || !_PEDANTIC
-		
+
+#ifndef NO_LOG
 		if (isCounting == TRUE) {
 			CountKMSReq++;
 
@@ -1098,8 +1102,15 @@ int runServer()
 			double uptimeReq = (double)(checkPointClock - startClock);
 			double reqRate = CountKMSReq / uptimeReq;
 
-			logger("Total %d requests in %.2lf seconds (%.4lf reqs/sec)\n", CountKMSReq, uptimeReq, reqRate);
+			logger(
+				"Total %d %s in %.2lf seconds (%.4lf reqs/sec)\n", 
+				CountKMSReq,
+				(CountKMSReq == 1) ? "request" : "requests",
+				uptimeReq, 
+				reqRate
+			);
 		}
+#endif // NO_LOG
 	}
 #	endif // NO_SOCKETS
 }

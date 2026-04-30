@@ -26,13 +26,11 @@ void printClientFlags();
 
 #ifndef NO_LOG
 int logger(const char *const fmt, ...);
-#endif //NO_LOG
+#endif // NO_LOG
 
 void uuid2StringLE(const GUID *const guid, char *const string);
 
 //void copy_arguments(int argc, char **argv, char ***new_argv);
 //void destroy_arguments(int argc, char **argv);
-
-extern int logger(const char *const fmt, ...);
 
 #endif // INCLUDED_OUTPUT_H

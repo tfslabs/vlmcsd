@@ -686,7 +686,6 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 		isCounting = getIniFileArgumentBool(&isCounting, iniarg);
 		break;
 
-
 	case INI_PARAM_LOG_FILE:
 		fn_log = vlmcsd_strdup(iniarg);
 		break;
