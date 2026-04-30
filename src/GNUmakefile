@@ -652,7 +652,7 @@ endif
 	$(BUILDCOMMANDPREFIX)$(AR) rcs $@ $^
 
 clean:
-	rm -rf $(REAL_PROGRAM_NAME) $(REAL_MULTI_NAME) $(REAL_DLL_NAME) $(REAL_CLIENT_NAME)  $(OBJ_NAME) $(REAL_A_NAME) ../bin/* ../build/* *.d
+	rm -rf $(REAL_PROGRAM_NAME) $(REAL_MULTI_NAME) $(REAL_DLL_NAME) $(REAL_CLIENT_NAME) $(OBJ_NAME) $(REAL_A_NAME) ../bin/* ../build/* *.d
 
 dnsclean:
 	rm -rf ../build/dns_srv.o
