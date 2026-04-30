@@ -375,36 +375,36 @@ static __noreturn void usage()
 #if !defined(NO_TIMEOUT) && !__minix__
 		" -t <seconds>\t\tDisconnect client after an amount of time of inactivity (default 30)\n"
 #endif // !defined(NO_TIMEOUT) && !__minix__
-		" -d\t\t\tDisconnect each client after processing one activation request.\n"
-		" -k\t\t\tDo not disconnect clients after processing an activation request (default if \"-d\" defined in external VLMCSD configuration file).\n"
+		" -d\t\t\tDisconnect each client after processing one activation request\n"
+		" -k\t\t\tDo not disconnect clients after processing an activation request (default if \"-d\" defined in external VLMCSD configuration file)\n"
 #ifndef SIMPLE_RPC
-		" -N (0|1)\t\tDisable (0)/Enable (default, 1) NDR64. Only useful when on Windows Vista/7 32-bit, where enabling NDR64 will make VLMCSD by running higher Windows build number.\n"
-		" -B (0|1)\t\tDisable (0)/Enable (1) bind time feature negotiation in RPC protocol.\n"
+		" -N (0|1)\t\tDisable (0)/Enable (default, 1) NDR64. Only useful when on Windows Vista/7 32-bit, where enabling NDR64 will make VLMCSD by running higher Windows build number\n"
+		" -B (0|1)\t\tDisable (0)/Enable (1) bind time feature negotiation in RPC protocol\n"
 #endif // !SIMPLE_RPC
 #endif // USE_MSRPC
 #ifndef NO_PID_FILE
-		" -p <file>\t\tCreate pid file filename. This is used by standard init scripts (typically found in \"/etc/init.d\").\n"
+		" -p <file>\t\tCreate pid file filename. This is used by standard init scripts (typically found in \"/etc/init.d\")\n"
 #endif // NO_PID_FILE
 #ifndef NO_INI_FILE
-		" -i <file>\t\tUse external VLMCSD configuration file. Default name of that file is \"vlmcsd.ini\".\n"
+		" -i <file>\t\tUse external VLMCSD configuration file. Default name of that file is \"vlmcsd.ini\"\n"
 #endif // NO_INI_FILE
 #ifndef NO_EXTERNAL_DATA
-		" -j <file>\t\tUse external VLMCSD ePID database. Default name of that file is \"vlmcsd.kmd\".\n"
+		" -j <file>\t\tUse external VLMCSD ePID database. Default name of that file is \"vlmcsd.kmd\"\n"
 #endif // !NO_EXTERNAL_DATA
 #ifndef NO_CUSTOM_INTERVALS
-		" -R <interval>\t\tRenew activation every <interval> (default 1w).\n"
-		" -A <interval>\t\tRetry activation every <interval>, if the previous activation/reactivation is failed (default 2h).\n"
+		" -R <interval>\t\tRenew activation every <interval> (default 1w)\n"
+		" -A <interval>\t\tRetry activation every <interval>, if the previous activation/reactivation is failed (default 2h)\n"
 #endif // NO_CUSTOM_INTERVALS
 #ifndef NO_LOG
-		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have read+write access to that file.\n"
-		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1).\n"
+		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have read+write access to that file\n"
+		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1)\n"
 #ifndef PRIVACY_ON
-		" -X\t\t\tAllow running in Privacy Mode (experiment).\n"
+		" -X\t\t\tAllow running in Privacy Mode\n"
 #endif // PRIVACY_ON
-		" -w\t\t\tDisplay total KMS requests (experiment).\n"
+		" -w\t\t\tDisplay total KMS requests\n"
 #ifndef NO_VERBOSE_LOG
-		" -v\t\t\tAllow logging verbose.\n"
-		" -q\t\t\tDon't allow log verbose (default).\n"
+		" -v\t\t\tAllow logging verbose\n"
+		" -q\t\t\tDon't allow log verbose (default)\n"
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 #ifndef NO_VERSION_INFORMATION
