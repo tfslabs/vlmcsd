@@ -297,7 +297,7 @@ static __noreturn void usage()
 	/////////////////////////////////////////////////////////////////////
 	//// ePID randomization level is used
 #ifndef NO_RANDOM_EPID
-		" -r (0|1|2)\t\tSet randomization level of the ePIDs (default is \"0\")\n\t\t\t\t\"0\" stands for no randomization, which also means VLMCSD will use the default ePID that is built-in. It is useful for emulating/replicating real KMS servers\n\t\t\t\t\"1\" stands for randomization of each KMS request, but it also poses a risk of being detected non-genuine KMS Server, causing clients to fail to be activated\n\t\t\t\t\"2\" is as same as the \"1\" option, but only for debugging\n"
+		" -r (0|1|2)\t\tSet randomization level of the ePIDs (default is \"0\")\n\t\t\t\t\"0\" stands for no randomization, which also means VLMCSD will use the default ePID that is built-in\n\t\t\t\t\"1\" stands for randomization of each KMS request, but it also poses a risk of being detected non-genuine KMS Server\n\t\t\t\t\"2\" is as same as the \"1\" option, but only for debugging\n"
 		" -C <LCID>\t\tUse fixed Windows Language Code Identifier in random ePIDs\n\t\t\t\tSee https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c for correct LCIDs\n"
 		" -H <build>\t\tUse fixed Windows build number for activation\n\t\t\t\tUseful when the client requires a proper KMS Server\n\t\t\t\tSee all build numbers here: https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions\n"
 #endif // NO_RANDOM_EPID
@@ -363,8 +363,8 @@ static __noreturn void usage()
 		" -K (0|1|2|3)\t\tSet white-listing level which product VLMCSD accepts or refuses (default 0)\n\t\t\t\t\"0\" Activate all products with an unknown, retail or beta/preview KMS IDs\n\t\t\t\t\"1\" Activate products with a retail or beta/preview KMS ID but refuse to activate products with an unknown KMS ID\n\t\t\t\t\"2\" Activate products with an unknown KMS ID but refuse products with a retail or beta/preview KMS ID\n\t\t\t\t\"3\" Activate only products with a known volume license RTM KMS ID and refuse all others\n"
 		" -c (0|1)\t\tDisable (0)/Enable (1) client time checking\n\t\t\t\tIf the client time is different than 4 hours compare to the KMS Host, the host will deny the activation (default 0)\n\t\t\t\tNote: It is recommended that the VLMCSD has a reliable time service (e.g. sync the time with time.windows.com)\n"
 #ifndef NO_CLIENT_LIST
-		" -M (0|1)\t\tDisable (0)/Enable (1) maintaining clients (default 0)\n\t\t\t\tNote: Enabling this service is not recommended, except you have to do so to prevent the activation failling\n\t\t\t\tIt is because the VLMCSD can only keep maximum of 16777215 clients. If that number exceed, VLMCSD will no longer accept any new connect, nor activation requests\n"
-		" -E (0|1)\t\tDisable (0)/Enable (1) starting VLMCSD with empty client list (Default 0)\n\t\t\t\tNote: It is recommended to keep the default, because Office will not activate unless your KMS Host has at least 5 active clients.\n\t\t\t\tSee more: https://learn.microsoft.com/en-us/office/troubleshoot/administration/0xc004f038-computer-not-activate\n"
+		" -M (0|1)\t\tDisable (default, 0)/Enable (1) maintaining clients\n\t\t\t\tNote: Enabling this service is not recommended, except you have to do so to prevent the activation failling\n\t\t\t\tIt is because the VLMCSD can only keep maximum of 16777215 clients. If that number exceed, VLMCSD will no longer accept any new connect, nor activation requests\n"
+		" -E (0|1)\t\tDisable (default, 0)/Enable (1) starting VLMCSD with empty client list\n\t\t\t\tNote: It is recommended to keep the default, because Office will not activate unless your KMS Host has at least 5 active clients.\n\t\t\t\tSee more: https://learn.microsoft.com/en-us/office/troubleshoot/administration/0xc004f038-computer-not-activate\n"
 #endif // !NO_CLIENT_LIST
 #endif // !NO_STRICT_MODES
 	/////////////////////////////////////////////////////////////////////
@@ -396,10 +396,10 @@ static __noreturn void usage()
 		" -A <interval>\t\tRetry activation every <interval>, if the previous activation/reactivation is failed (default 2h)\n"
 #endif // NO_CUSTOM_INTERVALS
 #ifndef NO_LOG
-		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have read+write access to that file\n"
-		" -T0, -T1\t\tDisable (0)/Enable logging client connection with time and date (default 1)\n"
+		" -l <file>\t\tWrites VLMCSD log into a file. Note: Make sure you have rw access to that file\n"
+		" -T0, -T1\t\tDisable (0)/Enable (default, 1) logging client connection with time and date\n"
 #ifndef PRIVACY_ON
-		" -X\t\t\tAllow running in Privacy Mode\n"
+		" -X\t\t\tAllow running in Privacy Mode (hide detail of incoming and response requests)\n"
 #endif // PRIVACY_ON
 		" -w\t\t\tDisplay total KMS requests\n"
 #ifndef NO_VERBOSE_LOG
