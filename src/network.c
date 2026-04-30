@@ -52,6 +52,7 @@ typedef int (WINAPI *sendrecv_t)(SOCKET, void*, int, int);
 #endif
 
 #include "output.h"
+#include <time.h>
 
 // Send or receive a fixed number of bytes regardless if received in one or more chunks
 int_fast8_t sendrecv(SOCKET sock, BYTE *data, int len, int_fast8_t do_send)
@@ -1048,6 +1049,7 @@ int runServer()
 	}
 
 	static uint32_t CountKMSReq = 0;
+	time_t startClock = time(NULL);
 
 	for (;;)
 	{
@@ -1089,8 +1091,15 @@ int runServer()
 		serveClientAsync(s_client, RpcAssocGroup);
 #		endif // NO_LOG || !_PEDANTIC
 		
-		if (isCounting == TRUE)
-			logger("Total KMS requests: %d\n", ++CountKMSReq);
+		if (isCounting == TRUE) {
+			CountKMSReq++;
+
+			time_t checkPointClock = time(NULL);
+			double uptimeReq = (double)(checkPointClock - startClock);
+			double reqRate = CountKMSReq / uptimeReq;
+
+			logger("Total %d requests in %.2lf seconds (%.4lf reqs/sec)\n", CountKMSReq, uptimeReq, reqRate);
+		}
 	}
 #	endif // NO_SOCKETS
 }
