@@ -95,18 +95,30 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <OutDir>$(SolutionDir)..\bin\$(Configuration)</OutDir>
+    <IntDir>$(Configuration)\$(Platform)</IntDir>
+    <TargetName>vs_$(ProjectName)_$(Configuration)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <OutDir>$(SolutionDir)..\bin\$(Configuration)</OutDir>
+    <IntDir>$(Configuration)\$(Platform)</IntDir>
+    <TargetName>vs_$(ProjectName)_$(Configuration)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <OutDir>$(SolutionDir)..\bin\$(Configuration)</OutDir>
+    <IntDir>$(Configuration)\$(Platform)</IntDir>
+    <TargetName>vs_$(ProjectName)_$(Configuration)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <OutDir>$(SolutionDir)..\bin\$(Configuration)</OutDir>
+    <IntDir>$(Configuration)\$(Platform)</IntDir>
+    <TargetName>vs_$(ProjectName)_$(Configuration)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
