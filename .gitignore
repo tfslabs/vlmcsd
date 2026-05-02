@@ -12,6 +12,7 @@ _deps
 bin
 build
 VisualStudio
+.vs
 lib
 .vscode
 *.d

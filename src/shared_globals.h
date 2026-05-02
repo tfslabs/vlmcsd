@@ -26,6 +26,7 @@
 #endif // !defined(NO_LIMIT) && !__minix__
 #else
 //#ifndef USE_MSRPC
+#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <ws2tcpip.h>
 //#endif // USE_MSRPC

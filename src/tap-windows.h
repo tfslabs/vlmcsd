@@ -31,8 +31,12 @@
  * =============
  */
 
-#define TAP_WIN_CONTROL_CODE(request,method) \
-  CTL_CODE (FILE_DEVICE_UNKNOWN, request, method, FILE_ANY_ACCESS)
+#ifdef   _MSC_VER
+#include <winioctl.h>
+#endif // _MSC_VER
+
+
+#define TAP_WIN_CONTROL_CODE(request,method) CTL_CODE (FILE_DEVICE_UNKNOWN, request, method, FILE_ANY_ACCESS)
 
 /* Present in 8.1 */
 
@@ -73,5 +77,3 @@
 #define TAP_WIN_SUFFIX    ".tap"
 
 #endif // __TAP_WIN_H
-
-

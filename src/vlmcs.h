@@ -7,6 +7,7 @@
 #include CONFIG
 
 #if !defined(USE_MSRPC) && defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #endif // defined(USE_MSRPC) && defined(_WIN32)
 #include "types.h"
