@@ -4,14 +4,10 @@ services:
     ports:
       - 1688:1688
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "1688" ]
+      test: nc -z 127.0.0.1 1688
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 15s
-    deploy:
-      resources:
-        limits:
-          memory: 32M
-    restart: on-failure:5
-    image: theflightsims/vlmcsd:linux-amd64
+    restart: always
+    image: theflightsims/vlmcsd:latest
