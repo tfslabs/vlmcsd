@@ -1,12 +1,12 @@
 name: Build static VLMCSD binary
 permissions:
-    contents: read
+  contents: read
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
   pull_request:
-    branches: [master]
+    branches: [ master ]
   schedule:
     - cron: "0 0 * * 1"
   workflow_dispatch:
@@ -18,31 +18,11 @@ jobs:
     strategy:
       matrix:
         arch:
-          - { 
-              name: amd64, 
-              target: x86_64-linux-gnu, 
-              apt: gcc 
-            }
-          - {
-              name: arm64,
-              target: aarch64-linux-gnu,
-              apt: gcc-aarch64-linux-gnu,
-            }
-          - {
-              name: ppc64le,
-              target: powerpc64le-linux-gnu,
-              apt: gcc-powerpc64le-linux-gnu,
-            }
-          - { 
-            name: s390x, 
-            target: s390x-linux-gnu, 
-            apt: gcc-s390x-linux-gnu 
-            }
-          - {
-              name: riscv64,
-              target: riscv64-linux-gnu,
-              apt: gcc-riscv64-linux-gnu,
-            }
+          - { name: amd64, target: x86_64-linux-gnu, apt: gcc }
+          - { name: arm64, target: aarch64-linux-gnu, apt: gcc-aarch64-linux-gnu }
+          - { name: ppc64le, target: powerpc64le-linux-gnu, apt: gcc-powerpc64le-linux-gnu }
+          - { name: s390x, target: s390x-linux-gnu, apt: gcc-s390x-linux-gnu }
+          - { name: riscv64, target: riscv64-linux-gnu, apt: gcc-riscv64-linux-gnu }
 
     steps:
       - name: Checkout code
@@ -82,16 +62,8 @@ jobs:
     strategy:
       matrix:
         arch:
-          - {
-              name: amd64,
-              target: x86_64-w64-mingw32,
-              apt: gcc-mingw-w64-x86-64,
-            }
-          - { 
-            name: x86, 
-            target: i686-w64-mingw32, 
-            apt: gcc-mingw-w64-i686 
-            }
+          - { name: amd64, target: x86_64-w64-mingw32, apt: gcc-mingw-w64-x86-64 }
+          - { name: x86, target: i686-w64-mingw32, apt: gcc-mingw-w64-i686 }
 
     steps:
       - name: Checkout code

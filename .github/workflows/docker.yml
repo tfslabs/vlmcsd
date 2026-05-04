@@ -4,9 +4,9 @@ permissions:
 
 on:
     push:
-        branches: ["master"]
+        branches: [ "master" ]
     pull_request:
-        branches: ["master"]
+        branches: [ "master" ]
     schedule:
         - cron: "0 0 * * 1"
     workflow_dispatch:
@@ -14,33 +14,6 @@ on:
 jobs:
     build-docker:
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                map:
-                    - {
-                        name: amd64,
-                        arch: amd64
-                    }
-                    - {
-                        name: arm64v8,
-                        arch: arm64/v8
-                    }
-                    - {
-                        name: ppc64le,
-                        arch: ppc64le
-                    }
-                    - {
-                        name: s390x,
-                        arch: s390x
-                    }
-                    - {
-                        name: riscv64,
-                        arch: riscv64
-                    }
-                    - {
-                        name: armv7,
-                        arch: arm/v7
-                    }
         steps:
             - name: Check out the repo
               uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
@@ -56,7 +29,7 @@ jobs:
               with:
                   context: .
                   file: ./.docker/Dockerfile
-                  platforms: linux/${{ matrix.map.arch }}
+                  platforms: linux/386,linux/amd64,linux/arm/v5,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/riscv64,linux/s390x
                   push: false
 
             - name: Log in to DockerHub
@@ -70,8 +43,8 @@ jobs:
               with:
                   context: .
                   file: ./.docker/Dockerfile
-                  platforms: linux/${{ matrix.map.arch }}
+                  platforms: linux/386,linux/amd64,linux/arm/v5,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/riscv64,linux/s390x
                   push: true
                   tags: |
-                      theflightsims/vlmcsd:linux-${{ matrix.map.name }}
+                      theflightsims/vlmcsd:latest
               if: github.ref == 'refs/heads/master'

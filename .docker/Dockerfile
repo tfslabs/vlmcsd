@@ -1,22 +1,34 @@
-FROM ubuntu:noble AS builder
+FROM debian:trixie AS builder
 
+# Set the current dir
 WORKDIR /root/vlmcsd
 
-# Install required build packages
-RUN apt update && apt upgrade -y && apt install -y gcc make git
+# Install build pacakges
+RUN apt update 
+RUN apt full-upgrade -y 
+RUN apt install -y gcc make
 
-# Clone the repository and build the binary
-RUN git clone --depth 1 --branch "master" "https://github.com/tfslabs/vlmcsd.git" .
+# Copy source code
+COPY --chown=root:root man /root/vlmcsd/man
+COPY --chown=root:root src /root/vlmcsd/src
+COPY --chown=root:root GNUmakefile /root/vlmcsd/GNUmakefile
+
+# Start build
 RUN make -j"$(nproc)" vlmcsd
 
-FROM ubuntu:noble
+FROM debian:trixie
 
-# Install necessary runtime libraries (glibc is provided by Debian base)
-RUN apt update && apt install -y libgcc-s1 libstdc++6 && rm -rf /var/lib/apt/lists/*
+RUN apt update \
+    && apt full-upgrade -y \
+    && apt autoremove -y \
+    && apt install -y libgcc-s1 libstdc++6 netcat-openbsd \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy only the compiled binary from the builder stage
 COPY --from=builder /root/vlmcsd/bin/vlmcsd /usr/bin/vlmcsd
 
 EXPOSE 1688
 
-CMD ["/usr/bin/vlmcsd", "-P", "1688", "-H", "26100", "-C", "1033", "-T0", "-e", "-v", "-D"]
+ENTRYPOINT [ "/usr/bin/vlmcsd" ]
+
+CMD ["-e", "-v", "-D", "-w"]
