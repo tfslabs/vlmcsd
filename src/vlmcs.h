@@ -18,6 +18,11 @@
 #endif // USE_MSRPC
 #include "kms.h"
 
+#if _MSC_VER
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 #if MULTI_CALL_BINARY < 1
 #define client_main main
 #else

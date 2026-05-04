@@ -13,6 +13,11 @@ extern char *fn_log;
 
 #include "types.h"
 
+#if _MSC_VER
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 //int main(int argc, CARGV);
 extern void cleanup();
 
