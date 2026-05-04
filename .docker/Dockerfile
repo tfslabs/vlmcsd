@@ -1,4 +1,4 @@
-FROM ubuntu:noble AS builder
+FROM debian:trixie AS builder
 
 # Set the current dir
 WORKDIR /root/vlmcsd
@@ -16,7 +16,7 @@ COPY --chown=root:root GNUmakefile /root/vlmcsd/GNUmakefile
 # Start build
 RUN make -j"$(nproc)" vlmcsd
 
-FROM ubuntu:noble
+FROM debian:trixie
 
 RUN apt update \
     && apt full-upgrade -y \
