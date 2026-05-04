@@ -12,15 +12,7 @@ git clone https://github.com/tfslabs/vlmcsd.git
 
 ### Build with `make`
 
-To build with `make`, make sure you have installed `gcc`, `make`, and `glibc`
-
-#### On Windows
-
-You can try install [GNU Windows](https://github.com/tfslabs/gnu-windows/releases/tag/1.1.0). ([How to install on Windows?](https://github.com/tfslabs/gnu-windows/wiki/Installing-GNU-Windows-binaries))
-
-#### On Linux
-
-Depends on your distribution, the installation may differ.
+To build with `make`, make sure you have installed `gcc`, `make`, and `glibc`. Depends on your distribution, the installation may differ.
 
 ```bash
 # Ubuntu/Debian
@@ -29,17 +21,17 @@ apt install -y gcc make
 # Fedora
 dnf groupinstall "Development Tools"
 
-# Arch Linux
+# Arch/Msys2
 pacman -S gcc base-devel
 ```
 
 ### Build with Visual Studio (only for Windows)
 
-To contribute, you may need Visual Studio 2022. Required Visual Studio 2022 SDKs:
+To contribute, you may need Visual Studio. Required Visual Studio SDKs:
 
-* C++ Windows XP Support for VS 2017 (v141) Tools
-* Windows 10 SDK (10.0.18362.0)
-* Windows Universal C Runtime
+* MSVC v142 - VS 2019 C++ x64/x86 build tools
+* MSVC v142 - VS 2019 C++ x64/x86 Spectre-mitigated libs *(optional)*
+* [Windows 10 SDK (10.0.17763.7010)](https://learn.microsoft.com/en-us/windows/apps/windows-sdk/downloads)
 
 ## Build from source
 
@@ -57,13 +49,16 @@ make help
 
 ### With Docker container
 
-To build, `Dockerfile` are provided in the `.docker` folder. Note that the multi-arch may need to include `--platform`. Currently, `vlmcsd` supports these following architecture(s)
+To build, `Dockerfile` are provided in the `.docker` folder. Note that the multi-arch may need to include `--platform`. Currently, `vlmcsd` supports these following architecture
 
+* `linux/386`
 * `linux/amd64`
+* `linux/arm/v5`
+* `linux/arm/v7`
 * `linux/arm64/v8`
 * `linux/ppc64le`
-* `linux/s390x`
 * `linux/riscv64`
+* `linux/s390x`
 
 For example, the command below supports building `vlmcsd` for Linux running on AMD64
 
@@ -71,13 +66,11 @@ For example, the command below supports building `vlmcsd` for Linux running on A
 docker build --platform linux/amd64 -f .docker/Dockerfile -t theflightsims/vlmcsd:linux-amd64 .
 ```
 
-For building with multiple architecture(s), there are `.docker/quick_build.sh` (for Linux) and `.docker/quick_build.cmd` (for Windows).
-
 ### With Visual Studio
 
 In the `VisualStudio` folder, there are some built-in projects.
 
-However, since this project is a part of [Windows Server Management Tool](https://github.com/TheFlightSims/windowsserver-mgmttools), you may need to clone the whole repo, before using Visual Studio, because the full Visual Studio Solution are already configured with valid build configurations.
+You can open the `vlmcsd.sln` project solution in the `VisualStudio` folder.
 
 ### Manage database
 
@@ -92,7 +85,3 @@ However, since this project is a part of [Windows Server Management Tool](https:
 * Internal database
 
 > The internal VLMCSD databases are, both includes in `src/kmsdata.c` and `src/kmsdata-full.c` files.
-
-## Validate the application
-
-To quick validating the Volume License Management Service DAEMON, you can use a quick Python3 script in the `.test`
