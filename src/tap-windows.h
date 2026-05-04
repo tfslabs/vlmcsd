@@ -33,7 +33,7 @@
 
 #ifdef   _WIN32
 #include <winioctl.h>
-#endif // _MSC_VER
+#endif // _WIN32
 
 #define TAP_WIN_CONTROL_CODE(request,method) \
   CTL_CODE (FILE_DEVICE_UNKNOWN, request, method, FILE_ANY_ACCESS)
