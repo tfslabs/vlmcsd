@@ -31,10 +31,9 @@
  * =============
  */
 
-#ifdef   _MSC_VER && !defined(_WINDOWS_)
+#ifdef   _WIN32
 #include <winioctl.h>
 #endif // _MSC_VER
-
 
 #define TAP_WIN_CONTROL_CODE(request,method) \
   CTL_CODE (FILE_DEVICE_UNKNOWN, request, method, FILE_ANY_ACCESS)
