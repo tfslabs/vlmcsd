@@ -106,14 +106,14 @@ int main(int argc, CARGV argv)
 #if _MSC_VER && !defined(_DEBUG)
 int __stdcall WinStartUp(void)
 {
-	WCHAR **szArgList;
+	WCHAR** szArgList;
 	int argc;
+
 	szArgList = CommandLineToArgvW(GetCommandLineW(), &argc);
 
-	int i;
-	char **argv = (char**)vlmcsd_malloc(sizeof(char*)*argc);
+	char** argv = (char**)vlmcsd_malloc(sizeof(char*) * argc);
 
-	for (i = 0; i < argc; i++)
+	for (int i = 0; i < argc; i++)
 	{
 		int size = WideCharToMultiByte(CP_UTF8, 0, szArgList[i], -1, argv[i], 0, NULL, NULL);
 		argv[i] = (char*)vlmcsd_malloc(size);

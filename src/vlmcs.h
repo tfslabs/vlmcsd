@@ -7,6 +7,7 @@
 #include CONFIG
 
 #if !defined(USE_MSRPC) && defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #endif // defined(USE_MSRPC) && defined(_WIN32)
 #include "types.h"
@@ -16,6 +17,11 @@
 #include "msrpc-client.h"
 #endif // USE_MSRPC
 #include "kms.h"
+
+#if _MSC_VER
+#include <windows.h>
+#include <shellapi.h>
+#endif
 
 #if MULTI_CALL_BINARY < 1
 #define client_main main
