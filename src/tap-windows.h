@@ -31,7 +31,7 @@
  * =============
  */
 
-#ifdef   _MSC_VER
+#ifdef   _MSC_VER && !defined(_WINDOWS_)
 #include <winioctl.h>
 #endif // _MSC_VER
 
