@@ -23,14 +23,15 @@ build-linux-docker:
   variables:
     DOCKER_HOST: "tcp://docker:2375"
     CA_CERTIFICATE: "$CA_CERTIFICATE"
+    DOCKER_TLS_CERTDIR: ""
 
   services:
   - name: docker:dind
     alias: docker
     command:
+    - /bin/sh
+    - -c
     - |
-      /bin/sh
-      -c
       echo "$CA_CERTIFICATE" > /usr/local/share/ca-certificates/ca.crt
       update-ca-certificates
       mkdir -p "/etc/docker/certs.d/${CI_REGISTRY}"
