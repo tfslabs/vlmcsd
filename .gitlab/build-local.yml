@@ -49,7 +49,7 @@ build-linux-docker:
     docker buildx build \
     --file ./.docker/Dockerfile \
     --tag "${CI_REGISTRY_IMAGE}:latest" \
-    --platform linux/386,linux/amd64,linux/arm/v5,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/riscv64,linux/s390x \
+    --platform linux/amd64,linux/arm64,linux/ppc64le,linux/riscv64,linux/s390x \
     --push .
 
   rules:
