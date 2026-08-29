@@ -4,9 +4,9 @@ permissions:
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
   schedule:
     - cron: "0 0 1 * *"
   workflow_dispatch:
@@ -19,10 +19,22 @@ jobs:
       matrix:
         arch:
           - { name: amd64, target: x86_64-linux-gnu, apt: gcc }
-          - { name: arm64, target: aarch64-linux-gnu, apt: gcc-aarch64-linux-gnu }
-          - { name: ppc64le, target: powerpc64le-linux-gnu, apt: gcc-powerpc64le-linux-gnu }
+          - {
+              name: arm64,
+              target: aarch64-linux-gnu,
+              apt: gcc-aarch64-linux-gnu,
+            }
+          - {
+              name: ppc64le,
+              target: powerpc64le-linux-gnu,
+              apt: gcc-powerpc64le-linux-gnu,
+            }
           - { name: s390x, target: s390x-linux-gnu, apt: gcc-s390x-linux-gnu }
-          - { name: riscv64, target: riscv64-linux-gnu, apt: gcc-riscv64-linux-gnu }
+          - {
+              name: riscv64,
+              target: riscv64-linux-gnu,
+              apt: gcc-riscv64-linux-gnu,
+            }
 
     steps:
       - name: Checkout code
@@ -54,7 +66,7 @@ jobs:
         with:
           name: vlmcsd-linux-${{ matrix.arch.name }}
           path: artifacts/linux-${{ matrix.arch.name }}/
-          retention-days: 14
+          retention-days: 30
 
   build-windows:
     name: Build Windows
@@ -62,7 +74,11 @@ jobs:
     strategy:
       matrix:
         arch:
-          - { name: amd64, target: x86_64-w64-mingw32, apt: gcc-mingw-w64-x86-64 }
+          - {
+              name: amd64,
+              target: x86_64-w64-mingw32,
+              apt: gcc-mingw-w64-x86-64,
+            }
           - { name: x86, target: i686-w64-mingw32, apt: gcc-mingw-w64-i686 }
 
     steps:
@@ -90,4 +106,4 @@ jobs:
         with:
           name: vlmcsd-windows-${{ matrix.arch.name }}
           path: artifacts/windows-${{ matrix.arch.name }}/
-          retention-days: 14
+          retention-days: 30
