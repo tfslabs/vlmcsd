@@ -1,0 +1,108 @@
+## It is required the `USERNAME` and `TOKEN` as the runner environment
+##  in Settings > CI/CD > Variables > Project variables
+
+stages:
+- build-cloud
+
+workflow:
+  auto_cancel:
+    on_job_failure: all
+
+  rules:
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  - if: '$CI_COMMIT_BRANCH'
+  - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  - if: '$CI_PIPELINE_SOURCE == "web"'
+  - when: never
+
+build-linux-docker:
+  stage: build-cloud
+  image: docker:cli
+
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    USERNAME: "$USERNAME"
+    TOKEN: "$TOKEN"
+
+  services:
+  - name: docker:dind
+    alias: docker
+  
+  before_script:
+  - echo "$TOKEN" | docker login --username "$USERNAME" --password-stdin
+  - docker run --privileged --rm tonistiigi/binfmt:latest --install all
+
+  script:
+  - |
+    docker buildx build \
+    --file ./.docker/Dockerfile \
+    --tag "${CI_REGISTRY_IMAGE}:latest" \
+    --platform linux/386,linux/amd64,linux/arm/v5,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/riscv64,linux/s390x \
+    --push .
+
+  rules:
+  - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+build-linux-binary:
+  image: ubuntu:noble
+  stage: build-cloud
+  parallel:
+    matrix:
+    - ARCH_NAME: amd64
+      TARGET: x86_64-linux-gnu
+      APT_PACKAGE: gcc-x86-64-linux-gnu
+    - ARCH_NAME: arm64
+      TARGET: aarch64-linux-gnu
+      APT_PACKAGE: gcc-aarch64-linux-gnu
+    - ARCH_NAME: ppc64le
+      TARGET: powerpc64le-linux-gnu
+      APT_PACKAGE: gcc-powerpc64le-linux-gnu
+    - ARCH_NAME: s390x
+      TARGET: s390x-linux-gnu
+      APT_PACKAGE: gcc-s390x-linux-gnu
+    - ARCH_NAME: riscv64
+      TARGET: riscv64-linux-gnu
+      APT_PACKAGE: gcc-riscv64-linux-gnu
+
+  script:
+  - export DEBIAN_FRONTEND=noninteractive
+  - apt update
+  - apt install -y build-essential make "${APT_PACKAGE}"
+  - make clean
+  - make all CC="${TARGET}-gcc" STRIP=0
+  - mkdir -p "artifacts/linux-${ARCH_NAME}"
+  - cp -r bin "artifacts/linux-${ARCH_NAME}/"
+  - cp -r lib "artifacts/linux-${ARCH_NAME}/"
+
+  artifacts:
+    name: "vlmcsd-linux-${ARCH_NAME}"
+    paths:
+    - "artifacts/linux-${ARCH_NAME}/"
+
+build-windows-binary:
+  image: ubuntu:noble
+  stage: build-cloud
+  parallel:
+    matrix:
+    - ARCH_NAME: amd64
+      TARGET: x86_64-w64-mingw32
+      APT_PACKAGE: gcc-mingw-w64-x86-64
+    - ARCH_NAME: x86
+      TARGET: i686-w64-mingw32
+      APT_PACKAGE: gcc-mingw-w64-i686
+
+  script:
+  - export DEBIAN_FRONTEND=noninteractive
+  - apt update
+  - apt install -y build-essential make "${APT_PACKAGE}"
+  - make clean
+  - make all CC="${TARGET}-gcc" STRIP=0
+  - mkdir -p "artifacts/windows-${ARCH_NAME}"
+  - cp -r bin "artifacts/windows-${ARCH_NAME}/"
+  - cp -r lib "artifacts/windows-${ARCH_NAME}/"
+
+  artifacts:
+    name: "vlmcsd-windows-${ARCH_NAME}"
+    paths:
+    - "artifacts/windows-${ARCH_NAME}/"
