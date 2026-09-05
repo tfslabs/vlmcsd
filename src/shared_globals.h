@@ -163,6 +163,7 @@ extern uint32_t MaxTasks;
 extern int_fast8_t LogDateAndTime;
 extern char *fn_log;
 extern int_fast8_t logstdout;
+extern char *cidr_str;
 #ifndef NO_VERBOSE_LOG
 extern int_fast8_t logverbose;
 #endif

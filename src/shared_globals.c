@@ -69,6 +69,7 @@ uint32_t MaxTasks = SEM_VALUE_MAX;
 int_fast8_t LogDateAndTime = TRUE;
 char *fn_log = NULL;
 int_fast8_t logstdout = 0;
+char *cidr_str = NULL;
 #ifndef NO_VERBOSE_LOG
 int_fast8_t logverbose = 0;
 #endif // NO_VERBOSE_LOG
