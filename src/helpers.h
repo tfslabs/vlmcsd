@@ -54,4 +54,18 @@ int shmdt(const void *shmaddr);
 int shmctl(int shmid, int cmd, /*struct shmid_ds*/void *buf);
 #endif // __ANDROID__ && !defined(USE_THREADS)
 
+extern char** splitByDelim(char* str, char deli);
+extern uint32_t getSizeOfCharArr(char** arr);
+extern int_fast8_t isPosNum(char* str);
+extern uint32_t strToPosNum(char* str);
+
+// Used for Ipv4
+#ifndef IP4FILTER_OFF
+extern struct cidrIpv4;
+extern int_fast8_t isValidIpv4Network(char* ip_str);
+extern int_fast8_t isValidCidrIpv4(char* cidr_str);
+extern int_fast8_t* parseIpv4ToArr(char* ip_str);
+extern int_fast8_t isIpv4InCidr(char* ip_str, char* cidr_str);
+#endif //IP4FILTER_OFF
+
 #endif // HELPERS_H

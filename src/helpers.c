@@ -2,9 +2,9 @@
  * Helper functions used by other modules
  */
 
- //#ifndef _GNU_SOURCE
- //#define _GNU_SOURCE
- //#endif
+// #ifndef _GNU_SOURCE
+// #define _GNU_SOURCE
+// #endif
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -52,46 +52,53 @@
 #include <sys/sysctl.h>
 #endif
 
- /*
-  *  UCS2 <-> UTF-8 functions
-  *  All functions use little endian UCS2 since we only need it to communicate with Windows via RPC
-  */
+struct cidrIpv4
+{
+	char *network; // Network part, looks like 127.0.0.1
+	uint8_t host;  // Host part, looks like the 8
+};
 
-  // Convert one character from UTF-8 to UCS2
-  // Returns 0xffff, if utf-8 evaluates to > 0xfffe (outside basic multilingual pane)
+/*
+ *  UCS2 <-> UTF-8 functions
+ *  All functions use little endian UCS2 since we only need it to communicate with Windows via RPC
+ */
+
+// Convert one character from UTF-8 to UCS2
+// Returns 0xffff, if utf-8 evaluates to > 0xfffe (outside basic multilingual pane)
 WCHAR utf8_to_ucs2_char(const unsigned char *input, const unsigned char **end_ptr)
 {
 	*end_ptr = input;
 	if (input[0] == 0)
 		return (WCHAR)~0;
 
-	if (input[0] < 0x80) {
+	if (input[0] < 0x80)
+	{
 		*end_ptr = input + 1;
 		return LE16(input[0]);
 	}
 
-	if ((input[0] & 0xE0) == 0xE0) {
+	if ((input[0] & 0xE0) == 0xE0)
+	{
 
 		if (input[1] == 0 || input[2] == 0)
 			return (WCHAR)~0;
 
 		*end_ptr = input + 3;
 
-		return
-			LE16((input[0] & 0x0F) << 12 |
-			(input[1] & 0x3F) << 6 |
-				(input[2] & 0x3F));
+		return LE16((input[0] & 0x0F) << 12 |
+					(input[1] & 0x3F) << 6 |
+					(input[2] & 0x3F));
 	}
 
-	if ((input[0] & 0xC0) == 0xC0) {
+	if ((input[0] & 0xC0) == 0xC0)
+	{
 		if (input[1] == 0)
 			return (WCHAR)~0;
 
 		*end_ptr = input + 2;
 
-		return
-			LE16((input[0] & 0x1F) << 6 |
-			(input[1] & 0x3F));
+		return LE16((input[0] & 0x1F) << 6 |
+					(input[1] & 0x3F));
 	}
 	return (WCHAR)~0;
 }
@@ -103,22 +110,26 @@ int ucs2_to_utf8_char(const WCHAR ucs2_le, char *utf8)
 {
 	const WCHAR ucs2 = LE16(ucs2_le);
 
-	if (ucs2 < 0x80) {
+	if (ucs2 < 0x80)
+	{
 		utf8[0] = (char)ucs2;
 		utf8[1] = '\0';
 		return 1;
 	}
 
-	if (ucs2 >= 0x80 && ucs2 < 0x800) {
+	if (ucs2 >= 0x80 && ucs2 < 0x800)
+	{
 		utf8[0] = (char)((ucs2 >> 6) | 0xC0);
 		utf8[1] = (char)((ucs2 & 0x3F) | 0x80);
 		utf8[2] = '\0';
 		return 2;
 	}
 
-	if (ucs2 >= 0x800 && ucs2 < 0xFFFF) {
+	if (ucs2 >= 0x800 && ucs2 < 0xFFFF)
+	{
 
-		if (ucs2 >= 0xD800 && ucs2 <= 0xDFFF) {
+		if (ucs2 >= 0xD800 && ucs2 <= 0xDFFF)
+		{
 			/* Ill-formed (UTF-16 ouside of BMP) */
 			return -1;
 		}
@@ -133,42 +144,48 @@ int ucs2_to_utf8_char(const WCHAR ucs2_le, char *utf8)
 	return -1;
 }
 
-
 // Converts UTF8 to UCS2. Returns size in bytes of the converted string or -1 on error
-size_t utf8_to_ucs2(WCHAR* const ucs2_le, const char* const utf8, const size_t maxucs2, const size_t maxutf8)
+size_t utf8_to_ucs2(WCHAR *const ucs2_le, const char *const utf8, const size_t maxucs2, const size_t maxutf8)
 {
-	const unsigned char* current_utf8 = (unsigned char*)utf8;
-	WCHAR* current_ucs2_le = ucs2_le;
+	const unsigned char *current_utf8 = (unsigned char *)utf8;
+	WCHAR *current_ucs2_le = ucs2_le;
 
 	for (; *current_utf8; current_ucs2_le++)
 	{
-		size_t size = (char*)current_utf8 - utf8;
+		size_t size = (char *)current_utf8 - utf8;
 
-		if (size >= maxutf8) return (size_t)-1;
-		if (((*current_utf8 & 0xc0) == 0xc0) && (size >= maxutf8 - 1)) return (size_t)-1;
-		if (((*current_utf8 & 0xe0) == 0xe0) && (size >= maxutf8 - 2)) return (size_t)-1;
-		if (current_ucs2_le - ucs2_le >= (intptr_t)maxucs2 - 1) return (size_t)-1;
+		if (size >= maxutf8)
+			return (size_t)-1;
+		if (((*current_utf8 & 0xc0) == 0xc0) && (size >= maxutf8 - 1))
+			return (size_t)-1;
+		if (((*current_utf8 & 0xe0) == 0xe0) && (size >= maxutf8 - 2))
+			return (size_t)-1;
+		if (current_ucs2_le - ucs2_le >= (intptr_t)maxucs2 - 1)
+			return (size_t)-1;
 
 		*current_ucs2_le = utf8_to_ucs2_char(current_utf8, &current_utf8);
 		current_ucs2_le[1] = 0;
 
-		if (*current_ucs2_le == (WCHAR)-1) return (size_t)-1;
+		if (*current_ucs2_le == (WCHAR)-1)
+			return (size_t)-1;
 	}
 	return current_ucs2_le - ucs2_le;
 }
 
 // Converts UCS2 to UTF-8. Returns TRUE or FALSE
-BOOL ucs2_to_utf8(const WCHAR* const ucs2_le, char* utf8, size_t maxucs2, size_t maxutf8)
+BOOL ucs2_to_utf8(const WCHAR *const ucs2_le, char *utf8, size_t maxucs2, size_t maxutf8)
 {
 	char utf8_char[4];
-	const WCHAR* current_ucs2 = ucs2_le;
+	const WCHAR *current_ucs2 = ucs2_le;
 	unsigned int index_utf8 = 0;
 
 	for (*utf8 = 0; *current_ucs2; current_ucs2++)
 	{
-		if (current_ucs2 - ucs2_le > (intptr_t)maxucs2) return FALSE;
+		if (current_ucs2 - ucs2_le > (intptr_t)maxucs2)
+			return FALSE;
 		int len = ucs2_to_utf8_char(*current_ucs2, utf8_char);
-		if (index_utf8 + len > maxutf8) return FALSE;
+		if (index_utf8 + len > maxutf8)
+			return FALSE;
 		strncat(utf8, utf8_char, len);
 		index_utf8 += len;
 	}
@@ -178,7 +195,6 @@ BOOL ucs2_to_utf8(const WCHAR* const ucs2_le, char* utf8, size_t maxucs2, size_t
 
 /* End of UTF-8 <-> UCS2 conversion */
 
-
 // Checks, whether a string is a valid integer number between min and max. Returns TRUE or FALSE. Puts int value in *value
 BOOL stringToInt(const char *const szValue, const unsigned int min, const unsigned int max, unsigned int *const value)
 {
@@ -187,7 +203,7 @@ BOOL stringToInt(const char *const szValue, const unsigned int min, const unsign
 	errno = 0;
 	long long result = vlmcsd_strtoll(szValue, &nextchar, 10);
 
-	if (errno || result < (long long)min || result >(long long)max || *nextchar)
+	if (errno || result < (long long)min || result > (long long)max || *nextchar)
 	{
 		return FALSE;
 	}
@@ -196,31 +212,34 @@ BOOL stringToInt(const char *const szValue, const unsigned int min, const unsign
 	return TRUE;
 }
 
-
-//Converts a String Guid to a host binary guid in host endianess
+// Converts a String Guid to a host binary guid in host endianess
 int_fast8_t string2UuidLE(const char *const restrict input, GUID *const restrict guid)
 {
 	int i;
 
-	if (strlen(input) < GUID_STRING_LENGTH) return FALSE;
-	if (input[8] != '-' || input[13] != '-' || input[18] != '-' || input[23] != '-') return FALSE;
+	if (strlen(input) < GUID_STRING_LENGTH)
+		return FALSE;
+	if (input[8] != '-' || input[13] != '-' || input[18] != '-' || input[23] != '-')
+		return FALSE;
 
 	for (i = 0; i < GUID_STRING_LENGTH; i++)
 	{
-		if (i == 8 || i == 13 || i == 18 || i == 23) continue;
+		if (i == 8 || i == 13 || i == 18 || i == 23)
+			continue;
 
 		const char c = (char)toupper((int)input[i]);
 
-		if (c < '0' || c > 'F' || (c > '9' && c < 'A')) return FALSE;
+		if (c < '0' || c > 'F' || (c > '9' && c < 'A'))
+			return FALSE;
 	}
 
 	char inputCopy[GUID_STRING_LENGTH + 1];
 	strncpy(inputCopy, input, GUID_STRING_LENGTH + 1);
 	inputCopy[8] = inputCopy[13] = inputCopy[18] = 0;
 
-	hex2bin((BYTE*)&guid->Data1, inputCopy, 8);
-	hex2bin((BYTE*)&guid->Data2, inputCopy + 9, 4);
-	hex2bin((BYTE*)&guid->Data3, inputCopy + 14, 4);
+	hex2bin((BYTE *)&guid->Data1, inputCopy, 8);
+	hex2bin((BYTE *)&guid->Data2, inputCopy + 9, 4);
+	hex2bin((BYTE *)&guid->Data3, inputCopy + 14, 4);
 	hex2bin(guid->Data4, input + 19, 16);
 
 	guid->Data1 = BS32(guid->Data1);
@@ -228,7 +247,6 @@ int_fast8_t string2UuidLE(const char *const restrict input, GUID *const restrict
 	guid->Data3 = BS16(guid->Data3);
 	return TRUE;
 }
-
 
 __pure DWORD timeSpanString2Seconds(const char *const restrict argument)
 {
@@ -253,14 +271,15 @@ __pure DWORD timeSpanString2Seconds(const char *const restrict argument)
 		return 0;
 	}
 
-	if (*unitId && unitId[1]) return 0;
-	if (val < 1) val = 1;
+	if (*unitId && unitId[1])
+		return 0;
+	if (val < 1)
+		val = 1;
 	return (DWORD)(val & UINT_MAX);
 }
 
-
 #if !IS_LIBRARY
-//Checks a command line argument if it is numeric and between min and max. Returns the numeric value or exits on error
+// Checks a command line argument if it is numeric and between min and max. Returns the numeric value or exits on error
 __pure unsigned int getOptionArgumentInt(const char o, const unsigned int min, const unsigned int max)
 {
 	unsigned int result;
@@ -279,7 +298,7 @@ void optReset(void)
 {
 #if __minix__ || defined(__BSD__) || defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__)
 	optind = 1;
-	optreset = 1; // Makes newer BSD getopt happy
+	optreset = 1;		  // Makes newer BSD getopt happy
 #elif defined(__UCLIBC__) // uClibc headers also define __GLIBC__ so be careful here
 	optind = 0; // uClibc seeks compatibility with GLIBC
 #elif defined(__GLIBC__)
@@ -293,7 +312,7 @@ void optReset(void)
 #if _WIN32 || __CYGWIN__
 
 // Returns a static message buffer containing text for a given Win32 error. Not thread safe (same as strerror)
-char* win_strerror(const int message)
+char *win_strerror(const int message)
 {
 #define STRERROR_BUFFER_SIZE 256
 	static char buffer[STRERROR_BUFFER_SIZE];
@@ -304,26 +323,25 @@ char* win_strerror(const int message)
 
 #endif // _WIN32 || __CYGWIN__
 
-
 /*
  * parses an address in the form host:[port] in addr
  * returns host and port in seperate strings
  */
-void parseAddress(char *const addr, char** szHost, char** szPort)
+void parseAddress(char *const addr, char **szHost, char **szPort)
 {
 	*szHost = addr;
 
-#	ifndef NO_SOCKETS
-	*szPort = (char*)defaultport;
-#	else // NO_SOCKETS
+#ifndef NO_SOCKETS
+	*szPort = (char *)defaultport;
+#else  // NO_SOCKETS
 	*szPort = "1688";
-#	endif // NO_SOCKETS
+#endif // NO_SOCKETS
 
 	char *lastcolon = strrchr(addr, ':');
 	char *firstcolon = strchr(addr, ':');
 	char *closingbracket = strrchr(addr, ']');
 
-	if (*addr == '[' && closingbracket) //Address in brackets
+	if (*addr == '[' && closingbracket) // Address in brackets
 	{
 		*closingbracket = 0;
 		(*szHost)++;
@@ -331,26 +349,24 @@ void parseAddress(char *const addr, char** szHost, char** szPort)
 		if (closingbracket[1] == ':')
 			*szPort = closingbracket + 2;
 	}
-	else if (firstcolon && firstcolon == lastcolon) //IPv4 address or hostname with port
+	else if (firstcolon && firstcolon == lastcolon) // IPv4 address or hostname with port
 	{
 		*firstcolon = 0;
 		*szPort = firstcolon + 1;
 	}
 }
 
-
 // Initialize random generator (needs to be done in each thread)
 void randomNumberInit()
 {
-#	if _MSC_VER
+#if _MSC_VER
 	srand(GetTickCount());
-#	else
+#else
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	srand((unsigned int)(tv.tv_sec ^ tv.tv_usec));
-#	endif
+#endif
 }
-
 
 // We always exit immediately if any OOM condition occurs
 __noreturn void OutOfMemory(void)
@@ -359,26 +375,26 @@ __noreturn void OutOfMemory(void)
 	exit(VLMCSD_ENOMEM);
 }
 
-
-void* vlmcsd_malloc(size_t len)
+void *vlmcsd_malloc(size_t len)
 {
-	void* buf = malloc(len);
-	if (!buf) OutOfMemory();
+	void *buf = malloc(len);
+	if (!buf)
+		OutOfMemory();
 	return buf;
 }
 
-char* vlmcsd_strdup(const char* src)
+char *vlmcsd_strdup(const char *src)
 {
-#	if _MSC_VER
-	char* dst = _strdup(src);
-#	else // !_MSC_VER
-	char* dst = strdup(src);
-#	endif
+#if _MSC_VER
+	char *dst = _strdup(src);
+#else // !_MSC_VER
+	char *dst = strdup(src);
+#endif
 
-	if (!dst) OutOfMemory();
+	if (!dst)
+		OutOfMemory();
 	return dst;
 }
-
 
 /*
  * Converts hex digits to bytes in big-endian order.
@@ -387,22 +403,25 @@ char* vlmcsd_strdup(const char* src)
 void hex2bin(BYTE *const bin, const char *hex, const size_t maxbin)
 {
 	static const char *const hexdigits = "0123456789ABCDEF";
-	char* nextchar;
+	char *nextchar;
 	size_t i;
 
-	for (i = 0; (i < 16) && utf8_to_ucs2_char((const unsigned char*)hex, (const unsigned char**)&nextchar) != (WCHAR)-1; hex = nextchar)
+	for (i = 0; (i < 16) && utf8_to_ucs2_char((const unsigned char *)hex, (const unsigned char **)&nextchar) != (WCHAR)-1; hex = nextchar)
 	{
-		const char* pos = strchr(hexdigits, toupper((int)*hex));
-		if (!pos) continue;
+		const char *pos = strchr(hexdigits, toupper((int)*hex));
+		if (!pos)
+			continue;
 
-		if (!(i & 1)) bin[i >> 1] = 0;
+		if (!(i & 1))
+			bin[i >> 1] = 0;
 		bin[i >> 1] |= (char)(pos - hexdigits);
-		if (!(i & 1)) bin[i >> 1] <<= 4;
+		if (!(i & 1))
+			bin[i >> 1] <<= 4;
 		i++;
-		if (i >> 1 > maxbin) break;
+		if (i >> 1 > maxbin)
+			break;
 	}
 }
-
 
 __pure BOOL getArgumentBool(int_fast8_t *result, const char *const argument)
 {
@@ -410,8 +429,7 @@ __pure BOOL getArgumentBool(int_fast8_t *result, const char *const argument)
 		!strncasecmp(argument, "true", 4) ||
 		!strncasecmp(argument, "on", 2) ||
 		!strncasecmp(argument, "yes", 3) ||
-		!strncasecmp(argument, "1", 1)
-		)
+		!strncasecmp(argument, "1", 1))
 	{
 		*result = TRUE;
 		return TRUE;
@@ -420,8 +438,7 @@ __pure BOOL getArgumentBool(int_fast8_t *result, const char *const argument)
 		!strncasecmp(argument, "false", 5) ||
 		!strncasecmp(argument, "off", 3) ||
 		!strncasecmp(argument, "no", 2) ||
-		!strncasecmp(argument, "0", 1)
-		)
+		!strncasecmp(argument, "0", 1))
 	{
 		*result = FALSE;
 		return TRUE;
@@ -449,13 +466,14 @@ __noreturn static void dataFileFormatError()
 #if !defined(DATA_FILE) || !defined(NO_SIGHUP)
 void getExeName()
 {
-	if (fn_exe != NULL) return;
+	if (fn_exe != NULL)
+		return;
 
-#	if (__GLIBC__ || __linux__) && defined(USE_AUXV)
+#if (__GLIBC__ || __linux__) && defined(USE_AUXV)
 
-	fn_exe = (char*)getauxval(AT_EXECFN);
+	fn_exe = (char *)getauxval(AT_EXECFN);
 
-#	elif (__ANDROID__ && __ANDROID_API__ < 16) || (__UCLIBC__ && __UCLIBC_MAJOR__ < 1 && !defined(NO_PROCFS)) // Workaround for older uclibc
+#elif (__ANDROID__ && __ANDROID_API__ < 16) || (__UCLIBC__ && __UCLIBC_MAJOR__ < 1 && !defined(NO_PROCFS)) // Workaround for older uclibc
 
 	char temp[PATH_MAX + 1];
 
@@ -464,11 +482,11 @@ void getExeName()
 		fn_exe = vlmcsd_strdup(temp);
 	}
 
-#	elif (__linux__ || __CYGWIN__) && !defined(NO_PROCFS)
+#elif (__linux__ || __CYGWIN__) && !defined(NO_PROCFS)
 
 	fn_exe = realpath("/proc/self/exe", NULL);
 
-#	elif (__FreeBSD__ || __FreeBSD_kernel__)
+#elif (__FreeBSD__ || __FreeBSD_kernel__)
 
 	int mib[4];
 	mib[0] = CTL_KERN;
@@ -483,19 +501,19 @@ void getExeName()
 		fn_exe = vlmcsd_strdup(path);
 	}
 
-#	elif (__DragonFly__) && !defined(NO_PROCFS)
+#elif (__DragonFly__) && !defined(NO_PROCFS)
 
 	fn_exe = realpath("/proc/curproc/file", NULL);
 
-#	elif __NetBSD__ && !defined(NO_PROCFS)
+#elif __NetBSD__ && !defined(NO_PROCFS)
 
 	fn_exe = realpath("/proc/curproc/exe", NULL);
 
-#	elif __sun__
+#elif __sun__
 
 	fn_exe = getexecname();
 
-#	elif __APPLE__
+#elif __APPLE__
 
 	char path[PATH_MAX + 1];
 	uint32_t size = sizeof(path);
@@ -505,16 +523,16 @@ void getExeName()
 		fn_exe = vlmcsd_strdup(path);
 	}
 
-#	elif _WIN32
+#elif _WIN32
 
 	char path[512];
 	GetModuleFileName(GetModuleHandle(NULL), path, 512);
 	path[511] = 0;
 	fn_exe = vlmcsd_strdup(path);
 
-#	else
+#else
 	// Sorry no exe detection
-#	endif
+#endif
 }
 #endif // defined(DATA_FILE) && defined(NO_SIGHUP)
 
@@ -529,7 +547,7 @@ static void getDefaultDataFile()
 	strncat(fileName, "\\vlmcsd.kmd", MAX_PATH - 11);
 	fn_data = vlmcsd_strdup(fileName);
 }
-#else // !_WIN32
+#else  // !_WIN32
 static void getDefaultDataFile()
 {
 	char fileName[512];
@@ -537,11 +555,11 @@ static void getDefaultDataFile()
 
 	if (!fn_exe)
 	{
-		fn_data = (char*)"/etc/vlmcsd.kmd";
+		fn_data = (char *)"/etc/vlmcsd.kmd";
 		return;
 	}
 
-	char* fn_exe_copy = vlmcsd_strdup(fn_exe);
+	char *fn_exe_copy = vlmcsd_strdup(fn_exe);
 	strncpy(fileName, dirname(fn_exe_copy), 512);
 	free(fn_exe_copy);
 	strncat(fileName, "/vlmcsd.kmd", 500);
@@ -552,19 +570,20 @@ static void getDefaultDataFile()
 
 void loadKmsData()
 {
-#	ifndef NO_INTERNAL_DATA
+#ifndef NO_INTERNAL_DATA
 	KmsData = (PVlmcsdHeader_t)DefaultKmsData;
-#	endif // NO_INTERNAL_DATA
+#endif // NO_INTERNAL_DATA
 
-#	ifndef NO_EXTERNAL_DATA
+#ifndef NO_EXTERNAL_DATA
 	long size;
-#	ifndef NO_INTERNAL_DATA
+#ifndef NO_INTERNAL_DATA
 	size = (long)getDefaultKmsDataSize();
-#	endif // NO_INTERNAL_DATA
+#endif // NO_INTERNAL_DATA
 
-#	ifndef DATA_FILE
-	if (!fn_data) getDefaultDataFile();
-#	endif // DATA_FILE
+#ifndef DATA_FILE
+	if (!fn_data)
+		getDefaultDataFile();
+#endif // DATA_FILE
 
 	if (strcmp(fn_data, "-"))
 	{
@@ -572,38 +591,43 @@ void loadKmsData()
 
 		if (!file)
 		{
-#			ifndef NO_INTERNAL_DATA
+#ifndef NO_INTERNAL_DATA
 			if (ExplicitDataLoad)
-#			endif // NO_INTERNAL_DATA
+#endif // NO_INTERNAL_DATA
 			{
 				dataFileReadError();
 			}
 		}
 		else
 		{
-			if (fseek(file, 0, SEEK_END)) dataFileReadError();
+			if (fseek(file, 0, SEEK_END))
+				dataFileReadError();
 			size = ftell(file);
-			if (size == -1L) dataFileReadError();
+			if (size == -1L)
+				dataFileReadError();
 
 			KmsData = (PVlmcsdHeader_t)vlmcsd_malloc(size);
-			if (fseek(file, 0, SEEK_SET)) dataFileReadError();
+			if (fseek(file, 0, SEEK_SET))
+				dataFileReadError();
 
 			const size_t bytesRead = fread(KmsData, 1, size, file);
-			if ((long)bytesRead != size) dataFileReadError();
+			if ((long)bytesRead != size)
+				dataFileReadError();
 			fclose(file);
 
-#			if !defined(NO_LOG) && !defined(NO_SOCKETS)
-			if (!InetdMode) logger("Read KMS data file version %u.%u %s\n", (unsigned int)LE16(KmsData->MajorVer), (unsigned int)LE16(KmsData->MinorVer), fn_data);
-#			endif // NO_LOG
+#if !defined(NO_LOG) && !defined(NO_SOCKETS)
+			if (!InetdMode)
+				logger("Read KMS data file version %u.%u %s\n", (unsigned int)LE16(KmsData->MajorVer), (unsigned int)LE16(KmsData->MinorVer), fn_data);
+#endif // NO_LOG
 		}
 	}
 
+#endif // NO_EXTERNAL_DATA
 
-#	endif // NO_EXTERNAL_DATA
-
-#	ifndef UNSAFE_DATA_LOAD
-	if (((BYTE*)KmsData)[size - 1] != 0) dataFileFormatError();
-#	endif // UNSAFE_DATA_LOAD
+#ifndef UNSAFE_DATA_LOAD
+	if (((BYTE *)KmsData)[size - 1] != 0)
+		dataFileFormatError();
+#endif // UNSAFE_DATA_LOAD
 
 	KmsData->MajorVer = LE16(KmsData->MajorVer);
 	KmsData->MinorVer = LE16(KmsData->MinorVer);
@@ -616,26 +640,28 @@ void loadKmsData()
 
 	for (i = 0; i < vlmcsd_countof(KmsData->Datapointers); i++)
 	{
-		KmsData->Datapointers[i].Pointer = (BYTE*)KmsData + LE64(KmsData->Datapointers[i].Offset);
-#		ifndef UNSAFE_DATA_LOAD
-		if ((BYTE*)KmsData->Datapointers[i].Pointer > (BYTE*)KmsData + size) dataFileFormatError();
-#		endif // UNSAFE_DATA_LOAD
+		KmsData->Datapointers[i].Pointer = (BYTE *)KmsData + LE64(KmsData->Datapointers[i].Offset);
+#ifndef UNSAFE_DATA_LOAD
+		if ((BYTE *)KmsData->Datapointers[i].Pointer > (BYTE *)KmsData + size)
+			dataFileFormatError();
+#endif // UNSAFE_DATA_LOAD
 	}
 
 	for (i = 0; i < KmsData->CsvlkCount; i++)
 	{
 		PCsvlkData_t csvlkData = &KmsData->CsvlkData[i];
-		csvlkData->EPid = (char*)KmsData + LE64(csvlkData->EPidOffset);
+		csvlkData->EPid = (char *)KmsData + LE64(csvlkData->EPidOffset);
 		csvlkData->ReleaseDate = LE64(csvlkData->ReleaseDate);
-#		ifndef UNSAFE_DATA_LOAD
-		if (csvlkData->EPid > (char*)KmsData + size) dataFileFormatError();
-#		endif // UNSAFE_DATA_LOAD
+#ifndef UNSAFE_DATA_LOAD
+		if (csvlkData->EPid > (char *)KmsData + size)
+			dataFileFormatError();
+#endif // UNSAFE_DATA_LOAD
 
-#		ifndef NO_RANDOM_EPID
+#ifndef NO_RANDOM_EPID
 		csvlkData->GroupId = LE32(csvlkData->GroupId);
 		csvlkData->MinKeyId = LE32(csvlkData->MinKeyId);
 		csvlkData->MaxKeyId = LE32(csvlkData->MaxKeyId);
-#		endif // NO_RANDOM_EPID
+#endif // NO_RANDOM_EPID
 	}
 
 	for (i = 0; i < (uint32_t)KmsData->HostBuildCount; i++)
@@ -645,43 +671,43 @@ void loadKmsData()
 		hostBuild->Flags = LE32(hostBuild->Flags);
 		hostBuild->PlatformId = LE32(hostBuild->PlatformId);
 		hostBuild->ReleaseDate = LE64(hostBuild->ReleaseDate);
-		hostBuild->DisplayName = (char*)KmsData + LE64(hostBuild->DisplayNameOffset);
-#		ifndef UNSAFE_DATA_LOAD
-		if (hostBuild->DisplayName > (char*)KmsData + size) dataFileFormatError();
-#		endif // UNSAFE_DATA_LOAD
+		hostBuild->DisplayName = (char *)KmsData + LE64(hostBuild->DisplayNameOffset);
+#ifndef UNSAFE_DATA_LOAD
+		if (hostBuild->DisplayName > (char *)KmsData + size)
+			dataFileFormatError();
+#endif // UNSAFE_DATA_LOAD
 	}
 
 	const uint32_t totalItemCount = KmsData->AppItemCount + KmsData->KmsItemCount + KmsData->SkuItemCount;
 
-#	ifndef NO_EXTERNAL_DATA
+#ifndef NO_EXTERNAL_DATA
 	if (
 		memcmp(KmsData->Magic, "KMD", sizeof(KmsData->Magic)) ||
 		KmsData->MajorVer != 2
-#		ifndef UNSAFE_DATA_LOAD
+#ifndef UNSAFE_DATA_LOAD
 		||
 		sizeof(VlmcsdHeader_t) + totalItemCount * sizeof(VlmcsdData_t) >= ((uint64_t)size)
-#		endif //UNSAFE_DATA_LOAD
-		)
+#endif // UNSAFE_DATA_LOAD
+	)
 	{
 		dataFileFormatError();
 	}
-#	endif // NO_EXTERNAL_DATA
+#endif // NO_EXTERNAL_DATA
 
 	for (i = 0; i < totalItemCount; i++)
 	{
 		PVlmcsdData_t item = &KmsData->AppItemList[i];
-		item->Name = (char*)KmsData + LE64(item->NameOffset);
+		item->Name = (char *)KmsData + LE64(item->NameOffset);
 
-#		ifndef UNSAFE_DATA_LOAD
+#ifndef UNSAFE_DATA_LOAD
 		if (
-			item->Name >= (char*)KmsData + (uint64_t)size ||
+			item->Name >= (char *)KmsData + (uint64_t)size ||
 			(KmsData->AppItemCount && item->AppIndex >= KmsData->AppItemCount) ||
-			item->KmsIndex >= KmsData->KmsItemCount
-			)
+			item->KmsIndex >= KmsData->KmsItemCount)
 		{
 			dataFileFormatError();
 		}
-#		endif // UNSAFE_DATA_LOAD
+#endif // UNSAFE_DATA_LOAD
 	}
 }
 
@@ -697,7 +723,6 @@ void exitOnWarningLevel(const int_fast8_t level)
 #endif // !NO_SOCKETS
 
 #endif // IS_LIBRARY
-
 
 #if __ANDROID__ && !defined(USE_THREADS) // Bionic does not wrap these syscalls (intentionally because Google fears, developers don't know how to use it)
 
@@ -723,7 +748,7 @@ int shmdt(const void *shmaddr)
 #endif // __NR_shmdt
 
 #ifdef __NR_shmctl
-int shmctl(int shmid, int cmd, /*struct shmid_ds*/void *buf)
+int shmctl(int shmid, int cmd, /*struct shmid_ds*/ void *buf)
 {
 	return syscall(__NR_shmctl, shmid, cmd, buf);
 }
@@ -731,4 +756,317 @@ int shmctl(int shmid, int cmd, /*struct shmid_ds*/void *buf)
 
 #endif // __ANDROID__ && !defined(USE_THREADS)
 
+/*
+	Split a string into parts by a deli
+	For example:
+		Inparam: str = "abc.edf", deli = '.'
+		Out: ["abc", "edf"]
+*/
+char **splitByDelim(char *str, char deli)
+{
+	if (!str)
+		return NULL;
 
+	size_t src_len = strlen(str);
+	size_t max_tokens = src_len + 1;
+
+	// allocate and zero-initialize pointers
+	char **strSpl = calloc(max_tokens + 1, sizeof(char *)); // +1 for final NULL
+	if (!strSpl)
+		return NULL;
+
+	size_t iteration = 0;
+	for (size_t i = 0; i < src_len; ++i)
+	{
+		if (str[i] == deli)
+		{
+			// move to next token, avoid overflow
+			if (iteration + 1 >= max_tokens)
+				break;
+			iteration++;
+			continue;
+		}
+
+		size_t cur_len = strSpl[iteration] ? strlen(strSpl[iteration]) : 0;
+
+		char *temp = realloc(strSpl[iteration], cur_len + 2); // +1 char + '\0'
+		if (!temp)
+		{
+			// cleanup on failure
+			for (size_t k = 0; k <= max_tokens; ++k)
+				free(strSpl[k]);
+			free(strSpl);
+			return NULL;
+		}
+
+		temp[cur_len] = str[i];
+		temp[cur_len + 1] = '\0';
+		strSpl[iteration] = temp;
+	}
+
+	return strSpl;
+}
+
+/*
+	Return for how many string in an array
+	For example:
+		Inparam: arr = ["abc", "def"]
+		Output: (uint32_t) 2
+*/
+uint32_t getSizeOfCharArr(char **arr)
+{
+	if (!arr)
+	{
+		return 0;
+	}
+
+	uint32_t c = 0;
+	while (arr[c] != NULL)
+	{
+		size_t len = 0;
+
+#ifdef _MSC_VER
+		__try
+		{
+			len = strlen(arr[c]);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			break;
+		}
+#else  // _MSC_VER
+		len = strlen(arr[c]);
+#endif // _MSC_VER
+
+		if (len == 0)
+		{
+			break;
+		}
+
+		c++;
+	}
+
+	return c;
+}
+
+/*
+	Check if a string is a positive number
+	For example:
+		Inparam: str = "32"
+		Out: (int_fast8_t) 1 (or TRUE)
+*/
+int_fast8_t isPosNum(char *str)
+{
+	if (!str)
+		return FALSE;
+
+	for (size_t i = 0; i < strlen(str); i++)
+	{
+		if ((uint8_t)str[i] < (uint8_t)'0' || (uint8_t)str[i] > (uint8_t)'9')
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+/*
+	Convert a string to a positive number
+	For example:
+		Inpram: str = "32"
+		Out: (uint32_t) 32
+*/
+uint32_t strToPosNum(char *str)
+{
+	if (!str)
+		return -1;
+
+	if (!isPosNum(str))
+		return -1;
+
+	uint32_t num = 0;
+
+	size_t strLen = (size_t)strlen(str);
+	if (strLen > 10)
+		return -1;
+
+	for (size_t i = 0; i < strLen; i++)
+	{
+		uint32_t base = pow(10.0, (double)(strLen - i - 1));
+		num += ((uint8_t)str[i] - (uint8_t)'0') * base;
+	}
+
+	return num;
+}
+
+// IPv4 Handlers
+
+#ifndef IP4FILTER_OFF
+
+// Parse the Ipv4 into an array of bits
+int_fast8_t *parseIpv4ToArr(char *ip_str)
+{
+	if (!ip_str)
+		return NULL;
+	if (!isValidIpv4Network(ip_str))
+		return NULL;
+
+	int_fast8_t *ipv4_bits = malloc(32 * sizeof(int_fast8_t));
+	if (!ipv4_bits)
+		return NULL;
+
+	char **ip_part_arr = splitByDelim(ip_str, '.');
+	if (!ip_part_arr || getSizeOfCharArr(ip_part_arr) != 4)
+	{
+		if (ip_part_arr)
+		{
+			for (uint32_t k = 0; k < getSizeOfCharArr(ip_part_arr); k++)
+				free(ip_part_arr[k]);
+			free(ip_part_arr);
+		}
+		free(ipv4_bits);
+		return NULL;
+	}
+
+	for (uint8_t i = 0; i < 4; i++)
+	{
+		uint32_t ip_prt_int = strToPosNum(ip_part_arr[i]);
+
+		// strToPosNum returns -1 (as large uint) on error; check range 0..255
+		if (ip_prt_int > 255)
+		{
+			// cleanup
+			for (uint32_t k = 0; k < getSizeOfCharArr(ip_part_arr); k++)
+				free(ip_part_arr[k]);
+			free(ip_part_arr);
+			free(ipv4_bits);
+			return NULL;
+		}
+
+		// Fill bits: most-significant bit first for each octet
+		for (uint8_t bit = 0; bit < 8; bit++)
+		{
+			uint8_t value = (uint8_t)((ip_prt_int >> (7 - bit)) & 0x1);
+			ipv4_bits[i * 8 + bit] = (int_fast8_t)value;
+		}
+	}
+
+	// cleanup split parts
+	for (uint32_t k = 0; k < getSizeOfCharArr(ip_part_arr); k++)
+		free(ip_part_arr[k]);
+	free(ip_part_arr);
+
+	return ipv4_bits;
+}
+
+// Return if an IPv4 is valid or not
+// Check status: Pass
+int_fast8_t isValidIpv4Network(char *ip_str)
+{
+	struct in_addr dst;
+
+#if defined(_WIN32) || defined(_WIN64)
+	// MSVC
+	int result = InetPtonA(AF_INET, ip_str, &dst);
+#else
+	// POSIX
+	int result = inet_pton(AF_INET, ip_str, &dst);
+#endif
+
+	return (result == 1) ? 1 : 0;
+}
+
+// Return if a IPv4 CIDR is valid or not
+// Check status: Pass
+int_fast8_t isValidCidrIpv4(char *cidr_str)
+{
+	if (!cidr_str)
+	{
+		return FALSE;
+	}
+
+	char **cidr_pts = splitByDelim(cidr_str, '/');
+
+	if (getSizeOfCharArr(cidr_pts) != 2)
+	{
+		return FALSE;
+	}
+
+	struct cidrIpv4 cidr_Ipv4;
+	cidr_Ipv4.network = cidr_pts[0];
+	cidr_Ipv4.host = (uint8_t)strToPosNum(cidr_pts[1]);
+
+	free(cidr_pts);
+
+	return (isValidIpv4Network(cidr_Ipv4.network) && (cidr_Ipv4.host > (uint8_t)0 && cidr_Ipv4.host < (uint8_t)33));
+}
+
+// Check if an IP is in a CIDR
+int_fast8_t isIpv4InCidr(char *ip_str, char *cidr_str)
+{
+	if (!ip_str || !cidr_str)
+		return FALSE;
+
+	if (!isValidCidrIpv4(cidr_str) || !isValidIpv4Network(ip_str))
+		return FALSE;
+
+	char **cidr_pts = splitByDelim(cidr_str, '/');
+
+	if (getSizeOfCharArr(cidr_pts) != 2)
+	{
+		return FALSE;
+	}
+
+	struct cidrIpv4 cidr_Ipv4;
+	cidr_Ipv4.network = cidr_pts[0];
+	cidr_Ipv4.host = (uint8_t)strToPosNum(cidr_pts[1]);
+
+	int_fast8_t *ip_char_arr = parseIpv4ToArr(ip_str);
+	int_fast8_t *cidr_net_arr = parseIpv4ToArr(cidr_Ipv4.network);
+
+	// Compare the ip_char_arr and cidr_net_arr, with the cidr_Ipv4.host
+	if (!ip_char_arr || !cidr_net_arr)
+	{
+		if (ip_char_arr)
+			free(ip_char_arr);
+		if (cidr_net_arr)
+			free(cidr_net_arr);
+		// free split parts
+		for (uint32_t k = 0; k < getSizeOfCharArr(cidr_pts); k++)
+			free(cidr_pts[k]);
+		free(cidr_pts);
+		return FALSE;
+	}
+
+	uint8_t bits_to_compare = cidr_Ipv4.host;
+	if (bits_to_compare == 0)
+	{
+		// nothing to compare (shouldn't happen because validation requires 1..32)
+		free(ip_char_arr);
+		free(cidr_net_arr);
+		for (uint32_t k = 0; k < getSizeOfCharArr(cidr_pts); k++)
+			free(cidr_pts[k]);
+		free(cidr_pts);
+		return FALSE;
+	}
+
+	int_fast8_t match = 1;
+	for (uint8_t b = 0; b < bits_to_compare; b++)
+	{
+		if (ip_char_arr[b] != cidr_net_arr[b])
+		{
+			match = 0;
+			break;
+		}
+	}
+
+	free(ip_char_arr);
+	free(cidr_net_arr);
+
+	for (uint32_t k = 0; k < getSizeOfCharArr(cidr_pts); k++)
+		free(cidr_pts[k]);
+	free(cidr_pts);
+
+	return match ? TRUE : FALSE;
+}
+
+#endif // IP4FILTER_OFF

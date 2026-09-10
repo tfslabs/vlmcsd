@@ -406,7 +406,9 @@ static __noreturn void usage()
 #ifndef NO_VERBOSE_LOG
 		" -v\t\t\tAllow logging verbose\n"
 		" -q\t\t\tDon't allow log verbose (default)\n"
+#ifndef IP4FILTER_OFF
 		" -n <ipv4 cidr>\t\tIgnore logging for specific IPv4 addresses in CIDR\n"
+#endif // IP4FILTER_OFF
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 #ifndef NO_VERSION_INFORMATION
@@ -692,9 +694,11 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 		fn_log = vlmcsd_strdup(iniarg);
 		break;
 
+#ifndef IP4FILTER_OFF
 	case INT_PARAM_IGNORE_IPV4_CIDR:
 		cidr_str = vlmcsd_strdup(iniarg);
 		break;
+#endif // IP4FILTER_OFF
 
 	case INI_PARAM_LOG_DATE_AND_TIME:
 		success = getIniFileArgumentBool(&LogDateAndTime, iniarg);
