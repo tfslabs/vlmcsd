@@ -98,7 +98,6 @@ static int_fast8_t ip2str(char *restrict result, const size_t resultLength, cons
 	return TRUE;
 }
 
-
 static int_fast8_t getSocketList(struct addrinfo **saList, const char *const addr, const int flags, const int AddressFamily)
 {
 	int status;
@@ -230,6 +229,25 @@ static int_fast8_t isPrivateIPAddress(struct sockaddr* addr, socklen_t* length)
 }
 #endif // !defined(NO_PRIVATE_IP_DETECT)
 
+#ifndef IP4FILTER_OFF
+int_fast8_t parseCidrIpv4(char* cidr, uint32_t* network, uint32_t* mask) {
+	unsigned int a, b, c, d, prefix;
+	if (sscanf(cidr, "%u.%u.%u.%u/%u", &a, &b, &c, &d, &prefix) < 5) {
+		return FALSE;
+	}
+
+	if (a > 255 || b > 255 || c > 255 || d > 255 || prefix > 32) {
+		return FALSE;
+	}
+
+	uint32_t ip = (a << 24) | (b << 16) | (c << 8) | d;
+
+	*mask = (prefix == 0) ? 0 : (0xFFFFFFFFUL << (32 - prefix));
+	*network = ip & *mask;
+
+	return TRUE;
+}
+#endif // IP4FILTER_OFF
 
 // Connect to TCP address addr (e.g. "kms.example.com:1688") and return an
 // open socket for the connection if successful or INVALID_SOCKET otherwise

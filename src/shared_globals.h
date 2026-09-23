@@ -163,10 +163,17 @@ extern uint32_t MaxTasks;
 extern int_fast8_t LogDateAndTime;
 extern char *fn_log;
 extern int_fast8_t logstdout;
+
+#ifndef IP4FILTER_OFF
 extern char *cidr_str;
+extern uint32_t cidr_ip;
+extern uint32_t cidr_mask;
+#endif // IP4FILTER_OFF
+
 #ifndef NO_VERBOSE_LOG
 extern int_fast8_t logverbose;
 #endif
+
 #endif
 
 #if !defined(USE_MSRPC) && !defined(SIMPLE_RPC)

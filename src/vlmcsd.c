@@ -2046,7 +2046,13 @@ int newmain()
 		logger("vlmcsd %s started successfully\n", Version);
 
 	if (cidr_str != NULL) {
-		logger("Excluded %s from logging\n", cidr_str);
+		// Write a function to parse the CIDR string and log the result
+		int_fast8_t retVal = parseCidrIpv4(cidr_str, &cidr_ip, &cidr_mask);
+		if (retVal != TRUE) {
+			usage();
+		}
+
+		logger("Excluded network %u/%u from logging\n", cidr_ip, cidr_mask);
 	}
 
 #ifdef PRIVACY_ON
