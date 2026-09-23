@@ -45,4 +45,8 @@ int runServer();
 SOCKET connectToAddress(const char *const addr, const int AddressFamily, int_fast8_t showHostName);
 int_fast8_t isDisconnected(const SOCKET s);
 
+#ifndef IP4FILTER_OFF
+extern int_fast8_t parseCidrIpv4(char* cidr, uint32_t* network, uint32_t* mask);
+#endif // IP4FILTER_OFF
+
 #endif // INCLUDED_NETWORK_H
