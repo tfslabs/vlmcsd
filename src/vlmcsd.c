@@ -2052,7 +2052,7 @@ int newmain()
 			usage();
 		}
 
-		logger("Excluded network %u/%u from logging\n", cidr_ip, cidr_mask);
+		logger("Excluded network %s from logging\n", cidr_str);
 	}
 
 #ifdef PRIVACY_ON
