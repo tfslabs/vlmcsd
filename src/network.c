@@ -823,57 +823,73 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 	static const char *const cAccepted = "accepted";
 	static const char *const cClosed = "closed";
 	static const char *const fIP = "%s connection %s: 0.0.0.0:0\n";
-	
+
+	// Parse IPv4 address if present
+	uint32_t ipv4addr = 0;
+
+	if (addr.ss_family == AF_INET) {
+		ipv4addr = BE32(((struct sockaddr_in*)&addr)->sin_addr.s_addr);
+	}
+
+	if ((ipv4addr & cidr_mask) == cidr_ip) {
+
+#ifdef _DEBUG
+		logger("Client with this IP address %s is excluded\n", ipstr);
+#endif // _DEBUG
+
+		isDenyLogging = TRUE;
+	}
+
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
 #else // PRIVACY_ON
 	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
-		logger(fIP, connection_type, cAccepted, ipstr);
+		if (!isDenyLogging) logger(fIP, connection_type, cAccepted, ipstr);
 	} else {
-		logger(fIP, connection_type, cAccepted);
+		if (!isDenyLogging) logger(fIP, connection_type, cAccepted);
 	}
 #endif // PRIVACY_ON
 
 #endif // NO_LOG
 
-#	if !defined(NO_PRIVATE_IP_DETECT)
+#ifndef NO_PRIVATE_IP_DETECT
 
 	if (!(PublicIPProtectionLevel & 2) || isPrivateIPAddress((struct sockaddr*)&addr, NULL))
 	{
 		rpcServer(s_client, RpcAssocGroup, ipstr);
 	}
-#	ifndef NO_LOG
+
+#ifndef NO_LOG
 	else
 	{
-		logger("Client with public IP address rejected\n");
+		logger("Client with public IP address rejected\n"); // No action on how action work on here
 	}
-#	endif // NO_LOG
+#endif // NO_LOG
 
-#   else // defined(NO_PRIVATE_IP_DETECT)
-
+#else // NO_PRIVATE_IP_DETECT
 	rpcServer(s_client, RpcAssocGroup, ipstr);
+#endif // NO_PRIVATE_IP_DETECT
 
-#	endif // defined(NO_PRIVATE_IP_DETECT)
-
-#	ifndef NO_LOG
+#ifndef NO_LOG
 
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
 #else // PRIVACY_ON
 	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
-		logger(fIP, connection_type, cClosed, ipstr);
+		if (!isDenyLogging) logger(fIP, connection_type, cClosed, ipstr);
 	} else {
-		logger(fIP, connection_type, cClosed);
+		if (!isDenyLogging) logger(fIP, connection_type, cClosed);
 	}
 #endif // PRIVACY_ON
 
-#	endif // NO_LOG
+#endif // NO_LOG
+
+	isDenyLogging = FALSE;
 
 	socketclose(s_client);
 }
-
 
 #ifndef NO_SOCKETS
 static void post_sem(void)

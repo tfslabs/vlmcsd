@@ -165,6 +165,7 @@ extern char *fn_log;
 extern int_fast8_t logstdout;
 
 #ifndef IP4FILTER_OFF
+extern int_fast8_t isDenyLogging;
 extern char *cidr_str;
 extern uint32_t cidr_ip;
 extern uint32_t cidr_mask;
