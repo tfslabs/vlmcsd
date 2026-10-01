@@ -2052,6 +2052,7 @@ int newmain()
 			usage();
 		}
 
+		isFilter = TRUE;
 		logger("Excluded network %s from logging\n", cidr_str);
 	}
 

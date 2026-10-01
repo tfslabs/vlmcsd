@@ -71,7 +71,8 @@ char *fn_log = NULL;
 int_fast8_t logstdout = 0;
 
 #ifndef IP4FILTER_OFF
-int_fast8_t isDenyLogging = FALSE;
+int_fast8_t isDenyLoggingForReq = FALSE;
+int_fast8_t isFilter = FALSE;
 char *cidr_str = NULL;
 uint32_t cidr_ip = 0;
 uint32_t cidr_mask = 0;

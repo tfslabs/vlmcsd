@@ -429,7 +429,7 @@ static int32_t getProductIndexFromAllLists(const GUID* guid, char** productName)
  */
 static void logRequest(REQUEST* baseRequest)
 {
-	if (isDenyLogging) {
+	if (isFilter && isDenyLoggingForReq) {
 		return;
 	}
 
@@ -572,7 +572,7 @@ static void CheckRequest(const REQUEST *const Request)
  */
 static void logResponse(RESPONSE* baseResponse, const BYTE *const hwId, const char *const EpidSource)
 {
-	if (isDenyLogging) {
+	if (isFilter && isDenyLoggingForReq) {
 		return;
 	}
 

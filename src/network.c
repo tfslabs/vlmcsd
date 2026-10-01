@@ -831,13 +831,12 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 		ipv4addr = BE32(((struct sockaddr_in*)&addr)->sin_addr.s_addr);
 	}
 
-	if ((ipv4addr & cidr_mask) == cidr_ip) {
-
+	if (isFilter && (ipv4addr & cidr_mask) == cidr_ip) {
 #ifdef _DEBUG
 		logger("Client with this IP address %s is excluded\n", ipstr);
 #endif // _DEBUG
 
-		isDenyLogging = TRUE;
+		isDenyLoggingForReq = TRUE;
 	}
 
 #ifdef PRIVACY_ON
@@ -845,9 +844,9 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #else // PRIVACY_ON
 	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
-		if (!isDenyLogging) logger(fIP, connection_type, cAccepted, ipstr);
+		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cAccepted, ipstr);
 	} else {
-		if (!isDenyLogging) logger(fIP, connection_type, cAccepted);
+		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cAccepted);
 	}
 #endif // PRIVACY_ON
 
@@ -878,15 +877,15 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #else // PRIVACY_ON
 	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
-		if (!isDenyLogging) logger(fIP, connection_type, cClosed, ipstr);
+		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cClosed, ipstr);
 	} else {
-		if (!isDenyLogging) logger(fIP, connection_type, cClosed);
+		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cClosed);
 	}
 #endif // PRIVACY_ON
 
 #endif // NO_LOG
 
-	isDenyLogging = FALSE;
+	isDenyLoggingForReq = FALSE;
 
 	socketclose(s_client);
 }
