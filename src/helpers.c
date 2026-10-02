@@ -52,12 +52,6 @@
 #include <sys/sysctl.h>
 #endif
 
-struct cidrIpv4
-{
-	char *network; // Network part, looks like 127.0.0.1
-	uint8_t host;  // Host part, looks like the 8
-};
-
 /*
  *  UCS2 <-> UTF-8 functions
  *  All functions use little endian UCS2 since we only need it to communicate with Windows via RPC
