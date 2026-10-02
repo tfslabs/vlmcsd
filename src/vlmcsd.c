@@ -2049,9 +2049,7 @@ int newmain()
 
 #ifndef IP4FILTER_OFF
 	if (cidr_str != NULL) {
-		// Write a function to parse the CIDR string and log the result
-		int_fast8_t retVal = parseCidrIpv4(cidr_str, &cidr_ip, &cidr_mask);
-		if (retVal != TRUE) {
+		if (!parseCidrIpv4(cidr_str, &cidr_ip, &cidr_mask)) {
 			usage();
 		}
 
