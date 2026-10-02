@@ -551,6 +551,18 @@
 
 #endif
 
+#ifndef IP4FILTER_OFF
+
+/*
+ * This flag disable the ability to filter out the Ipv4 packet from logging
+ * This is useful when this new feature is still under testing, and not fully validated
+ *  on devices like Android or other supported devices but 
+*/
+
+// #define IP4FILTER_OFF
+
+#endif // IP4FILTER_OFF
+
 /* Don't change anything BELOW this line */
 
 #endif /* CONFIG_H_ */

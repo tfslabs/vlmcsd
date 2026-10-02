@@ -69,9 +69,19 @@ uint32_t MaxTasks = SEM_VALUE_MAX;
 int_fast8_t LogDateAndTime = TRUE;
 char *fn_log = NULL;
 int_fast8_t logstdout = 0;
+
+#ifndef IP4FILTER_OFF
+int_fast8_t isDenyLoggingForReq = FALSE;
+int_fast8_t isFilter = FALSE;
+char *cidr_str = NULL;
+uint32_t cidr_ip = 0;
+uint32_t cidr_mask = 0;
+#endif // IP4FILTER_OFF
+
 #ifndef NO_VERBOSE_LOG
 int_fast8_t logverbose = 0;
 #endif // NO_VERBOSE_LOG
+
 #endif // NO_LOG
 
 #ifndef PRIVACY_ON
@@ -80,6 +90,7 @@ int_fast8_t isPrivacyOn = FALSE;
 int_fast8_t isPrivacyOn = TRUE;
 #endif // PRIVACY_ON
 
+uint32_t CountKMSReq = 0;
 int_fast8_t isCounting = FALSE;
 
 #ifndef NO_SOCKETS

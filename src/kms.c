@@ -429,6 +429,30 @@ static int32_t getProductIndexFromAllLists(const GUID* guid, char** productName)
  */
 static void logRequest(REQUEST* baseRequest)
 {
+	#ifndef IP4FILTER_OFF
+	if (isFilter && isDenyLoggingForReq) {
+		return;
+	}
+	#endif // IP4FILTER_OFF
+	
+	if (isCounting) {
+		time_t startClock = time(NULL);
+		time_t checkPointClock = time(NULL);
+
+		CountKMSReq++;
+
+		double uptimeReq = (double)(checkPointClock - startClock);
+		double reqRate = CountKMSReq / uptimeReq;
+
+		logger(
+			"Total %d %s in %.2lf seconds (%.4lf reqs/sec)\n",
+			CountKMSReq,
+			(CountKMSReq == 1) ? "request" : "requests",
+			uptimeReq,
+			reqRate
+		);
+	}
+
 #ifndef NO_VERBOSE_LOG
 	if (logverbose)
 	{
@@ -568,6 +592,12 @@ static void CheckRequest(const REQUEST *const Request)
  */
 static void logResponse(RESPONSE* baseResponse, const BYTE *const hwId, const char *const EpidSource)
 {
+#ifndef IP4FILTER_OFF
+	if (isFilter && isDenyLoggingForReq) {
+		return;
+	}
+#endif
+
 	char utf8pid[PID_BUFFER_SIZE * 3];
 	ucs2_to_utf8(baseResponse->KmsPID, utf8pid, PID_BUFFER_SIZE, PID_BUFFER_SIZE * 3);
 

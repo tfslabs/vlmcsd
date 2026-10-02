@@ -46,7 +46,6 @@ char* vlmcsd_strdup(const char* src);
 void exitOnWarningLevel(const int_fast8_t level);
 #endif // !NO_SOCKETS
 
-
 #if __ANDROID__ && !defined(USE_THREADS) // Bionic does not wrap these syscalls (intentionally because Google fears, developers don't know how to use it)
 int shmget(key_t key, size_t size, int shmflg);
 void *shmat(int shmid, const void *shmaddr, int shmflg);

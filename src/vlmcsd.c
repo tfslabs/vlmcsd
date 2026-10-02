@@ -88,7 +88,7 @@ Volume License Management Service DAEMON (vlmcsd)
 #include "wintap.h"
 #endif
 
-static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:SseDdVvqkZXw";
+static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:n:SseDdVvqkZXw";
 
 #if !defined(NO_SOCKETS) && !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
 static uint_fast8_t maxsockets = 0;
@@ -179,6 +179,9 @@ static IniFileParameter_t IniFileParameterList[] =
 		{"LogFile", INI_PARAM_LOG_FILE},
 		{"PrivacyMode", INI_PARAM_PRIVACY_MODE},
 		{"CountingReq", INT_PARAM_COUNTING_REQ},
+#ifndef IP4FILTER_OFF
+		{"ExcludeCIDR", INT_PARAM_IGNORE_IPV4_CIDR},
+#endif // IP4FILTER_OFF
 #ifndef NO_VERBOSE_LOG
 		{"LogVerbose", INI_PARAM_LOG_VERBOSE},
 #endif // NO_VERBOSE_LOG
@@ -405,6 +408,9 @@ static __noreturn void usage()
 #ifndef NO_VERBOSE_LOG
 		" -v\t\t\tAllow logging verbose\n"
 		" -q\t\t\tDon't allow log verbose (default)\n"
+#ifndef IP4FILTER_OFF
+		" -n <ipv4 cidr>\t\tIgnore logging for specific IPv4 addresses in CIDR\n"
+#endif // IP4FILTER_OFF
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
 #ifndef NO_VERSION_INFORMATION
@@ -689,6 +695,12 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 	case INI_PARAM_LOG_FILE:
 		fn_log = vlmcsd_strdup(iniarg);
 		break;
+
+#ifndef IP4FILTER_OFF
+	case INT_PARAM_IGNORE_IPV4_CIDR:
+		cidr_str = vlmcsd_strdup(iniarg);
+		break;
+#endif // IP4FILTER_OFF
 
 	case INI_PARAM_LOG_DATE_AND_TIME:
 		success = getIniFileArgumentBool(&LogDateAndTime, iniarg);
@@ -1267,6 +1279,13 @@ static void parseGeneralArguments()
 			fn_log = getCommandLineArg(optarg);
 			ignoreIniFileParameter(INI_PARAM_LOG_FILE);
 			break;
+
+#ifndef IP4FILTER_OFF
+		case 'n':
+			cidr_str = getCommandLineArg(optarg);
+			ignoreIniFileParameter(INT_PARAM_IGNORE_IPV4_CIDR);
+			break;
+#endif // IP4FILTER_OFF
 
 #ifndef NO_VERBOSE_LOG
 		case 'v':
@@ -2029,6 +2048,17 @@ int newmain()
 #if !defined(NO_LOG) && !defined(NO_SOCKETS) && !defined(USE_MSRPC)
 	if (!InetdMode)
 		logger("vlmcsd %s started successfully\n", Version);
+
+#ifndef IP4FILTER_OFF
+	if (cidr_str != NULL) {
+		if (!parseCidrIpv4(cidr_str, &cidr_ip, &cidr_mask)) {
+			usage();
+		}
+
+		isFilter = TRUE;
+		logger("Excluded network %s from logging\n", cidr_str);
+	}
+#endif // IP4FILTER_OFF
 
 #ifdef PRIVACY_ON
 		logger("Privacy mode (Enforced) is turned on\n");

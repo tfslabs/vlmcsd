@@ -63,6 +63,7 @@ int server_main(int argc, CARGV argv);
 #define INI_PARAM_EXIT_LEVEL 30
 #define INI_PARAM_PRIVACY_MODE 31
 #define INT_PARAM_COUNTING_REQ 32
+#define INT_PARAM_IGNORE_IPV4_CIDR 33
 
 #define INI_FILE_PASS_1 1
 #define INI_FILE_PASS_2 2

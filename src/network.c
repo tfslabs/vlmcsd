@@ -98,7 +98,6 @@ static int_fast8_t ip2str(char *restrict result, const size_t resultLength, cons
 	return TRUE;
 }
 
-
 static int_fast8_t getSocketList(struct addrinfo **saList, const char *const addr, const int flags, const int AddressFamily)
 {
 	int status;
@@ -230,6 +229,25 @@ static int_fast8_t isPrivateIPAddress(struct sockaddr* addr, socklen_t* length)
 }
 #endif // !defined(NO_PRIVATE_IP_DETECT)
 
+#ifndef IP4FILTER_OFF
+int_fast8_t parseCidrIpv4(char* cidr, uint32_t* network, uint32_t* mask) {
+	unsigned int a, b, c, d, prefix;
+	if (sscanf(cidr, "%u.%u.%u.%u/%u", &a, &b, &c, &d, &prefix) < 5) {
+		return FALSE;
+	}
+
+	if (a > 255 || b > 255 || c > 255 || d > 255 || prefix > 32) {
+		return FALSE;
+	}
+
+	uint32_t ip = (a << 24) | (b << 16) | (c << 8) | d;
+
+	*mask = (prefix == 0) ? 0 : (0xFFFFFFFFUL << (32 - prefix));
+	*network = ip & *mask;
+
+	return TRUE;
+}
+#endif // IP4FILTER_OFF
 
 // Connect to TCP address addr (e.g. "kms.example.com:1688") and return an
 // open socket for the connection if successful or INVALID_SOCKET otherwise
@@ -805,57 +823,94 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 	static const char *const cAccepted = "accepted";
 	static const char *const cClosed = "closed";
 	static const char *const fIP = "%s connection %s: 0.0.0.0:0\n";
-	
+
+
+#ifndef IP4FILTER_OFF
+	// Parse IPv4 address if present
+	uint32_t ipv4addr = 0;
+
+	if (addr.ss_family == AF_INET) {
+		ipv4addr = BE32(((struct sockaddr_in*)&addr)->sin_addr.s_addr);
+	}
+
+	if (isFilter && (ipv4addr & cidr_mask) == cidr_ip) {
+
+#ifdef _DEBUG
+		logger("Client with this IP address %s is excluded\n", ipstr);
+#endif // _DEBUG
+
+		isDenyLoggingForReq = TRUE;
+	}
+#endif // IP4FILTER_OFF
+
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
 #else // PRIVACY_ON
 	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
+#ifndef IP4FILTER_OFF
+		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cAccepted, ipstr);
+#else
 		logger(fIP, connection_type, cAccepted, ipstr);
+#endif // IP4FILTER_OFF
 	} else {
+#ifndef IP4FILTER_OFF
+		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cAccepted);
+#else
 		logger(fIP, connection_type, cAccepted);
+#endif // IP4FILTER_OFF
 	}
 #endif // PRIVACY_ON
 
 #endif // NO_LOG
 
-#	if !defined(NO_PRIVATE_IP_DETECT)
+#ifndef NO_PRIVATE_IP_DETECT
 
 	if (!(PublicIPProtectionLevel & 2) || isPrivateIPAddress((struct sockaddr*)&addr, NULL))
 	{
 		rpcServer(s_client, RpcAssocGroup, ipstr);
 	}
-#	ifndef NO_LOG
+
+#ifndef NO_LOG
 	else
 	{
-		logger("Client with public IP address rejected\n");
+		logger("Client with public IP address rejected\n"); // No action on how action work on here
 	}
-#	endif // NO_LOG
+#endif // NO_LOG
 
-#   else // defined(NO_PRIVATE_IP_DETECT)
-
+#else // NO_PRIVATE_IP_DETECT
 	rpcServer(s_client, RpcAssocGroup, ipstr);
+#endif // NO_PRIVATE_IP_DETECT
 
-#	endif // defined(NO_PRIVATE_IP_DETECT)
-
-#	ifndef NO_LOG
+#ifndef NO_LOG
 
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
 #else // PRIVACY_ON
 	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
+#ifndef IP4FILTER_OFF
+		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cClosed, ipstr);
+#else
 		logger(fIP, connection_type, cClosed, ipstr);
+#endif // IP4FILTER_OFF
 	} else {
+#ifndef IP4FILTER_OFF
+		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cClosed);
+#else
 		logger(fIP, connection_type, cClosed);
+#endif // IP4FILTER_OFF
 	}
 #endif // PRIVACY_ON
 
-#	endif // NO_LOG
+#endif // NO_LOG
 
 	socketclose(s_client);
-}
 
+#ifndef IP4FILTER_OFF
+	isDenyLoggingForReq = FALSE;
+#endif // IP4FILTER_OFF
+}
 
 #ifndef NO_SOCKETS
 static void post_sem(void)
@@ -1049,10 +1104,6 @@ int runServer()
 		serveClient(STDIN_FILENO, RpcAssocGroup);
 		return 0;
 	}
-#ifndef NO_LOG
-	static uint32_t CountKMSReq = 0;
-	time_t startClock = time(NULL);
-#endif // NO_LOG
 
 	for (;;)
 	{
@@ -1094,23 +1145,6 @@ int runServer()
 		serveClientAsync(s_client, RpcAssocGroup);
 #		endif // NO_LOG || !_PEDANTIC
 
-#ifndef NO_LOG
-		if (isCounting == TRUE) {
-			CountKMSReq++;
-
-			time_t checkPointClock = time(NULL);
-			double uptimeReq = (double)(checkPointClock - startClock);
-			double reqRate = CountKMSReq / uptimeReq;
-
-			logger(
-				"Total %d %s in %.2lf seconds (%.4lf reqs/sec)\n", 
-				CountKMSReq,
-				(CountKMSReq == 1) ? "request" : "requests",
-				uptimeReq, 
-				reqRate
-			);
-		}
-#endif // NO_LOG
 	}
 #	endif // NO_SOCKETS
 }
