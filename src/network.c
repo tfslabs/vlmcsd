@@ -836,7 +836,9 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 		logger("Client with this IP address %s is excluded\n", ipstr);
 #endif // _DEBUG
 
+#ifndef IP4FILTER_OFF
 		isDenyLoggingForReq = TRUE;
+#endif // IP4FILTER_OFF
 	}
 
 #ifdef PRIVACY_ON
@@ -844,9 +846,17 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #else // PRIVACY_ON
 	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
+#ifndef IP4FILTER_OFF
 		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cAccepted, ipstr);
+#else
+		logger(fIP, connection_type, cAccepted, ipstr);
+#endif // IP4FILTER_OFF
 	} else {
+#ifndef IP4FILTER_OFF
 		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cAccepted);
+#else
+		logger(fIP, connection_type, cAccepted);
+#endif // IP4FILTER_OFF
 	}
 #endif // PRIVACY_ON
 
@@ -877,9 +887,17 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #else // PRIVACY_ON
 	if (isPrivacyOn == FALSE) {
 		static const char *const fIP = "%s connection %s: %s\n";
+#ifndef IP4FILTER_OFF
 		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cClosed, ipstr);
+#else
+		logger(fIP, connection_type, cClosed, ipstr);
+#endif // IP4FILTER_OFF
 	} else {
+#ifndef IP4FILTER_OFF
 		if (!isFilter || !isDenyLoggingForReq) logger(fIP, connection_type, cClosed);
+#else
+		logger(fIP, connection_type, cClosed);
+#endif // IP4FILTER_OFF
 	}
 #endif // PRIVACY_ON
 

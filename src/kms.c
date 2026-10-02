@@ -429,10 +429,12 @@ static int32_t getProductIndexFromAllLists(const GUID* guid, char** productName)
  */
 static void logRequest(REQUEST* baseRequest)
 {
+	#ifndef IP4FILTER_OFF
 	if (isFilter && isDenyLoggingForReq) {
 		return;
 	}
-
+	#endif // IP4FILTER_OFF
+	
 #ifndef NO_VERBOSE_LOG
 	if (logverbose)
 	{
