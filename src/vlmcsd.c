@@ -1278,10 +1278,12 @@ static void parseGeneralArguments()
 			ignoreIniFileParameter(INI_PARAM_LOG_FILE);
 			break;
 
+#ifndef IP4FILTER_OFF
 		case 'n':
 			cidr_str = getCommandLineArg(optarg);
 			ignoreIniFileParameter(INT_PARAM_IGNORE_IPV4_CIDR);
 			break;
+#endif // IP4FILTER_OFF
 
 #ifndef NO_VERBOSE_LOG
 		case 'v':
@@ -2045,6 +2047,7 @@ int newmain()
 	if (!InetdMode)
 		logger("vlmcsd %s started successfully\n", Version);
 
+#ifndef IP4FILTER_OFF
 	if (cidr_str != NULL) {
 		// Write a function to parse the CIDR string and log the result
 		int_fast8_t retVal = parseCidrIpv4(cidr_str, &cidr_ip, &cidr_mask);
@@ -2055,6 +2058,7 @@ int newmain()
 		isFilter = TRUE;
 		logger("Excluded network %s from logging\n", cidr_str);
 	}
+#endif // IP4FILTER_OFF
 
 #ifdef PRIVACY_ON
 		logger("Privacy mode (Enforced) is turned on\n");

@@ -574,9 +574,11 @@ static void CheckRequest(const REQUEST *const Request)
  */
 static void logResponse(RESPONSE* baseResponse, const BYTE *const hwId, const char *const EpidSource)
 {
+#ifndef IP4FILTER_OFF
 	if (isFilter && isDenyLoggingForReq) {
 		return;
 	}
+#endif
 
 	char utf8pid[PID_BUFFER_SIZE * 3];
 	ucs2_to_utf8(baseResponse->KmsPID, utf8pid, PID_BUFFER_SIZE, PID_BUFFER_SIZE * 3);

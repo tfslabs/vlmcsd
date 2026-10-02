@@ -831,15 +831,16 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 		ipv4addr = BE32(((struct sockaddr_in*)&addr)->sin_addr.s_addr);
 	}
 
+#ifndef IP4FILTER_OFF
 	if (isFilter && (ipv4addr & cidr_mask) == cidr_ip) {
+
 #ifdef _DEBUG
 		logger("Client with this IP address %s is excluded\n", ipstr);
 #endif // _DEBUG
 
-#ifndef IP4FILTER_OFF
 		isDenyLoggingForReq = TRUE;
-#endif // IP4FILTER_OFF
 	}
+#endif // IP4FILTER_OFF
 
 #ifdef PRIVACY_ON
 	logger(fIP, connection_type, cAccepted);
@@ -903,7 +904,9 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 
 #endif // NO_LOG
 
+#ifndef IP4FILTER_OFF
 	isDenyLoggingForReq = FALSE;
+#endif // IP4FILTER_OFF
 
 	socketclose(s_client);
 }
