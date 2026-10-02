@@ -904,9 +904,9 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 
 #endif // NO_LOG
 
-#ifndef IP4FILTER_OFF
+#if !defined(NO_LOG) && !defined(IP4FILTER_OFF)
 	isDenyLoggingForReq = FALSE;
-#endif // IP4FILTER_OFF
+#endif // !defined(NO_LOG) && !defined(IP4FILTER_OFF)
 
 	socketclose(s_client);
 }
