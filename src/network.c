@@ -904,10 +904,6 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 
 #endif // NO_LOG
 
-#if !defined(NO_LOG) && !defined(IP4FILTER_OFF)
-	isDenyLoggingForReq = FALSE;
-#endif // !defined(NO_LOG) && !defined(IP4FILTER_OFF)
-
 	socketclose(s_client);
 }
 
@@ -1170,6 +1166,11 @@ int runServer()
 				reqRate
 			);
 		}
+
+#ifndef IP4FILTER_OFF
+		isDenyLoggingForReq = FALSE;
+#endif // IP4FILTER_OFF
+
 #endif // NO_LOG
 	}
 #	endif // NO_SOCKETS
