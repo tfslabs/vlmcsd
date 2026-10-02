@@ -1149,7 +1149,13 @@ int runServer()
 #		endif // NO_LOG || !_PEDANTIC
 
 #ifndef NO_LOG
-		if (isCounting == TRUE) {
+
+#ifndef IP4FILTER_OFF
+		if (isCounting && !isDenyLoggingForReq) {
+#else // IP4FILTER_OFF
+		if (isCounting) {
+#endif // IP4FILTER_OFF
+
 			CountKMSReq++;
 
 			time_t checkPointClock = time(NULL);
