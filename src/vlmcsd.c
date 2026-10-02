@@ -179,7 +179,9 @@ static IniFileParameter_t IniFileParameterList[] =
 		{"LogFile", INI_PARAM_LOG_FILE},
 		{"PrivacyMode", INI_PARAM_PRIVACY_MODE},
 		{"CountingReq", INT_PARAM_COUNTING_REQ},
+#ifndef IP4FILTER_OFF
 		{"ExcludeCIDR", INT_PARAM_IGNORE_IPV4_CIDR},
+#endif // IP4FILTER_OFF
 #ifndef NO_VERBOSE_LOG
 		{"LogVerbose", INI_PARAM_LOG_VERBOSE},
 #endif // NO_VERBOSE_LOG
