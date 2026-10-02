@@ -90,6 +90,7 @@ int_fast8_t isPrivacyOn = FALSE;
 int_fast8_t isPrivacyOn = TRUE;
 #endif // PRIVACY_ON
 
+uint32_t CountKMSReq = 0;
 int_fast8_t isCounting = FALSE;
 
 #ifndef NO_SOCKETS

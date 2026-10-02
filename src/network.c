@@ -824,6 +824,8 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 	static const char *const cClosed = "closed";
 	static const char *const fIP = "%s connection %s: 0.0.0.0:0\n";
 
+
+#ifndef IP4FILTER_OFF
 	// Parse IPv4 address if present
 	uint32_t ipv4addr = 0;
 
@@ -831,7 +833,6 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 		ipv4addr = BE32(((struct sockaddr_in*)&addr)->sin_addr.s_addr);
 	}
 
-#ifndef IP4FILTER_OFF
 	if (isFilter && (ipv4addr & cidr_mask) == cidr_ip) {
 
 #ifdef _DEBUG
@@ -905,6 +906,10 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #endif // NO_LOG
 
 	socketclose(s_client);
+
+#ifndef IP4FILTER_OFF
+	isDenyLoggingForReq = FALSE;
+#endif // IP4FILTER_OFF
 }
 
 #ifndef NO_SOCKETS
@@ -1099,10 +1104,6 @@ int runServer()
 		serveClient(STDIN_FILENO, RpcAssocGroup);
 		return 0;
 	}
-#ifndef NO_LOG
-	static uint32_t CountKMSReq = 0;
-	time_t startClock = time(NULL);
-#endif // NO_LOG
 
 	for (;;)
 	{
@@ -1144,34 +1145,6 @@ int runServer()
 		serveClientAsync(s_client, RpcAssocGroup);
 #		endif // NO_LOG || !_PEDANTIC
 
-#ifndef NO_LOG
-
-#ifndef IP4FILTER_OFF
-		if (isCounting && !isDenyLoggingForReq) {
-#else // IP4FILTER_OFF
-		if (isCounting) {
-#endif // IP4FILTER_OFF
-
-			CountKMSReq++;
-
-			time_t checkPointClock = time(NULL);
-			double uptimeReq = (double)(checkPointClock - startClock);
-			double reqRate = CountKMSReq / uptimeReq;
-
-			logger(
-				"Total %d %s in %.2lf seconds (%.4lf reqs/sec)\n", 
-				CountKMSReq,
-				(CountKMSReq == 1) ? "request" : "requests",
-				uptimeReq, 
-				reqRate
-			);
-		}
-
-#ifndef IP4FILTER_OFF
-		isDenyLoggingForReq = FALSE;
-#endif // IP4FILTER_OFF
-
-#endif // NO_LOG
 	}
 #	endif // NO_SOCKETS
 }

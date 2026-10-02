@@ -435,6 +435,24 @@ static void logRequest(REQUEST* baseRequest)
 	}
 	#endif // IP4FILTER_OFF
 	
+	if (isCounting) {
+		time_t startClock = time(NULL);
+		time_t checkPointClock = time(NULL);
+
+		CountKMSReq++;
+
+		double uptimeReq = (double)(checkPointClock - startClock);
+		double reqRate = CountKMSReq / uptimeReq;
+
+		logger(
+			"Total %d %s in %.2lf seconds (%.4lf reqs/sec)\n",
+			CountKMSReq,
+			(CountKMSReq == 1) ? "request" : "requests",
+			uptimeReq,
+			reqRate
+		);
+	}
+
 #ifndef NO_VERBOSE_LOG
 	if (logverbose)
 	{
