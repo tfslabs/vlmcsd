@@ -249,10 +249,7 @@ void logResponseVerbose(const char *const ePID, const BYTE *const hwid, RESPONSE
 	uint32_t renewalInterval = LE32(response->VLRenewalInterval);
 	uint32_t activationInterval = LE32(response->VLActivationInterval);
 	char mbstr[64];
-	strftime(
-		mbstr, 
-		sizeof(mbstr), 
-		"%Y-%m-%d %X",
+	strftime(mbstr, sizeof(mbstr), "%Y-%m-%d %X",
 		gmtime(&(time_t) { fileTimeToUnixTime(&response->ClientTime) })
 	);
 
@@ -277,6 +274,7 @@ void logResponseVerbose(const char *const ePID, const BYTE *const hwid, RESPONSE
 #endif // _WIN32
 		);
 	}
+
 	p("Client machine ID               : %s\n", cmid);
 	p("Client request timestamp (UTC)  : %s\n", mbstr);
 	p("KMS host current active clients : %u\n", count);
