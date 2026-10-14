@@ -88,7 +88,7 @@ Volume License Management Service DAEMON (vlmcsd)
 #include "wintap.h"
 #endif
 
-static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:n:SseDdVvqkZXw";
+static const char *const optstring = "a:N:B:m:t:A:R:u:g:L:p:i:H:P:l:r:U:W:C:c:F:O:o:x:T:K:E:M:j:n:SseDdVvqkZXwf";
 
 #if !defined(NO_SOCKETS) && !defined(USE_MSRPC) && !defined(SIMPLE_SOCKETS)
 static uint_fast8_t maxsockets = 0;
@@ -179,6 +179,7 @@ static IniFileParameter_t IniFileParameterList[] =
 		{"LogFile", INI_PARAM_LOG_FILE},
 		{"PrivacyMode", INI_PARAM_PRIVACY_MODE},
 		{"CountingReq", INT_PARAM_COUNTING_REQ},
+		{"CSVLogging", INT_PARAM_CSV_LOGGING},
 #ifndef IP4FILTER_OFF
 		{"ExcludeCIDR", INT_PARAM_IGNORE_IPV4_CIDR},
 #endif // IP4FILTER_OFF
@@ -710,6 +711,17 @@ static BOOL setIniFileParameter(uint_fast8_t id, const char *const iniarg)
 	case INI_PARAM_LOG_VERBOSE:
 		success = getIniFileArgumentBool(&logverbose, iniarg);
 		break;
+
+#ifndef NO_CSV
+	case INT_PARAM_CSV_LOGGING:
+		if (!logverbose || !fn_data) {
+			success = FALSE;
+			break;
+		}
+
+		success = getIniFileArgumentBool(&isCsvLogging, iniarg);
+		break;
+#endif // NO_CSV
 
 #endif // NO_VERBOSE_LOG
 #endif // NO_LOG
@@ -1514,6 +1526,20 @@ static void parseGeneralArguments()
 			printServerFlags();
 			exit(EXIT_SUCCESS);
 #endif // NO_VERSION_INFORMATION
+
+#if !define(NO_CSV) && !defined(NO_LOG) && !defined(NO_EXTERNAL_DATA)
+		case 'f':
+			logverbose;
+			fn_data;
+
+			if (!logverbose || !fn_data)
+				usage();
+
+			isCsvLogging = TRUE;
+			ignoreIniFileParameter(INT_PARAM_CSV_LOGGING);
+			logger("CSV Export is now enabled.\n");
+			break;
+#endif // !define(NO_CSV) && !defined(NO_LOG) && !defined(NO_EXTERNAL_DATA)
 
 		default:
 			usage();

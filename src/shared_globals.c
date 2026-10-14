@@ -80,6 +80,11 @@ uint32_t cidr_mask = 0;
 
 #ifndef NO_VERBOSE_LOG
 int_fast8_t logverbose = 0;
+
+#ifndef NO_CSV
+int_fast8_t isCsvLogging = FALSE;
+#endif // NO_CSV
+
 #endif // NO_VERBOSE_LOG
 
 #endif // NO_LOG

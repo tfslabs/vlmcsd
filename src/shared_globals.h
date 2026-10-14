@@ -174,7 +174,12 @@ extern uint32_t cidr_mask;
 
 #ifndef NO_VERBOSE_LOG
 extern int_fast8_t logverbose;
-#endif
+
+#ifndef NO_CSV
+extern int_fast8_t isCsvLogging;
+#endif // NO_CSV
+
+#endif // NO_VERBOSE_LOG
 
 #endif
 
