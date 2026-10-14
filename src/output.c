@@ -158,140 +158,130 @@ void uuid2StringLE(const GUID *const guid, char *const string)
 #if !defined(NO_VERBOSE_LOG) && !defined(NO_LOG)
 void logRequestVerbose(REQUEST* Request, const PRINTFUNC p)
 {
-#ifdef PRIVACY_ON
-	p("Privacy mode                    : ON\n");
-#else
-	if (isPrivacyOn == FALSE)
-		p("Privacy mode                    : OFF\n");
-	else
-		p("Privacy mode                    : ON\n");
-#endif
+	uint16_t protocolMajorVersion = LE16(Request->MajorVer);
+	uint16_t protocolMinorVersion = LE16(Request->MinorVer);
+	char* isVM = LE32(Request->VMInfo) ? "Yes" : "No";
+	uint32_t licenseStatus = LE32(Request->LicenseStatus);
+	char* licenseStatusText = (licenseStatus < vlmcsd_countof(LicenseStatusText)) 
+									? LicenseStatusText[licenseStatus] : "Unknown";
+	uint32_t remainingTime = LE32(Request->BindingExpiration);
+	uint32_t minimumClients = LE32(Request->N_Policy);
 
 	char guidBuffer[GUID_STRING_LENGTH + 1];
-	char WorkstationBuffer[3 * WORKSTATION_NAME_BUFFER];
+	char* WorkstationBuffer[3 * WORKSTATION_NAME_BUFFER];
 	char* productName;
 
-	p("Protocol version                : %u.%u\n", LE16(Request->MajorVer), LE16(Request->MinorVer));
-	p("Client is a virtual machine     : %s\n", LE32(Request->VMInfo) ? "Yes" : "No");
-	p("Licensing status                : %u (%s)\n", (uint32_t)LE32(Request->LicenseStatus), LE32(Request->LicenseStatus) < vlmcsd_countof(LicenseStatusText) ? LicenseStatusText[LE32(Request->LicenseStatus)] : "Unknown");
-	p("Remaining time (0 = forever)    : %i minutes\n", (uint32_t)LE32(Request->BindingExpiration));
-
-	uuid2StringLE(&Request->AppID, guidBuffer);
-	getProductIndex(&Request->AppID, KmsData->AppItemList, KmsData->AppItemCount, &productName, NULL);
-
-#ifdef PRIVACY_ON
-	p("Application ID                  : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
-#else 
-	if (isPrivacyOn == FALSE)
-		p("Application ID                  : %s (%s)\n", guidBuffer, productName);
-	else
-		p("Application ID                  : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
-#endif
-
-	uuid2StringLE(&Request->ActID, guidBuffer);
-	getProductIndex(&Request->ActID, KmsData->SkuItemList, KmsData->SkuItemCount, &productName, NULL);
-#ifdef PRIVACY_ON
-	p("SKU ID (aka Activation ID)      : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
-#else
-	if (isPrivacyOn == FALSE)
-		p("SKU ID (aka Activation ID)      : %s (%s)\n", guidBuffer, productName);
-	else
-		p("SKU ID (aka Activation ID)      : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
-#endif
-
-	getProductIndex(&Request->KMSID, KmsData->KmsItemList, KmsData->KmsItemCount, &productName, NULL);
-
-#ifdef PRIVACY_ON
-	p("KMS ID (aka KMS counted ID)     : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
-#else
-	uuid2StringLE(&Request->KMSID, guidBuffer);
-	if (isPrivacyOn == FALSE)
-		p("KMS ID (aka KMS counted ID)     : %s (%s)\n", guidBuffer, productName);
-	else
-		p("KMS ID (aka KMS counted ID)     : 00000000-0000-0000-0000-000000000000 (%s)\n", productName);
-#endif
-
-#ifdef PRIVACY_ON
-	p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
-#else
-	uuid2StringLE(&Request->CMID, guidBuffer);
-	if (isPrivacyOn == FALSE)
-		p("Client machine ID               : %s\n", guidBuffer);
-	else
-		p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
-#endif
-
-#ifdef PRIVACY_ON
-	p("Previous client machine ID      : 00000000-0000-0000-0000-000000000000\n");
-#else
-	uuid2StringLE(&Request->CMID_prev, guidBuffer);
-	if (isPrivacyOn == FALSE)
-		p("Previous client machine ID      : %s\n", guidBuffer);
-	else
-		p("Previous client machine ID      : 00000000-0000-0000-0000-000000000000\n");
-#endif
-
+	time_t st = fileTimeToUnixTime(&Request->ClientTime);
 	char mbstr[64];
-	time_t st;
-	st = fileTimeToUnixTime(&Request->ClientTime);
 	strftime(mbstr, sizeof(mbstr), "%Y-%m-%d %X", gmtime(&st));
-	p("Client request timestamp (UTC)  : %s\n", mbstr);
 
 #ifdef PRIVACY_ON
-	p("Workstation name                : <hidden>\n");
-#else
-	ucs2_to_utf8(Request->WorkstationName, WorkstationBuffer, WORKSTATION_NAME_BUFFER, sizeof(WorkstationBuffer));
-	if (isPrivacyOn == FALSE)
-		p("Workstation name                : %s\n", WorkstationBuffer);
-	else
-		p("Workstation name                : <hidden>\n");
-#endif
+	char* privacyMode = "ON";
 
-	p("N count policy (minimum clients): %u\n", (uint32_t)LE32(Request->N_Policy));
+	char* appId = "00000000-0000-0000-0000-000000000000";
+	char* appIdProductName = "Hidden";
+
+	char* actId = "00000000-0000-0000-0000-000000000000";
+	char* actIdProductName = "Hidden";
+
+	char* kmsId = "00000000-0000-0000-0000-000000000000";
+	char* kmsIdProductName = "Hidden";
+
+	char* cmid = "00000000-0000-0000-0000-000000000000";
+	char* prevCmid = "00000000-0000-0000-0000-000000000000";
+
+	WorkstationBuffer = "Hidden";
+#else // PRIVACY_ON
+	char* privacyMode = (!isPrivacyOn) ? "OFF" : "ON";
+
+	// Allocate separate buffers for each GUID to fix display issue
+	char appIdBuffer[GUID_STRING_LENGTH + 1];
+	char actIdBuffer[GUID_STRING_LENGTH + 1];
+	char kmsIdBuffer[GUID_STRING_LENGTH + 1];
+	char cmidBuffer[GUID_STRING_LENGTH + 1];
+	char prevCmidBuffer[GUID_STRING_LENGTH + 1];
+	ucs2_to_utf8(Request->WorkstationName, &WorkstationBuffer, WORKSTATION_NAME_BUFFER, sizeof(WorkstationBuffer));
+
+	// Pointers to use based on privacy mode
+	uuid2StringLE(&Request->AppID, appIdBuffer);
+	getProductIndex(&Request->AppID, KmsData->AppItemList, KmsData->AppItemCount, &productName, NULL);
+	char* appId = (!isPrivacyOn) ? appIdBuffer : "00000000-0000-0000-0000-000000000000";
+	char* appIdProductName = (!isPrivacyOn) ? productName : "Hidden";
+
+	uuid2StringLE(&Request->ActID, actIdBuffer);
+	getProductIndex(&Request->ActID, KmsData->SkuItemList, KmsData->SkuItemCount, &productName, NULL);
+	char* actId = (!isPrivacyOn) ? actIdBuffer : "00000000-0000-0000-0000-000000000000";
+	char* actIdProductName = (!isPrivacyOn) ? productName : "Hidden";
+
+	uuid2StringLE(&Request->KMSID, kmsIdBuffer);
+	getProductIndex(&Request->KMSID, KmsData->KmsItemList, KmsData->KmsItemCount, &productName, NULL);
+	char* kmsId = (!isPrivacyOn) ? kmsIdBuffer : "00000000-0000-0000-0000-000000000000";
+	char* kmsIdProductName = (!isPrivacyOn) ? productName : "Hidden";
+
+	uuid2StringLE(&Request->CMID, cmidBuffer);
+	char* cmid = (!isPrivacyOn) ? cmidBuffer : "00000000-0000-0000-0000-000000000000";
+
+	uuid2StringLE(&Request->CMID_prev, prevCmidBuffer);
+	char* prevCmid = (!isPrivacyOn) ? prevCmidBuffer : "00000000-0000-0000-0000-000000000000";
+#endif // PRIVACY_ON
+
+	p("Privacy mode                    : %s\n", privacyMode);
+	p("Protocol version                : %u.%u\n", protocolMajorVersion, protocolMinorVersion);
+	p("Client is a virtual machine     : %s\n", isVM);
+	p("Licensing status                : %u (%s)\n", licenseStatus, licenseStatusText);
+	p("Remaining time (0 = forever)    : %i minutes\n", remainingTime);
+	p("Application ID                  : %s (%s)\n", appId, appIdProductName);
+	p("SKU ID (aka Activation ID)      : %s (%s)\n", actId, actIdProductName);
+	p("KMS ID (aka KMS counted ID)     : %s (%s)\n", kmsId, kmsIdProductName);
+	p("Client machine ID               : %s\n", cmid);
+	p("Previous client machine ID      : %s\n", prevCmid);
+	p("Client request timestamp (UTC)  : %s\n", mbstr);
+	p("Workstation name                : %s\n", WorkstationBuffer);
+	p("N count policy (minimum clients): %u\n", minimumClients);
 }
 
 void logResponseVerbose(const char *const ePID, const BYTE *const hwid, RESPONSE* response, const PRINTFUNC p)
 {
 	char guidBuffer[GUID_STRING_LENGTH + 1];
-
-	p("Protocol version                : %u.%u\n", (uint32_t)LE16(response->MajorVer), (uint32_t)LE16(response->MinorVer));
+	uint32_t protocolMajorVersion = LE16(response->MajorVer);
+	uint32_t protocolMinorVersion = LE16(response->MinorVer);
+	uint32_t count = LE32(response->Count);
+	uint32_t renewalInterval = LE32(response->VLRenewalInterval);
+	uint32_t activationInterval = LE32(response->VLActivationInterval);
+	char mbstr[64];
+	strftime(
+		mbstr, 
+		sizeof(mbstr), 
+		"%Y-%m-%d %X",
+		gmtime(&(time_t) { fileTimeToUnixTime(&response->ClientTime) })
+	);
 
 #ifdef PRIVACY_ON
-	p("KMS host extended PID           : <hidden>\n");
-#else
-	if (isPrivacyOn == FALSE)
-		p("KMS host extended PID           : %s\n", ePID);
-	else
-		p("KMS host extended PID           : <hidden>\n");
-#endif
-
-	if (LE16(response->MajorVer) > 5)
-#	ifndef _WIN32
-		p("KMS host Hardware ID            : %016llX\n", (unsigned long long)BE64(*(uint64_t*)hwid));
-#	else // _WIN32
-		p("KMS host Hardware ID            : %016I64X\n", (unsigned long long)BE64(*(uint64_t*)hwid));
-#	endif // WIN32
+	char* kmsHostEpid = "<hidden>";
+	char* cmid = "00000000-0000-0000-0000-000000000000";
+#else // PRIVACY_ON
+	char* kmsHostEpid = (!isPrivacyOn) ? ePID : "<hidden>";
 
 	uuid2StringLE(&response->CMID, guidBuffer);
-#ifdef PRIVACY_ON
-	p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
-#else
-	if (isPrivacyOn == FALSE) {
-		p("Client machine ID               : %s\n", guidBuffer);
-	} else {
-		p("Client machine ID               : 00000000-0000-0000-0000-000000000000\n");
+	char* cmid = (!isPrivacyOn) ? guidBuffer : "00000000-0000-0000-0000-000000000000";
+#endif // PRIVACY_ON
+
+	p("Protocol version                : %u.%u\n", protocolMajorVersion, protocolMinorVersion);
+	p("KMS host extended PID           : %s\n", kmsHostEpid);
+	if (LE16(response->MajorVer) > 5) {
+		p(
+#ifndef _WIN32
+			"KMS host Hardware ID            : %016llX\n", (uint64_t)BE64(*(uint64_t*)hwid)
+#else // _WIN32
+			"KMS host Hardware ID            : %016I64X\n", (uint64_t)BE64(*(uint64_t*)hwid)
+#endif // _WIN32
+		);
 	}
-#endif
-	char mbstr[64];
-	time_t st;
-
-	st = fileTimeToUnixTime(&response->ClientTime);
-	strftime(mbstr, sizeof(mbstr), "%Y-%m-%d %X", gmtime(&st));
+	p("Client machine ID               : %s\n", cmid);
 	p("Client request timestamp (UTC)  : %s\n", mbstr);
-
-	p("KMS host current active clients : %u\n", (uint32_t)LE32(response->Count));
-	p("Renewal interval policy         : %u\n", (uint32_t)LE32(response->VLRenewalInterval));
-	p("Activation interval policy      : %u\n", (uint32_t)LE32(response->VLActivationInterval));
+	p("KMS host current active clients : %u\n", count);
+	p("Renewal interval policy         : %u\n", renewalInterval);
+	p("Activation interval policy      : %u\n", activationInterval);
 }
 #endif // !defined(NO_VERBOSE_LOG) && !defined(NO_LOG)
 
