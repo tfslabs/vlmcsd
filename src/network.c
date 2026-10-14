@@ -902,14 +902,13 @@ static void serveClient(const SOCKET s_client, const DWORD RpcAssocGroup)
 #endif // IP4FILTER_OFF
 	}
 #endif // PRIVACY_ON
-
-#endif // NO_LOG
-
-	socketclose(s_client);
-
+	
 #ifndef IP4FILTER_OFF
 	isDenyLoggingForReq = FALSE;
 #endif // IP4FILTER_OFF
+#endif // NO_LOG
+
+	socketclose(s_client);
 }
 
 #ifndef NO_SOCKETS
